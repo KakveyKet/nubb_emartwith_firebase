@@ -71,7 +71,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="border-b">
+          <tr class="border-b" v-for="data in items" :key="data.id">
             <td class="py-3 px-4">01</td>
             <td class="py-3 px-4 flex items-center">
               <img
@@ -98,12 +98,34 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { getCollectionQuery } from "@/composible/getCollection";
 export default {
   setup() {
     const dates = ref();
+    const items = ref([]);
+    const getData = async () => {
+      try {
+        await getCollectionQuery(
+          "tasks",
+          [],
+          (data) => {
+            items.value = data;
+          },
+          true
+        );
+        console.log("====================================");
+        console.log("data", items);
+        console.log("====================================");
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
 
-    return { dates };
+    onMounted(() => {
+      getData();
+    });
+    return { dates, items };
   },
 };
 </script>

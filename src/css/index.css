@@ -20,14 +20,35 @@ body {
   .loginInput {
     @apply px-3 py-3 border border-slate-500 text-[#646464] outline-none text-13px  rounded-[17px];
   }
-  input {
+  .input_webpage {
     @apply px-3 py-3 border border-slate-500 text-[#646464] outline-none text-13px  rounded-[5px];
   }
   .searchInput {
-    @apply px-4 py-2 border rounded-lg focus:outline-none;
+    @apply px-4 py-2 border rounded-lg outline-none;
   }
   .add_new_button {
     @apply flex items-center bg-primary-5 text-white px-4 py-2 rounded-lg active:bg-primary-6 hover:bg-primary-7 duration-300;
+  }
+  .isSidebar_active {
+    @apply px-2 duration-300 h-[50px] flex items-center w-full bg-primary-3 justify-start  rounded-lg relative overflow-hidden text-16px font-semibold;
+  }
+  .isSidebar_not_active {
+    @apply px-2 duration-300 h-[50px] flex items-center w-full  justify-start  rounded-lg relative overflow-hidden text-16px font-semibold;
+  }
+  .isSidbar_border_active {
+    @apply w-1 h-full bg-primary-5 absolute left-0;
+  }
+  .isSidebar_invisibleText {
+    @apply text-primary-10 text-16px font-bold;
+  }
+  .sidebar_collap_btn {
+    @apply size-8 flex items-center justify-center -ml-4 rounded-full bg-primary-3 text-primary-11 shadow-lg;
+  }
+  .navbar {
+    @apply w-full h-[70px] flex items-center justify-between bg-white shadow-lg;
+  }
+  .btn_filter {
+    @apply px-2 py-2  text-gray-500 border border-gray-300  rounded-lg active:bg-gray-400 hover:bg-gray-200   duration-300;
   }
 }
 table {
@@ -39,4 +60,13 @@ td,
 th {
   text-align: left;
   padding: 8px;
+}
+.p-datepicker {
+  font-family: "Roboto", sans-serif;
+}
+.p-datepicker-input {
+  font-family: "Roboto", sans-serif;
+}
+.p-datepicker-title {
+  font-family: "Roboto", sans-serif;
 }

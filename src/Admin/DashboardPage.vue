@@ -24,15 +24,15 @@
         <router-link
           :class="
             $route.path === '/admindashboard'
-              ? 'px-2 duration-300 h-[50px] flex items-center w-full bg-primary-3 justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
-              : 'px-2 duration-300 h-[50px] flex items-center w-full  justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
+              ? 'isSidebar_active'
+              : 'isSidebar_not_active'
           "
           to="/admindashboard"
         >
           <div
             :class="[
               $route.path === '/admindashboard'
-                ? 'w-1 h-full bg-primary-5 absolute left-0'
+                ? 'isSidbar_border_active'
                 : 'hidden',
             ]"
           ></div>
@@ -59,11 +59,7 @@
             </svg>
 
             <h2
-              :class="[
-                sidebarVisible
-                  ? 'text-primary-10 text-16px font-bold'
-                  : 'hidden',
-              ]"
+              :class="[sidebarVisible ? 'isSidebar_invisibleText' : 'hidden']"
             >
               Dashboard
             </h2>
@@ -73,16 +69,14 @@
         <router-link
           :class="
             $route.path === '/products'
-              ? 'px-2 duration-300 h-[50px] flex items-center w-full bg-primary-3 justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
-              : 'px-2 duration-300 h-[50px] flex items-center w-full  justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
+              ? 'isSidebar_active'
+              : 'isSidebar_not_active'
           "
           to="/products"
         >
           <div
             :class="[
-              $route.path === '/products'
-                ? 'w-1 h-full bg-primary-5 absolute left-0'
-                : 'hidden',
+              $route.path === '/products' ? 'isSidbar_border_active' : 'hidden',
             ]"
           ></div>
           <div
@@ -108,11 +102,7 @@
             </svg>
 
             <h2
-              :class="[
-                sidebarVisible
-                  ? 'text-primary-10 text-16px font-bold'
-                  : 'hidden',
-              ]"
+              :class="[sidebarVisible ? 'isSidebar_invisibleText' : 'hidden']"
             >
               Products
             </h2>
@@ -122,15 +112,15 @@
         <router-link
           :class="
             $route.path === '/subcategory'
-              ? 'px-2 duration-300 h-[50px] flex items-center w-full bg-primary-3 justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
-              : 'px-2 duration-300 h-[50px] flex items-center w-full  justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
+              ? 'isSidebar_active'
+              : 'isSidebar_not_active'
           "
           to="/subcategory"
         >
           <div
             :class="[
               $route.path === '/subcategory'
-                ? 'w-1 h-full bg-primary-5 absolute left-0'
+                ? 'isSidbar_border_active'
                 : 'hidden',
             ]"
           ></div>
@@ -157,11 +147,7 @@
             </svg>
 
             <h2
-              :class="[
-                sidebarVisible
-                  ? 'text-primary-10 text-16px font-bold'
-                  : 'hidden',
-              ]"
+              :class="[sidebarVisible ? 'isSidebar_invisibleText' : 'hidden']"
             >
               Category
             </h2>
@@ -171,15 +157,15 @@
         <router-link
           :class="
             $route.path === '/todayorder'
-              ? 'px-2 duration-300 h-[50px] flex items-center w-full bg-primary-3 justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
-              : 'px-2 duration-300 h-[50px] flex items-center w-full  justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
+              ? 'isSidebar_active'
+              : 'isSidebar_not_active'
           "
           to="/todayorder"
         >
           <div
             :class="[
               $route.path === '/todayorder'
-                ? 'w-1 h-full bg-primary-5 absolute left-0'
+                ? 'isSidbar_border_active'
                 : 'hidden',
             ]"
           ></div>
@@ -206,11 +192,7 @@
             </svg>
 
             <h2
-              :class="[
-                sidebarVisible
-                  ? 'text-primary-10 text-16px font-bold'
-                  : 'hidden',
-              ]"
+              :class="[sidebarVisible ? 'isSidebar_invisibleText' : 'hidden']"
             >
               Today Orders
             </h2>
@@ -221,16 +203,14 @@
         <router-link
           :class="
             $route.path === '/report'
-              ? 'px-2 duration-300 h-[50px] flex items-center w-full bg-primary-3 justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
-              : 'px-2 duration-300 h-[50px] flex items-center w-full  justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
+              ? 'isSidebar_active'
+              : 'isSidebar_not_active'
           "
           to="/report"
         >
           <div
             :class="[
-              $route.path === '/report'
-                ? 'w-1 h-full bg-primary-5 absolute left-0'
-                : 'hidden',
+              $route.path === '/report' ? 'isSidbar_border_active' : 'hidden',
             ]"
           ></div>
           <div
@@ -256,11 +236,7 @@
             </svg>
 
             <h2
-              :class="[
-                sidebarVisible
-                  ? 'text-primary-10 text-16px font-bold'
-                  : 'hidden',
-              ]"
+              :class="[sidebarVisible ? 'isSidebar_invisibleText' : 'hidden']"
             >
               Report
             </h2>
@@ -270,15 +246,15 @@
         <router-link
           :class="
             $route.path === '/martcover'
-              ? 'px-2 duration-300 h-[50px] flex items-center w-full bg-primary-3 justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
-              : 'px-2 duration-300 h-[50px] flex items-center w-full  justify-start  rounded-lg relative overflow-hidden text-16px font-semibold'
+              ? 'isSidebar_active'
+              : 'isSidebar_not_active'
           "
           to="/martcover"
         >
           <div
             :class="[
               $route.path === '/martcover'
-                ? 'w-1 h-full bg-primary-5 absolute left-0'
+                ? 'isSidbar_border_active'
                 : 'hidden',
             ]"
           ></div>
@@ -320,11 +296,9 @@
 
     <!-- Main content area -->
     <div class="content w-full">
-      <div
-        class="w-full h-[70px] flex items-center justify-between bg-white shadow-lg"
-      >
+      <div class="navbar">
         <button
-          class="size-8 flex items-center justify-center -ml-4 rounded-full bg-primary-3 text-primary-11 shadow-lg"
+          class="sidebar_collap_btn"
           v-if="sidebarVisible === true"
           @click="toggleSidebar"
         >
@@ -344,7 +318,7 @@
           </svg>
         </button>
         <button
-          class="size-8 flex items-center justify-center -ml-4 rounded-full bg-primary-3 text-primary-11 shadow-lg"
+          class="sidebar_collap_btn"
           v-if="sidebarVisible === false"
           @click="toggleSidebar"
         >

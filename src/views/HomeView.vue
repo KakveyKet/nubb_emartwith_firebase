@@ -17,7 +17,7 @@
           class="w-[450px] p-0.5 flex border-[#646464] border rounded-[40px] overflow-hidden"
         >
           <input
-            class="w-full border-none"
+            class="w-full border-none input_webpage"
             placeholder="What are you looking for?"
             type="text"
           />

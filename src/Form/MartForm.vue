@@ -4,12 +4,12 @@
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="name">Product Name</label>
-        <input v-model="name" type="text" id="name" required />
+        <InputText v-model="name" type="text" class="searchInput" />
       </div>
 
       <div class="form-group">
         <label for="location">Location</label>
-        <input v-model="location" type="text" id="location" required />
+        <InputText v-model="location" type="text" class="searchInput" />
       </div>
 
       <div class="form-group">
@@ -38,21 +38,7 @@
           coverImagesError
         }}</span>
       </div>
-
-      <div class="form-group">
-        <label for="Mart_category">Category</label>
-        <input
-          v-model="Mart_category"
-          type="text"
-          id="Mart_category"
-          required
-        />
-      </div>
-      <select v-model="Mart_category">
-        <option :value="option.id" :label="option.name" v-for="option in items">
-          {{ option.name }}
-        </option>
-      </select>
+      <Select v-model="Mart_category" :options="items" optionLabel="name" />
       <div class="form-group">
         <label for="Mart_Description">Description</label>
         <textarea
@@ -76,15 +62,18 @@
 
 <script>
 import { onMounted, ref } from "vue";
+import { projectAuth } from "@/config/config"; // Ensure you have this imported
 import useCollection from "@/composible/useCollection";
 import { timestamp } from "@/config/config";
 import { getCollectionQuery } from "@/composible/getCollection";
 import useStorage from "@/composible/useStorage";
+
 export default {
   setup() {
     const { uploadImage } = useStorage();
-
     const { addDocs } = useCollection("marts");
+
+    // State variables
     const name = ref("");
     const location = ref("");
     const martImage = ref(null);
@@ -97,6 +86,19 @@ export default {
     const profileImageError = ref("");
     const coverImagesError = ref("");
 
+    // Get the current authenticated user
+    const currentUser = ref(null);
+
+    // Fetch the current user on component mount
+    onMounted(() => {
+      currentUser.value = projectAuth.currentUser;
+      if (!currentUser.value) {
+        // Redirect to login if no user is authenticated
+        router.push({ name: "login" });
+      }
+    });
+
+    // Handle Profile Image Selection
     const handleProfileImage = (event) => {
       const file = event.target.files[0];
       if (file && file.size <= 1048576) {
@@ -109,6 +111,7 @@ export default {
       }
     };
 
+    // Handle Cover Images Selection
     const handleCoverImages = (event) => {
       const files = event.target.files;
       if (files.length > 3) {
@@ -130,9 +133,15 @@ export default {
       }
     };
 
+    // Handle Form Submission
     const handleSubmit = async () => {
       if (profileImageError.value || coverImagesError.value) {
         alert("Please fix the errors before submitting.");
+        return;
+      }
+
+      if (!currentUser.value) {
+        alert("User not authenticated.");
         return;
       }
 
@@ -178,17 +187,20 @@ export default {
         profileImageUrl: profileImageUrl,
         coverImageUrls: coverImageUrls,
         createdAt: timestamp(),
+        ownerId: currentUser.value.uid, // Add the owner's UID here
       };
 
       try {
         const result = await addDocs(martData);
         alert("Mart created successfully!");
+        // Optionally, reset the form or redirect
       } catch (error) {
         console.error("Error creating mart:", error);
         alert("Failed to create Mart.");
       }
     };
 
+    // Fetch Main Categories
     const items = ref([]);
     const getData = async () => {
       try {
@@ -200,32 +212,22 @@ export default {
           },
           true
         );
-        console.log("====================================");
-        console.log("data", items);
-        console.log("====================================");
+        console.log("Main Categories:", items.value);
       } catch (error) {
         console.error("Error fetching data:", error.message);
       }
     };
+
     onMounted(() => {
       getData();
+      // Fetch the current user
+      currentUser.value = projectAuth.currentUser;
+      if (!currentUser.value) {
+        // Redirect to login if no user is authenticated
+        router.push({ name: "login" });
+      }
     });
-    // category
-    // const category_name = ref("");
-    // const cate_status = ref(true);
-    // const addCategory = async () => {
-    //   try {
-    //     const reqBody = {
-    //       name: category_name.value,
-    //       status: true,
-    //       createdAt: timestamp(),
-    //     };
-    //     const result = await addDocs(reqBody);
-    //     console.log("result", result);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
+
     return {
       name,
       location,
@@ -241,9 +243,6 @@ export default {
       handleCoverImages,
       handleSubmit,
       items,
-      // addCategory,
-      // cate_status,
-      // category_name,
     };
   },
 };

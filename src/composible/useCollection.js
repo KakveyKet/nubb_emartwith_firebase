@@ -18,8 +18,8 @@ const useCollection = (collectionName) => {
 
     const setDocs = async (id, formDoc) => {
         return await setDoc(doc(collectionRef, id), formDoc);
-        //formDoc is data for add or update
     };
+
 
     const removeDoc = async (id) => {
         try {

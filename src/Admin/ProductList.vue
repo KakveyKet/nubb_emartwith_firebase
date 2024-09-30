@@ -206,7 +206,7 @@ export default {
     const getData = async () => {
       try {
         await getCollectionQuery(
-          "tasks",
+          "maincategory",
           [],
           (data) => {
             items.value = data;

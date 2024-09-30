@@ -13,6 +13,9 @@ import Aura from '@primevue/themes/aura';
 import Drawer from 'primevue/drawer'; // PrimeVue Drawer component
 import Button from 'primevue/button'; // PrimeVue Button component
 import DatePicker from 'primevue/datepicker';
+import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
+
 // Create Vue app instance
 const app = createApp(App);
 
@@ -20,6 +23,7 @@ const app = createApp(App);
 app.use(router);
 app.use(PrimeVue, {
     theme: {
+
         preset: Aura,
         options: {
             prefix: 'p',
@@ -35,5 +39,7 @@ app.component('font-awesome-icon', FontAwesomeIcon);
 app.component('Drawer', Drawer); // Use a multi-word name
 app.component('DatePicker', DatePicker); // Use a multi-word name
 app.component('Button', Button); // Use a multi-word name
+app.component('InputText', InputText)
+app.component('Select', Select)
 // Mount the app
 app.mount('#app');

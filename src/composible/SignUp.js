@@ -1,22 +1,53 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { ref } from "vue";
-import { projectAuth } from "@/config/config";
+import { projectAuth, timestamp } from "@/config/config";
+import useCollection from "@/composible/useCollection";
 
 const error = ref(null);
 const isPending = ref(false);
 
-const signup = async (email, password, displayName) => {
+const signup = async (email, password, displayName, role) => {
+    const { setDocs } = useCollection("users");
     try {
         isPending.value = true;
-        const response = await createUserWithEmailAndPassword(projectAuth, email, password, displayName);
+
+        console.log("Attempting to sign up with:", { email, password, displayName, role });
+
+        // Create user in Firebase Authentication
+        const response = await createUserWithEmailAndPassword(projectAuth, email, password);
+        if (!response) {
+            throw new Error("Could not complete the signup");
+        }
+
+        console.log("User created in Firebase Auth:", response.user);
+
+        // Update the user's profile with display name
         await updateProfile(response.user, { displayName });
+
+        // Prepare user data for Firestore
+        const userData = {
+            username: displayName,
+            email: email,
+            role: role || "manager", // Default role if not provided
+            createdAt: timestamp(),
+        };
+
+        console.log("Saving user data to Firestore:", userData);
+
+        // Save additional user data in Firestore
+        await setDocs(response.user.uid, userData);
+
+        console.log("User data successfully saved to Firestore.");
+
         return response;
     } catch (err) {
         error.value = err.message;
+        console.error("Signup error:", err); // Log the error details
     } finally {
         isPending.value = false;
     }
 };
+
 
 const useSignUp = () => {
     return { error, isPending, signup };

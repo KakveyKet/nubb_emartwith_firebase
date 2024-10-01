@@ -1,20 +1,17 @@
-import {
-    collection,
-    onSnapshot,
-    query,
-    getDocs,
-} from "firebase/firestore";
+import { collection, onSnapshot, query, getDocs, where } from "firebase/firestore";
 import { projectFirestore } from "../config/config";
 
 export const getCollectionQuery = async (
     collectionName,
-    whereDoc,
+    whereDoc = [],  // whereDoc will now accept an array of conditions
     callback,
     useSnapshot = false
 ) => {
     const collectionRef = collection(projectFirestore, collectionName);
+
+    // Apply the where clauses dynamically if provided
     let queryRef = collectionRef;
-    if (whereDoc) {
+    if (whereDoc && whereDoc.length > 0) {
         queryRef = query(collectionRef, ...whereDoc);
     }
 

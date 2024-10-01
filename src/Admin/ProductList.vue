@@ -213,9 +213,7 @@ export default {
           },
           true
         );
-        console.log("====================================");
         console.log("data", items);
-        console.log("====================================");
       } catch (error) {
         console.error("Error fetching data:", error.message);
       }

@@ -16,7 +16,7 @@
             sidebarVisible ? 'text-primary-10 text-24px font-bold' : 'hidden',
           ]"
         >
-          <h1 class="text-20px">NUBB E-Shop</h1>
+          <h1 class="text-20px">{{ marts[0]?.name }}</h1>
         </div>
       </div>
       <div class="w-full flex flex-col space-y-4 mt-4 p-3">
@@ -40,7 +40,7 @@
             :class="[
               sidebarVisible
                 ? 'flex gap-3 w-full ml-8'
-                : 'flex items-center justify-center w-full',
+                : 'flex marts-center justify-center w-full',
             ]"
           >
             <svg
@@ -83,7 +83,7 @@
             :class="[
               sidebarVisible
                 ? 'flex gap-3 w-full ml-8'
-                : 'flex items-center justify-center w-full',
+                : 'flex marts-center justify-center w-full',
             ]"
           >
             <svg
@@ -128,7 +128,7 @@
             :class="[
               sidebarVisible
                 ? 'flex gap-3 w-full ml-8'
-                : 'flex items-center justify-center w-full',
+                : 'flex marts-center justify-center w-full',
             ]"
           >
             <svg
@@ -173,7 +173,7 @@
             :class="[
               sidebarVisible
                 ? 'flex gap-3 w-full ml-8'
-                : 'flex items-center justify-center w-full',
+                : 'flex marts-center justify-center w-full',
             ]"
           >
             <svg
@@ -217,7 +217,7 @@
             :class="[
               sidebarVisible
                 ? 'flex gap-3 w-full ml-8'
-                : 'flex items-center justify-center w-full',
+                : 'flex marts-center justify-center w-full',
             ]"
           >
             <svg
@@ -262,7 +262,7 @@
             :class="[
               sidebarVisible
                 ? 'flex gap-3 w-full ml-8'
-                : 'flex items-center justify-center w-full',
+                : 'flex marts-center justify-center w-full',
             ]"
           >
             <svg
@@ -291,6 +291,48 @@
             </h2>
           </div>
         </router-link>
+        <div
+          @click="logout"
+          class="text-red-500 cursor-pointer"
+          :class="
+            $route.path === '/martcover'
+              ? 'isSidebar_active'
+              : 'isSidebar_not_active'
+          "
+          to="/martcover"
+        >
+          <div
+            :class="[
+              $route.path === '/martcover'
+                ? 'isSidbar_border_active'
+                : 'hidden',
+            ]"
+          ></div>
+          <div
+            :class="[
+              sidebarVisible
+                ? 'flex gap-3 w-full ml-8'
+                : 'flex marts-center justify-center w-full',
+            ]"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"
+              />
+            </svg>
+
+            <h2 class="text-red-500 text-16px font-bold">Logout</h2>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -337,8 +379,8 @@
             />
           </svg>
         </button>
-        <div class="flex items-center gap-3 mr-6">
-          <div class="flex items-center gap-2">
+        <div class="flex marts-center gap-3 mr-6">
+          <div class="flex marts-center gap-2">
             <img
               class="w-[24px] h-[16px]"
               src="../assets/download.png"
@@ -362,7 +404,7 @@
               </svg>
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex marts-center gap-2">
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -381,7 +423,7 @@
               <h3 class="text-16px">Cart</h3>
             </div>
           </div>
-          <div class="flex items-center gap-2 border-r border-primary-4 px-2">
+          <div class="flex marts-center gap-2 border-r border-primary-4 px-2">
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -401,7 +443,7 @@
               <h3 class="text-16px">Favorite</h3>
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex marts-center gap-2">
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -416,7 +458,7 @@
                 />
               </svg>
 
-              <h3 class="text-16px">Hi, Nyla</h3>
+              <h3 class="text-16px">Hi, {{ currentUser?.displayName }}</h3>
             </div>
           </div>
         </div>
@@ -428,12 +470,70 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
+<script>
+import { onMounted, ref } from "vue";
+import { projectAuth } from "@/config/config"; // Firebase config import
+import { getAuth, signOut } from "firebase/auth";
+import { useRouter } from "vue-router";
+import { getCollectionQuery } from "@/composible/getCollection";
+import { where } from "firebase/firestore";
 
-const sidebarVisible = ref(true);
+export default {
+  setup() {
+    const sidebarVisible = ref(true);
+    const currentUser = ref(null);
+    const router = useRouter();
+    const auth = getAuth(); // Get the Firebase auth instance
 
-const toggleSidebar = () => {
-  sidebarVisible.value = !sidebarVisible.value;
+    // Function to toggle the sidebar visibility
+    const toggleSidebar = () => {
+      sidebarVisible.value = !sidebarVisible.value;
+    };
+    const marts = ref([]);
+    const fetchMartsForCurrentUser = async () => {
+      if (currentUser?.value) {
+        const userId = currentUser.value?.uid; // Get current user's ID
+
+        // Define the condition for matching user_id with the mart's user_id
+        const conditions = [where("ownerId", "==", userId)];
+
+        // Call the getCollectionQuery function with the conditions
+        await getCollectionQuery("marts", conditions, (data) => {
+          marts.value = data;
+          console.log("data mart", marts.value);
+        });
+      } else {
+        console.error("No user is currently logged in.");
+      }
+    };
+
+    // Function to log out the user
+    const logout = async () => {
+      try {
+        await signOut(auth); // Sign out the user using Firebase
+        localStorage.removeItem("user"); // Remove any stored user info
+        router.push("/login"); // Redirect to login page
+        alert("You have been logged out successfully!");
+      } catch (error) {
+        console.error("Error logging out:", error);
+        alert("Failed to log out. Please try again.");
+      }
+    };
+
+    // Fetch the current user from Firebase auth
+    onMounted(async () => {
+      currentUser.value = projectAuth.currentUser;
+      await Promise.allSettled([fetchMartsForCurrentUser()]);
+    });
+
+    // Return all variables and functions to make them available in the template
+    return {
+      sidebarVisible,
+      currentUser,
+      toggleSidebar,
+      logout,
+      marts,
+    };
+  },
 };
 </script>

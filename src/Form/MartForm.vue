@@ -187,7 +187,7 @@ export default {
         profileImageUrl: profileImageUrl,
         coverImageUrls: coverImageUrls,
         createdAt: timestamp(),
-        ownerId: currentUser.value.uid, // Add the owner's UID here
+        ownerId: currentUser.value.uid,
       };
 
       try {

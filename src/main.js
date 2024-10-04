@@ -15,7 +15,8 @@ import Button from 'primevue/button'; // PrimeVue Button component
 import DatePicker from 'primevue/datepicker';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
-
+import Dialog from 'primevue/dialog';
+import Chip from 'primevue/chip';
 // Create Vue app instance
 const app = createApp(App);
 
@@ -41,5 +42,8 @@ app.component('DatePicker', DatePicker); // Use a multi-word name
 app.component('Button', Button); // Use a multi-word name
 app.component('InputText', InputText)
 app.component('Select', Select)
+app.component('Dialog', Dialog)
+app.component('Chip', Chip)
+
 // Mount the app
 app.mount('#app');

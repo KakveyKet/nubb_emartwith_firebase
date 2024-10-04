@@ -50,6 +50,9 @@ body {
   .btn_filter {
     @apply px-2 py-2  text-gray-500 border border-gray-300  rounded-lg active:bg-gray-400 hover:bg-gray-200   duration-300;
   }
+  .chip_btn {
+    @apply w-[100px] px-2 py-1 bg-green-500 rounded-lg text-white;
+  }
 }
 table {
   border-collapse: collapse;

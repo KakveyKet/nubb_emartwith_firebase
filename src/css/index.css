@@ -73,3 +73,19 @@ th {
 .p-datepicker-title {
   font-family: "Roboto", sans-serif;
 }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #e5d5ec;
+  /* border-radius: 100vh; */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #d55c0c;
+  border-radius: 100vh;
+}

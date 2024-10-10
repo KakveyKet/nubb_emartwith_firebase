@@ -39,7 +39,7 @@ export default {
           // Add the category with the known branch ID
           await addDoc(collection(projectFirestore, "subcategories"), {
             name: categoryName.value,
-            branch_id: marts.value,
+            branch_id: marts.value[0]?.id,
             status: true,
             created_at: timestamp(),
           });

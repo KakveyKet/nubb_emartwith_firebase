@@ -167,10 +167,9 @@
       modal
       header="Add New Category"
     >
-      <div>
-        <component :is="currentComponent" />
-      </div>
+      <component :is="currentComponent" />
     </Dialog>
+    <!-- {{ marts }} , {{ items }} -->
   </div>
 </template>
 
@@ -178,6 +177,9 @@
 import { ref, onMounted } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import SubCategoryForm from "@/Form/SubCategoryForm.vue";
+import { getAuth } from "firebase/auth";
+import { projectAuth } from "@/config/config";
+import { where } from "firebase/firestore";
 
 export default {
   components: {
@@ -185,8 +187,24 @@ export default {
   },
   setup() {
     const dates = ref();
-    const items = ref([]);
     const visible = ref(false);
+    const currentUser = ref(null);
+    const auth = getAuth(); // Get the Firebase auth instance
+    const items = ref([]);
+    const marts = ref([]);
+    const fetchMarts = async (field, value) => {
+      if (currentUser?.value) {
+        const conditions = [where(field, "==", value)]; // Dynamic condition based on the field and value provided
+
+        await getCollectionQuery("marts", conditions, (data) => {
+          marts.value = data;
+          console.log("data mart", marts.value);
+        });
+      } else {
+        console.error("No user is currently logged in.");
+      }
+    };
+
     const currentComponent = ref(null);
     const handleAdd = () => {
       visible.value = true;
@@ -196,28 +214,43 @@ export default {
       visible.value = false;
       currentComponent.value = "";
     };
-    const getData = async () => {
-      try {
-        await getCollectionQuery(
-          "subcategories",
-          [],
-          (data) => {
-            items.value = data;
-          },
-          true
-        );
-        console.log("data", items);
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
+    const fetchSubCategories = async (field, value) => {
+      if (marts.value.length > 0) {
+        const conditions = [where(field, "==", value)]; // Dynamic condition based on the field and value provided
+
+        await getCollectionQuery("subcategories", conditions, (data) => {
+          items.value = data;
+          console.log("data category", items.value);
+        });
+      } else {
+        console.error("Error fetching data: Marts data is empty.");
       }
     };
 
-    onMounted(() => {
-      getData();
+    onMounted(async () => {
+      currentUser.value = projectAuth.currentUser;
+
+      // Fetch marts first and wait for it to complete
+      await fetchMarts("ownerId", currentUser.value.uid);
+
+      // Only fetch subcategories if marts were successfully fetched and marts.value is not empty
+      if (marts.value.length > 0) {
+        await fetchSubCategories("branch_id", marts.value[0].id);
+      } else {
+        console.error("Error: No marts available for the current user.");
+      }
     });
-    return { dates, items, visible, handleAdd, handleClose, currentComponent };
+    return {
+      dates,
+      items,
+      visible,
+      handleAdd,
+      handleClose,
+      currentComponent,
+      marts,
+    };
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

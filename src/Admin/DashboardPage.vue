@@ -479,8 +479,8 @@ import { where } from "firebase/firestore";
 export default {
   setup() {
     const sidebarVisible = ref(true);
-    const currentUser = ref(null);
     const router = useRouter();
+    const currentUser = ref(null);
     const auth = getAuth(); // Get the Firebase auth instance
 
     // Function to toggle the sidebar visibility
@@ -491,11 +491,8 @@ export default {
     const fetchMartsForCurrentUser = async () => {
       if (currentUser?.value) {
         const userId = currentUser.value?.uid; // Get current user's ID
-
-        // Define the condition for matching user_id with the mart's user_id
         const conditions = [where("ownerId", "==", userId)];
 
-        // Call the getCollectionQuery function with the conditions
         await getCollectionQuery("marts", conditions, (data) => {
           marts.value = data;
           console.log("data mart", marts.value);

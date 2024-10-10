@@ -193,13 +193,16 @@
         </tbody>
       </table>
     </div>
+    <!-- <ProductForm /> -->
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
+import ProductForm from "./ProductForm.vue";
 export default {
+  components: { ProductForm },
   setup() {
     const dates = ref();
     const items = ref([]);

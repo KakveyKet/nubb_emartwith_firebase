@@ -136,7 +136,7 @@
     </div>
     <!-- category -->
     <div class="w-full mt-8">
-      <CategoryVue />
+      <CategoryVue :data="subCategory" />
     </div>
     <!-- body -->
     <div class="w-full h-screen">
@@ -169,20 +169,18 @@
         <div class="mt-8 w-fit gap-8 grid grid-cols-5">
           <!-- cart -->
           <div
-            v-for="data in 5"
+            v-for="data in products"
             :key="data"
             class="w-[180px] h-auto p-5 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
           >
             <div class="w-[120px] h-[100px] overflow-hidden mx-auto">
-              <img
-                src="../assets/icon/sanwitch.jpg"
-                class="object-cover"
-                alt=""
-              />
+              <img :src="data.images[0]" class="object-cover" alt="" />
             </div>
             <div>
-              <h2 class="font-semibold text-black text-14px">Sandwich</h2>
-              <p class="text-slate-400 text-13px">1 pc</p>
+              <h2 class="font-semibold text-black text-14px">
+                {{ data.name }}
+              </h2>
+              <!-- <p class="text-slate-400 text-13px">1 pc</p> -->
             </div>
             <div class="flex items-center justify-between">
               <div>
@@ -244,6 +242,9 @@
 import FooterVue from "@/components/FooterPage.vue";
 import CategoryVue from "@/components/CategoryPage.vue";
 import { useRoute } from "vue-router";
+import { getCollectionQuery } from "@/composible/getCollection";
+import { ref, onMounted } from "vue";
+
 export default {
   components: {
     FooterVue,
@@ -251,9 +252,26 @@ export default {
   },
   setup() {
     const route = useRoute();
-
+    const products = ref([]);
+    const fetchProducts = async () => {
+      await getCollectionQuery("products", [], (data) => {
+        products.value = data;
+      });
+    };
+    const subCategory = ref([]);
+    const fetchSubCategory = async () => {
+      await getCollectionQuery("subcategories", [], (data) => {
+        subCategory.value = data;
+      });
+    };
+    onMounted(async () => {
+      await Promise.allSettled([fetchProducts(), fetchSubCategory()]);
+    });
+    console.log(products.value);
     return {
       route,
+      products,
+      subCategory,
     };
   },
 };

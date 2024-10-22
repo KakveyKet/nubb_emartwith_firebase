@@ -67,7 +67,7 @@
               d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2"
             />
           </svg>
-          <span class="mr-2"> Add New</span>
+          <span class="mr-2" @click="handleAdd"> Add New</span>
         </div>
       </button>
     </div>
@@ -181,7 +181,7 @@
               />
               Sandwich
             </td>
-            <td class="py-3 px-4">Fast Food</td>
+            <td class="py-3 px-4">{{ data.name }}</td>
             <td class="py-3 px-4">20</td>
             <td class="py-3 px-4">2000 riel</td>
             <td class="py-3 px-4">
@@ -193,16 +193,26 @@
         </tbody>
       </table>
     </div>
-    <!-- <ProductForm /> -->
+    <!-- <BranchForm /> -->
+
+    <Dialog
+      class="!w-[400px] !h-fit"
+      v-model:visible="visible"
+      modal
+      header="Add New Product"
+    >
+      <component :is="currentComponent" @close="handleClose" />
+    </Dialog>
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
-import ProductForm from "./ProductForm.vue";
+import BranchForm from "./BranchForm.vue";
+import ProductForm from "@/Form/ProductForm.vue";
 export default {
-  components: { ProductForm },
+  components: { BranchForm, ProductForm },
   setup() {
     const dates = ref();
     const items = ref([]);
@@ -221,11 +231,21 @@ export default {
         console.error("Error fetching data:", error.message);
       }
     };
+    const visible = ref(false);
+    const currentComponent = ref(null);
+    const handleAdd = () => {
+      visible.value = true;
+      currentComponent.value = "ProductForm";
+    };
+    const handleClose = () => {
+      visible.value = false;
+      currentComponent.value = "";
+    };
 
     onMounted(() => {
       getData();
     });
-    return { dates, items };
+    return { dates, items, visible, handleAdd, handleClose, currentComponent };
   },
 };
 </script>

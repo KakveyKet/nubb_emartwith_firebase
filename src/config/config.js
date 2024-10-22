@@ -18,5 +18,5 @@ const firebaseApp = initializeApp(firebaseConfig);
 const projectFirestore = getFirestore(firebaseApp);
 const projectAuth = getAuth(firebaseApp);
 const projectStorage = getStorage(firebaseApp);
-const timestamp = serverTimestamp; // Or use directly in your code
+const timestamp = serverTimestamp;
 export { projectAuth, projectFirestore, projectStorage, timestamp };

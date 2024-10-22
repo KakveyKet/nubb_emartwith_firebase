@@ -31,6 +31,7 @@ const useCollection = (collectionName) => {
         }
     };
 
+
     const updateDocs = async (id, formDoc) => {
         try {
             console.log("Updating document with ID:", id);

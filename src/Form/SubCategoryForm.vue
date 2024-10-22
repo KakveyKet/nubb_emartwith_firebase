@@ -4,7 +4,6 @@
       <!-- Category Name Input -->
       <div class="flex flex-col space-y-2">
         <label for="category-name">Category Name:</label>
-
         <InputText
           v-model="categoryName"
           type="text"
@@ -13,6 +12,18 @@
           class="!w-full"
         />
       </div>
+
+      <!-- Image Upload Input -->
+      <div class="flex flex-col space-y-2 mt-4">
+        <label for="category-image">Upload Image:</label>
+        <input
+          type="file"
+          id="category-image"
+          @change="handleImageUpload"
+          accept="image/*"
+        />
+      </div>
+
       <div class="flex items-center justify-end mt-8 gap-3">
         <button class="add_new_button">Cancel</button>
         <button class="add_new_button" type="submit">Save</button>
@@ -29,36 +40,21 @@ import { where } from "firebase/firestore";
 import { projectAuth } from "@/config/config";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { timestamp } from "@/config/config";
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+
 export default {
   setup() {
     const categoryName = ref("");
     const selectedBranchId = ref(null);
-    const handleSubmit = async () => {
-      if (categoryName.value) {
-        try {
-          // Add the category with the known branch ID
-          await addDoc(collection(projectFirestore, "subcategories"), {
-            name: categoryName.value,
-            branch_id: marts.value[0]?.id,
-            status: true,
-            created_at: timestamp(),
-          });
-
-          // Clear the form fields after submission
-          categoryName.value = "";
-
-          alert("Category created successfully!");
-        } catch (error) {
-          console.error("Error creating category:", error);
-          alert("Failed to create category. Please try again.");
-        }
-      } else {
-        alert("Please fill out the category name.");
-      }
-    };
     const currentUser = ref(null);
-
     const marts = ref([]);
+    const imageFile = ref(null);
+
     const fetchMartsForCurrentUser = async () => {
       if (currentUser?.value) {
         const userId = currentUser.value?.uid;
@@ -71,6 +67,52 @@ export default {
         console.error("No user is currently logged in.");
       }
     };
+
+    const handleImageUpload = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        imageFile.value = file;
+      }
+    };
+
+    const handleSubmit = async () => {
+      if (categoryName.value) {
+        try {
+          let imageUrl = null;
+          if (imageFile.value) {
+            const storage = getStorage();
+            const storageReference = storageRef(
+              storage,
+              `images/${imageFile.value.name}`
+            );
+            const snapshot = await uploadBytes(
+              storageReference,
+              imageFile.value
+            );
+            imageUrl = await getDownloadURL(snapshot.ref);
+          }
+
+          await addDoc(collection(projectFirestore, "subcategories"), {
+            name: categoryName.value,
+            branch_id: marts.value[0]?.id,
+            status: true,
+            created_at: timestamp(),
+            image_url: imageUrl,
+          });
+
+          categoryName.value = "";
+          imageFile.value = null;
+
+          alert("Category created successfully!");
+        } catch (error) {
+          console.error("Error creating category:", error);
+          alert("Failed to create category. Please try again.");
+        }
+      } else {
+        alert("Please fill out the category name.");
+      }
+    };
+
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
       await Promise.allSettled([fetchMartsForCurrentUser()]);
@@ -81,6 +123,7 @@ export default {
       marts,
       handleSubmit,
       currentUser,
+      handleImageUpload,
     };
   },
 };

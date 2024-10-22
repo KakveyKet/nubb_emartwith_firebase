@@ -3,7 +3,7 @@ import { projectFirestore } from "../config/config";
 
 export const getCollectionQuery = async (
     collectionName,
-    whereDoc = [],  // whereDoc will now accept an array of conditions
+    whereDoc = [],
     callback,
     useSnapshot = false
 ) => {

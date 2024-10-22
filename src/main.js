@@ -17,6 +17,7 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Dialog from 'primevue/dialog';
 import Chip from 'primevue/chip';
+
 // Create Vue app instance
 const app = createApp(App);
 

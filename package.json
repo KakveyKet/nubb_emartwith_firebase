@@ -17,6 +17,7 @@
     "core-js": "^3.8.3",
     "eslint-plugin-vue": "^9.27.0",
     "firebase": "^10.13.1",
+    "primeicons": "^7.0.0",
     "primevue": "^4.0.5",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"

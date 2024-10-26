@@ -1,122 +1,187 @@
 <template>
-  <div>
-    <form @submit.prevent="handleSubmit">
-      <!-- Product Name Input -->
-      <div class="flex flex-col space-y-2">
-        <label for="name">Product Name: </label>
-        <InputText
-          v-model="productName"
-          type="text"
-          id="name"
-          placeholder="Enter product name"
-          class="!w-full"
-        />
-      </div>
-
-      <!-- Image Input -->
-      <div class="flex flex-col space-y-2 mt-4">
-        <label for="images">Product Images (1-3 images):</label>
-        <input
-          type="file"
-          id="images"
-          multiple
-          accept="image/*"
-          @change="handleImageUpload"
-          class="!w-full"
-        />
-      </div>
-      <Select
-        v-model="selectCategory"
-        :options="subcategory"
-        optionLabel="name"
-        placeholder="Select a category"
-        class="w-full md:w-56"
+  <form @submit.prevent="handleSubmit" class="space-y-4 w-full">
+    <!-- Product Name Input -->
+    <div class="flex flex-col space-y-2">
+      <label for="name">Product Name: </label>
+      <InputText
+        v-model="productName"
+        type="text"
+        id="name"
+        placeholder="Enter product name"
+        class="w-full"
       />
+    </div>
 
-      <div class="flex subcategory-center justify-end mt-8 gap-3">
-        <button class="add_new_button" type="button">Cancel</button>
-        <button class="add_new_button" type="submit">Save</button>
+    <!-- Description Input -->
+    <div class="flex flex-col space-y-2">
+      <label for="description">Description: </label>
+      <Textarea
+        v-model="description"
+        id="description"
+        placeholder="Enter product description"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Product Images Input -->
+    <div class="flex flex-col space-y-2 mt-4">
+      <label for="images">Product Images (1-3 images):</label>
+      <FileUpload
+        name="images"
+        :customUpload="true"
+        :multiple="true"
+        accept="image/*"
+        :maxFileSize="1000000"
+        :maxFiles="3"
+        :auto="false"
+        @select="onAdvancedUpload"
+      >
+        <template #empty>
+          <span>Drag and drop files here to upload.</span>
+        </template>
+      </FileUpload>
+    </div>
+
+    <!-- Preview of Selected Images -->
+    <div v-if="imagePreviews.length" class="flex flex-wrap gap-4 mt-4">
+      <div
+        v-for="(image, index) in imagePreviews"
+        :key="index"
+        class="w-24 h-24"
+      >
+        <img
+          :src="image"
+          alt="Preview"
+          class="object-cover w-full h-full rounded"
+        />
       </div>
-    </form>
-  </div>
+    </div>
+
+    <!-- Category, Price, and Stock Inputs -->
+    <div class="flex gap-4 mt-4">
+      <div class="flex flex-col space-y-2">
+        <label for="category">Category: </label>
+        <Select
+          v-model="selectCategory"
+          :options="subcategory"
+          optionLabel="name"
+          placeholder="Select a category"
+          filter
+          class="w-full"
+        />
+      </div>
+      <div class="flex flex-col space-y-2">
+        <label for="price">Price: </label>
+        <InputNumber
+          v-model="price"
+          id="price"
+          placeholder="Enter price"
+          mode="currency"
+          currency="USD"
+          locale="en-US"
+          class="w-full"
+        />
+      </div>
+      <div class="flex flex-col space-y-2">
+        <label for="stock">Stock: </label>
+        <InputNumber
+          v-model="stock"
+          id="stock"
+          placeholder="Enter stock"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Submit and Cancel Buttons -->
+    <div class="flex justify-end mt-8 gap-3">
+      <button class="add_new_button" type="button" @click="handleClose">
+        Cancel
+      </button>
+      <button class="add_new_button" type="submit">Save</button>
+    </div>
+  </form>
 </template>
 
 <script>
-import { collection, addDoc } from "firebase/firestore";
+import { ref, onMounted } from "vue";
+import FileUpload from "primevue/fileupload";
+import { addDoc, collection, where } from "firebase/firestore";
 import {
   projectFirestore,
   projectStorage,
   timestamp,
   projectAuth,
 } from "@/config/config";
-import { where } from "firebase/firestore";
-import { getCollectionQuery } from "@/composible/getCollection";
-import { ref, onMounted } from "vue";
-import { getStorage } from "firebase/storage";
 import {
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
+import { getCollectionQuery } from "@/composible/getCollection";
 
 export default {
-  setup() {
+  components: { FileUpload },
+  setup(props, { emit }) {
+    const productName = ref("");
+    const description = ref("");
+    const productImages = ref([]); // Array to hold uploaded files
+    const imagePreviews = ref([]); // Array to hold image preview URLs
     const selectCategory = ref(null);
+    const subcategory = ref([]);
+    const price = ref(0);
+    const stock = ref(null);
     const currentUser = ref(null);
     const marts = ref([]);
-    const productName = ref(null);
-    const productImages = ref([]); // To store the selected image files
-    const subcategory = ref([]);
 
-    // Fetch marts for the current user
-    const fetchMarts = async (field, value) => {
-      if (currentUser?.value) {
-        const conditions = [where(field, "==", value)]; // Dynamic condition based on the field and value provided
-
-        await getCollectionQuery("marts", conditions, (data) => {
-          marts.value = data;
-          console.log("data mart", marts.value);
-        });
-      } else {
-        console.error("No user is currently logged in.");
-      }
+    // Close the form
+    const handleClose = () => {
+      emit("close");
     };
 
-    // Handle image selection and store in productImages
-    const handleImageUpload = (event) => {
-      const files = event.target.files;
+    // Handle file selection for upload
+    const onAdvancedUpload = (event) => {
+      const files = event.files;
       if (files.length > 3) {
         alert("You can only upload up to 3 images.");
         return;
       }
-      productImages.value = Array.from(files);
+
+      // Clear previous images if necessary
+      productImages.value = [];
+      imagePreviews.value = [];
+
+      // Store selected files and create preview URLs
+      Array.from(files).forEach((file) => {
+        productImages.value.push(file);
+
+        // Create a URL for the preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imagePreviews.value.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
     };
+
+    // Upload image to Firebase storage
     const uploadImage = async (path, file) => {
-      const storage = getStorage(); // Ensure you're using the initialized storage instance
-      const storageRefInstance = storageRef(storage, `${path}-${Date.now()}`);
-
-      // Upload the file to Firebase Storage
+      const storageRefInstance = storageRef(
+        projectStorage,
+        `${path}-${Date.now()}`
+      );
       await uploadBytes(storageRefInstance, file);
-
-      // Get the URL of the uploaded file
-      const downloadUrl = await getDownloadURL(storageRefInstance);
-
-      return downloadUrl;
+      return getDownloadURL(storageRefInstance);
     };
 
-    // Handle form submission
+    // Handle form submission and image upload
     const handleSubmit = async () => {
-      let productImageUrls = []; // Array to store uploaded image URLs
-
-      // Ensure that the product name and images are provided
       if (!productName.value || productImages.value.length === 0) {
-        alert(
-          "Please fill out the product name and upload at least one image."
-        );
+        alert("Please enter a product name and upload images.");
         return;
       }
 
-      // Upload product images
+      let productImageUrls = [];
       for (const image of productImages.value) {
         try {
           const productImageUrl = await uploadImage(
@@ -125,58 +190,68 @@ export default {
           );
           productImageUrls.push(productImageUrl);
         } catch (error) {
-          console.error("Error uploading product image:", error);
+          console.error("Error uploading image:", error);
           alert("Failed to upload product images.");
-          return; // Exit if an error occurs
+          return;
         }
       }
 
       try {
-        // After successfully uploading images, save the product details to Firestore
         await addDoc(collection(projectFirestore, "products"), {
           name: productName.value,
           branch_id: marts.value[0]?.id,
-          images: productImageUrls, // Array of uploaded product image URLs
+          images: productImageUrls,
           status: true,
           category: selectCategory.value,
+          price: price.value,
+          stock: stock.value,
+          description: description.value,
           created_at: timestamp(),
         });
-
-        alert("Product created successfully!");
+        emit("toast");
       } catch (error) {
         console.error("Error creating product:", error);
-        alert("Failed to create product. Please try again.");
+      }
+    };
+
+    // Fetch marts and subcategories on mount
+    const fetchMarts = async (field, value) => {
+      if (currentUser?.value) {
+        const conditions = [where(field, "==", value)];
+        await getCollectionQuery("marts", conditions, (data) => {
+          marts.value = data;
+        });
       }
     };
 
     const fetchSubCategories = async (field, value) => {
       if (marts.value.length > 0) {
         const conditions = [where(field, "==", value)];
-
         await getCollectionQuery("subcategories", conditions, (data) => {
           subcategory.value = data;
-          console.log("data category", subcategory.value);
         });
-      } else {
-        console.error("Error fetching data: category data is empty.");
       }
     };
+
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
-      await Promise.allSettled([fetchMarts("ownerId", currentUser.value.uid)]);
+      await fetchMarts("ownerId", currentUser.value.uid);
       if (marts.value.length > 0) {
         await fetchSubCategories("branch_id", marts.value[0].id);
-      } else {
-        console.error("Error: No marts available for the current user.");
       }
     });
 
     return {
       productName,
-      handleImageUpload,
+      description,
+      onAdvancedUpload,
       handleSubmit,
-      subcategory,
+      imagePreviews,
       selectCategory,
+      subcategory,
+      price,
+      stock,
+      handleClose,
     };
   },
 };

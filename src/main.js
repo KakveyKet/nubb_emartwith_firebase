@@ -9,15 +9,26 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
+import ToastService from 'primevue/toastservice';
 
 import Drawer from 'primevue/drawer'; // PrimeVue Drawer component
 import Button from 'primevue/button'; // PrimeVue Button component
 import DatePicker from 'primevue/datepicker';
-import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Dialog from 'primevue/dialog';
 import Chip from 'primevue/chip';
-
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import ColumnGroup from 'primevue/columngroup';
+import Row from 'primevue/row';
+import Tag from 'primevue/tag';
+import 'primeicons/primeicons.css'
+import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
+import Dropdown from 'primevue/dropdown';
+import FileUpload from 'primevue/fileupload';
+import Textarea from 'primevue/textarea';
+import Toast from 'primevue/toast';
 // Create Vue app instance
 const app = createApp(App);
 
@@ -45,6 +56,18 @@ app.component('InputText', InputText)
 app.component('Select', Select)
 app.component('Dialog', Dialog)
 app.component('Chip', Chip)
-
+app.component('DataTable', DataTable)
+app.component('Column', Column)
+app.component('ColumnGroup', ColumnGroup)
+app.component('Row', Row)
+app.component('Tag', Tag)
+app.component('InputText', InputText)
+app.component('InputNumber', InputNumber)
+app.component('Dropdown', Dropdown)
+app.component('FileUpload', FileUpload)
+app.component('Textarea', Textarea)
+app.component("Toast", Toast)
 // Mount the app
+app.use(ToastService);
+
 app.mount('#app');

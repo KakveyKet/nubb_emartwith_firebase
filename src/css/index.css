@@ -54,7 +54,7 @@ body {
     @apply w-[100px] px-2 py-1 bg-green-500 rounded-lg text-white;
   }
 }
-table {
+/* table {
   border-collapse: collapse;
   width: 100%;
 }
@@ -63,7 +63,7 @@ td,
 th {
   text-align: left;
   padding: 8px;
-}
+} */
 .p-datepicker {
   font-family: "Roboto", sans-serif;
 }

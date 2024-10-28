@@ -252,18 +252,36 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const products = ref([]);
-    const fetchProducts = async () => {
-      await getCollectionQuery("products", [], (data) => {
-        products.value = data;
-      });
-    };
     const subCategory = ref([]);
-    const fetchSubCategory = async () => {
-      await getCollectionQuery("subcategories", [], (data) => {
-        subCategory.value = data;
-      });
+    const products = ref([]);
+    const loadFromCache = (key) => JSON.parse(localStorage.getItem(key)) || [];
+    const saveToCache = (key, data) =>
+      localStorage.setItem(key, JSON.stringify(data));
+
+    const fetchProducts = async () => {
+      const cachedProducts = loadFromCache("productsCache");
+      if (cachedProducts.length) {
+        products.value = cachedProducts;
+      } else {
+        await getCollectionQuery("products", [], (data) => {
+          products.value = data;
+          saveToCache("productsCache", data);
+        });
+      }
     };
+
+    const fetchSubCategory = async () => {
+      const cachedSubCategory = loadFromCache("subCategoryCache");
+      if (cachedSubCategory.length) {
+        subCategory.value = cachedSubCategory;
+      } else {
+        await getCollectionQuery("subcategories", [], (data) => {
+          subCategory.value = data;
+          saveToCache("subCategoryCache", data);
+        });
+      }
+    };
+
     onMounted(async () => {
       await Promise.allSettled([fetchProducts(), fetchSubCategory()]);
     });

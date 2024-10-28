@@ -33,7 +33,6 @@
         accept="image/*"
         :maxFileSize="1000000"
         :maxFiles="3"
-        :auto="false"
         @select="onAdvancedUpload"
       >
         <template #empty>
@@ -76,9 +75,7 @@
           v-model="price"
           id="price"
           placeholder="Enter price"
-          mode="currency"
-          currency="USD"
-          locale="en-US"
+          prefix="៛ "
           class="w-full"
         />
       </div>
@@ -98,7 +95,9 @@
       <button class="add_new_button" type="button" @click="handleClose">
         Cancel
       </button>
-      <button class="add_new_button" type="submit">Save</button>
+      <button class="add_new_button" type="submit">
+        {{ dataToEdit ? "Update" : "Save" }}
+      </button>
     </div>
   </form>
 </template>
@@ -106,40 +105,34 @@
 <script>
 import { ref, onMounted } from "vue";
 import FileUpload from "primevue/fileupload";
-import { addDoc, collection, where } from "firebase/firestore";
-import {
-  projectFirestore,
-  projectStorage,
-  timestamp,
-  projectAuth,
-} from "@/config/config";
-import {
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
+import { projectStorage, timestamp, projectAuth } from "@/config/config";
+import { where } from "firebase/firestore";
+import useStorage from "@/composible/useStorage";
 import { getCollectionQuery } from "@/composible/getCollection";
+import useCollection from "@/composible/useCollection";
 
 export default {
+  props: ["dataToEdit"],
   components: { FileUpload },
   setup(props, { emit }) {
     const productName = ref("");
     const description = ref("");
-    const productImages = ref([]); // Array to hold uploaded files
-    const imagePreviews = ref([]); // Array to hold image preview URLs
+    const productImages = ref([]);
+    const imagePreviews = ref([]);
     const selectCategory = ref(null);
     const subcategory = ref([]);
-    const price = ref(0);
+    const price = ref(null);
     const stock = ref(null);
     const currentUser = ref(null);
     const marts = ref([]);
 
-    // Close the form
+    const { addDocs, updateDocs } = useCollection("products");
+    const { uploadImage } = useStorage();
+
     const handleClose = () => {
       emit("close");
     };
 
-    // Handle file selection for upload
     const onAdvancedUpload = (event) => {
       const files = event.files;
       if (files.length > 3) {
@@ -147,15 +140,11 @@ export default {
         return;
       }
 
-      // Clear previous images if necessary
       productImages.value = [];
       imagePreviews.value = [];
 
-      // Store selected files and create preview URLs
       Array.from(files).forEach((file) => {
         productImages.value.push(file);
-
-        // Create a URL for the preview
         const reader = new FileReader();
         reader.onload = (e) => {
           imagePreviews.value.push(e.target.result);
@@ -164,57 +153,71 @@ export default {
       });
     };
 
-    // Upload image to Firebase storage
-    const uploadImage = async (path, file) => {
-      const storageRefInstance = storageRef(
-        projectStorage,
-        `${path}-${Date.now()}`
-      );
-      await uploadBytes(storageRefInstance, file);
-      return getDownloadURL(storageRefInstance);
-    };
-
-    // Handle form submission and image upload
     const handleSubmit = async () => {
-      if (!productName.value || productImages.value.length === 0) {
-        alert("Please enter a product name and upload images.");
+      if (!productName.value) {
+        alert("Please enter a product name.");
         return;
       }
 
       let productImageUrls = [];
-      for (const image of productImages.value) {
+
+      // Upload new images if there are any
+      if (productImages.value.length > 0) {
         try {
-          const productImageUrl = await uploadImage(
-            `products/${image.name}`,
-            image
+          productImageUrls = await Promise.all(
+            productImages.value.map((image) =>
+              uploadImage(`products/${Date.now()}-${image.name}`, image)
+            )
           );
-          productImageUrls.push(productImageUrl);
+          console.log("Uploaded image URLs:", productImageUrls);
         } catch (error) {
-          console.error("Error uploading image:", error);
-          alert("Failed to upload product images.");
+          console.error("Error uploading images:", error);
+          alert(
+            "Failed to upload product images. Please check your network connection and try again."
+          );
           return;
         }
+      } else if (props.dataToEdit?.images) {
+        // Retain existing images if no new images are uploaded
+        productImageUrls = [...props.dataToEdit.images];
+        console.log("Retaining existing images:", productImageUrls);
+      } else {
+        alert("Please upload at least one image.");
+        return;
       }
 
+      // Construct product data
+      const productData = {
+        name: productName.value,
+        images: productImageUrls,
+        status: true,
+        category: selectCategory.value,
+        price: price.value,
+        stock: stock.value,
+        description: description.value,
+        created_at: timestamp(),
+      };
+
+      console.log("Product data to save:", productData);
+
       try {
-        await addDoc(collection(projectFirestore, "products"), {
-          name: productName.value,
-          branch_id: marts.value[0]?.id,
-          images: productImageUrls,
-          status: true,
-          category: selectCategory.value,
-          price: price.value,
-          stock: stock.value,
-          description: description.value,
-          created_at: timestamp(),
-        });
-        emit("toast");
+        if (props.dataToEdit) {
+          await updateDocs(props.dataToEdit.id, productData);
+          console.log("Product updated successfully:", productData);
+          emit("toast", "update");
+          handleClose();
+        } else {
+          await addDocs(productData);
+          console.log("Product added successfully:", productData);
+          emit("toast", "create");
+          handleClose();
+        }
       } catch (error) {
-        console.error("Error creating product:", error);
+        console.error("Error creating or updating product:", error);
+        alert("There was an issue saving the product. Please try again.");
       }
     };
 
-    // Fetch marts and subcategories on mount
     const fetchMarts = async (field, value) => {
       if (currentUser?.value) {
         const conditions = [where(field, "==", value)];
@@ -238,6 +241,14 @@ export default {
       await fetchMarts("ownerId", currentUser.value.uid);
       if (marts.value.length > 0) {
         await fetchSubCategories("branch_id", marts.value[0].id);
+      }
+      if (props.dataToEdit) {
+        productName.value = props.dataToEdit.name;
+        description.value = props.dataToEdit.description;
+        price.value = props.dataToEdit.price;
+        stock.value = props.dataToEdit.stock;
+        selectCategory.value = props.dataToEdit.category;
+        imagePreviews.value = [...props.dataToEdit.images]; // Set initial previews to existing images
       }
     });
 

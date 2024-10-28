@@ -15,12 +15,13 @@
           />
         </div>
       </div>
+      <!-- <img :src="items[0]?.images[0]" alt="" class="size-20 rounded" /> -->
       <div class="mt-3">
         <DataTable
           :value="items"
           paginator
-          :rows="5"
-          :rowsPerPageOptions="[1, 10, 20, 50]"
+          :rows="50"
+          :rowsPerPageOptions="[50, 100, 200, 500]"
           tableStyle="min-width: 50rem"
         >
           <Column
@@ -36,12 +37,16 @@
                     ? slotProps.data.images[0]
                     : 'https://via.placeholder.com/40'
                 "
-                class="size-20 rounded"
+                class="size-20 rounded object-cover"
               />
             </template>
           </Column>
-          <Column field="qty" header="Qty" style="width: 20%"></Column>
-          <Column field="price" header="Price" style="width: 20%"></Column>
+          <Column field="stock" header="Qty" style="width: 20%"></Column>
+          <Column field="price" header="Price" style="width: 20%">
+            <template #body="slotProps">
+              {{ formatNumberWithCommas(slotProps.data.price) }} ៛
+            </template>
+          </Column>
           <Column field="status" header="Status" style="width: 20%">
             <template #body="slotProps">
               <Tag
@@ -53,20 +58,45 @@
           <Column field="action" header="Action" style="width: 20%">
             <template #body="slotProps">
               <div class="flex gap-2">
-                <Button icon="pi pi-pencil" text />
-                <Button icon="pi pi-trash" severity="danger" text />
+                <Button
+                  icon="pi pi-pencil"
+                  text
+                  @click="handleEdit(slotProps.data)"
+                />
+                <Button
+                  @click="handleDeleteDialog(slotProps.data.id, slotProps.data)"
+                  icon="pi pi-trash"
+                  severity="danger"
+                  text
+                />
               </div>
             </template>
           </Column>
         </DataTable>
       </div>
-      <Dialog header="Add Product" v-model:visible="visible" :modal="true">
+      <Dialog
+        :header="
+          currentComponent === 'ProductForm' ? 'Add Product' : 'Edit Product'
+        "
+        v-model:visible="visible"
+        :modal="true"
+        :style="{ width: '50vw', position: 'absolute', top: '10vh' }"
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+      >
         <component
           @close="handleClose"
-          @toast="showSuccess"
+          @toast="showToast"
           :is="currentComponent"
+          :dataToEdit="dataToEdit"
         />
       </Dialog>
+      <DeleteDialog
+        v-model:visible="deleteDialog"
+        :deleteId="deleteId"
+        :dataToDelete="dataToDelete"
+        @delete="handleDelete"
+        @toast="showToast"
+      />
       <Toast />
     </div>
   </div>
@@ -77,18 +107,46 @@ import { ref, onMounted } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import ProductForm from "@/Form/ProductForm.vue";
 import { useToast } from "primevue/usetoast";
+import DeleteDialog from "@/Form/DeleteDiaog.vue";
+import useCollection from "@/composible/useCollection";
+import {
+  formatCurrency,
+  formatNumber,
+  formatDate,
+  formatDateTime,
+  KhmerCurrency,
+  formatNumberWithCommas,
+} from "@/helper/formatCurrecy";
 export default {
   components: {
     ProductForm,
+    DeleteDialog,
   },
   setup() {
     const toast = useToast();
 
-    const showSuccess = () => {
-      toast.add({
-        severity: "success",
-        summary: "Product Created",
+    const showToast = (action, severity) => {
+      let summary;
+      switch (action) {
+        case "create":
+          severity = "success";
+          summary = "Product Created";
+          break;
+        case "update":
+          severity = "info";
+          summary = "Product Updated";
+          break;
+        case "delete":
+          summary = "Product Deleted";
+          break;
+        default:
+          severity = "info";
+          summary = "Action Completed";
+      }
 
+      toast.add({
+        severity: severity,
+        summary: summary,
         life: 3000,
       });
     };
@@ -99,26 +157,45 @@ export default {
     const handleVisible = () => {
       visible.value = true;
       currentComponent.value = "ProductForm";
+      dataToEdit.value = null;
     };
     const handleClose = () => {
       visible.value = false;
       currentComponent.value = null;
     };
-    const getData = async () => {
-      try {
-        await getCollectionQuery(
-          "products",
-          [],
-          (data) => {
-            items.value = data;
-          },
-          true
-        );
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-      }
+    const dataToEdit = ref(null);
+    const handleEdit = (data) => {
+      dataToEdit.value = data;
+      visible.value = true;
+      currentComponent.value = "ProductForm";
     };
+    const loadFromCache = (key) => JSON.parse(localStorage.getItem(key)) || [];
 
+    const getData = async () => {
+      await getCollectionQuery(
+        "products",
+        [],
+        (data) => {
+          items.value = data;
+        },
+        true
+      );
+    };
+    const { removeDoc } = useCollection("products");
+    const deleteDialog = ref(false);
+    const deleteId = ref(null);
+    const dataToDelete = ref(null);
+    const handleDelete = async (id) => {
+      await removeDoc(id);
+      deleteDialog.value = false;
+      deleteId.value = null;
+      dataToDelete.value = null;
+    };
+    const handleDeleteDialog = (id, doc) => {
+      deleteDialog.value = true;
+      deleteId.value = id;
+      dataToDelete.value = doc;
+    };
     onMounted(() => {
       getData();
     });
@@ -129,7 +206,21 @@ export default {
       visible,
       handleVisible,
       handleClose,
-      showSuccess,
+      showToast,
+      formatCurrency,
+      formatNumber,
+      formatDate,
+      formatDateTime,
+      KhmerCurrency,
+      formatNumberWithCommas,
+      handleEdit,
+      dataToEdit,
+      handleDelete,
+      deleteDialog,
+      deleteId,
+      handleDeleteDialog,
+      dataToDelete,
+      showToast,
     };
   },
 };

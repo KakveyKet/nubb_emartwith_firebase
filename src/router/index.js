@@ -14,13 +14,13 @@ import TodayReport from '@/report/TodayReport.vue';
 import Report from '@/report/Report.vue';
 import UserForm from '@/Form/UserForm.vue';
 import LoginForm from '@/Form/LoginForm.vue';
-
+import UserRegister from '@/user/UserRegiser.vue';
 const requireAuth = (to, from, next) => {
   onAuthStateChanged(projectAuth, (user) => {
     if (user) {
       next(); // User is authenticated, proceed to route
     } else {
-      next({ name: 'login' }); // Redirect to login if not authenticated
+      next({ name: 'login' });
     }
   });
 };
@@ -30,6 +30,11 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/userregister',
+    name: 'userregister',
+    component: UserRegister,
   },
   {
     path: '/dashboard',

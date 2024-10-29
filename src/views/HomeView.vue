@@ -1,20 +1,28 @@
 <template>
   <div class="w-full h-auto relative">
     <!-- navbar -->
-    <div class="w-full shadow-md">
-      <div class="w-[80%] mx-auto py-2 flex items-center justify-between">
+    <div class="xl:w-full lg:w-full md:w-full w-full shadow-md">
+      <div
+        class="xl:w-[80%] lg:w-[80%] md:w-[100%] w-[90%] mx-auto py-2 flex items-center justify-between"
+      >
         <!-- logo -->
         <div class="flex items-center gap-4">
           <div class="w-[48px] h-[66px]">
             <img src="../assets/nubb.png" alt="" />
           </div>
-          <div class="text-black text-24px font-bold">
-            <h1>NUBB E-Shop</h1>
+          <div
+            class="text-black xl:text-24px lg:text-20px md:text-16px text-14px font-bold"
+          >
+            <h1
+              class="xl:text-24px lg:text-20px md:text-16px text-14px font-bold text-nowrap"
+            >
+              NUBB E-Shop
+            </h1>
           </div>
         </div>
         <!-- search -->
         <div
-          class="w-[450px] p-0.5 flex border-[#646464] border rounded-[40px] overflow-hidden"
+          class="w-[450px] xl:flex hidden lg:flex md:flex p-0.5 border-[#646464] border rounded-[40px] overflow-hidden"
         >
           <input
             class="w-full border-none input_webpage"
@@ -25,7 +33,7 @@
         </div>
         <!-- tool -->
         <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2">
+          <div class="xl:flex hidden lg:flex md:flex items-center gap-2">
             <img
               class="w-[24px] h-[16px]"
               src="../assets/download.png"
@@ -49,7 +57,7 @@
               </svg>
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="xl:flex hidden lg:flex md:flex items-center gap-2">
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +76,9 @@
               <h3 class="text-16px">Cart</h3>
             </div>
           </div>
-          <div class="flex items-center gap-2 border-r border-primary-4 px-2">
+          <div
+            class="xl:flex hidden lg:flex md:flex items-center gap-2 border-r border-primary-4 px-2"
+          >
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -103,12 +113,29 @@
                 />
               </svg>
 
-              <h3 class="text-16px">Hi, Nyla</h3>
+              <h3 v-if="currentUser" class="text-16px">
+                Hi, {{ currentUser.displayName }}
+              </h3>
+
+              <h3
+                v-else
+                class="text-16px hover:cursor-pointer hover:text-primary-8 active:text-primary-8 duration-300"
+                @click="handleLogin"
+              >
+                Login
+              </h3>
+              <h3
+                v-if="currentUser"
+                class="text-16px hover:cursor-pointer hover:text-primary-8 active:text-primary-8 duration-300"
+                @click="logout"
+              >
+                Logout
+              </h3>
             </div>
           </div>
         </div>
         <!-- pf -->
-        <div></div>
+        <!-- <div></div> -->
       </div>
     </div>
     <!-- sub navbar  -->
@@ -166,12 +193,14 @@
           </div>
         </div>
         <!-- cart container -->
-        <div class="mt-8 w-fit gap-8 grid grid-cols-5">
+        <div
+          class="mt-8 xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-12 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2"
+        >
           <!-- cart -->
           <div
             v-for="data in products"
             :key="data"
-            class="w-[200px] h-auto p-5 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
+            class="xl:w-[200px] lg:w-[200px] md:w-[200px] w-[180px] h-auto p-5 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
           >
             <div class="w-full h-[150px] overflow-hidden rounded-md">
               <img :src="data.images[0]" class="object-cover" alt="" />
@@ -235,6 +264,14 @@
     <div>
       <FooterVue />
     </div>
+    <Dialog
+      v-model:visible="visible"
+      :modal="true"
+      :style="{ width: '50vw', position: 'absolute', top: '10vh' }"
+      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    >
+      <component :is="currentComponent" @close="handleClose" />
+    </Dialog>
   </div>
 </template>
 
@@ -245,17 +282,34 @@ import { useRoute } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { ref, onMounted } from "vue";
 import { formatCurrency, formatNumber } from "@/helper/formatCurrecy";
-
+import { projectAuth } from "@/config/config";
+import UserLoginForm from "@/user/UserLoginForm.vue";
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "vue-router";
 export default {
   components: {
     FooterVue,
     CategoryVue,
+    UserLoginForm,
   },
   setup() {
     const route = useRoute();
     const subCategory = ref([]);
     const products = ref([]);
+    const currentUser = ref(null);
+    const visible = ref(false);
+    const currentComponent = ref("");
+    const router = useRouter();
+    const auth = getAuth(); // Get the Firebase auth instance
 
+    const handleLogin = () => {
+      visible.value = true;
+      currentComponent.value = "UserLoginForm";
+    };
+    const handleClose = () => {
+      visible.value = false;
+      currentComponent.value = "";
+    };
     const fetchProducts = async () => {
       await getCollectionQuery("products", [], (data) => {
         products.value = data;
@@ -267,9 +321,23 @@ export default {
         subCategory.value = data;
       });
     };
-
+    const logout = async () => {
+      try {
+        await signOut(auth); // Sign out the user using Firebase
+        localStorage.removeItem("user"); // Remove any stored user info
+        router.push("/"); // Redirect to login page
+        alert("You have been logged out successfully!");
+      } catch (error) {
+        console.error("Error logging out:", error);
+        alert("Failed to log out. Please try again.");
+      }
+    };
     onMounted(async () => {
+      onAuthStateChanged(auth, (user) => {
+        currentUser.value = user;
+      });
       await Promise.allSettled([fetchProducts(), fetchSubCategory()]);
+      console.log("currentUser", currentUser.value);
     });
     console.log(products.value);
     return {
@@ -278,6 +346,12 @@ export default {
       subCategory,
       formatCurrency,
       formatNumber,
+      currentUser,
+      visible,
+      currentComponent,
+      handleLogin,
+      handleClose,
+      logout,
     };
   },
 };

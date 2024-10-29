@@ -3,7 +3,7 @@
     <div class="py-2">
       <h2 class="font-bold text-black text-14px">Categories</h2>
     </div>
-    <div class="flex flex-wrap gap-8">
+    <div class="xl:flex lg:flex md:flex grid grid-cols-3 gap-8">
       <div v-for="category in data" class="mt-6" :key="data">
         <div class="size-[96px] overflow-hidden rounded-full border">
           <img

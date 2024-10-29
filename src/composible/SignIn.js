@@ -1,28 +1,26 @@
-import { signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+// src/composible/SignIn.js
 import { ref } from "vue";
-import { projectAuth } from "@/config/config";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
-const error = ref(null);
-const isPending = ref(false);
+export default function useSignIn() {
+    const error = ref(null);
+    const isPending = ref(false);
 
-const signin = async (email, password, displayName) => {
-    try {
+    const signin = async (email, password) => {
+        error.value = null;
         isPending.value = true;
 
-        const userCredential = await signInWithEmailAndPassword(projectAuth, email, password);
+        try {
+            const auth = getAuth();
+            await signInWithEmailAndPassword(auth, email, password);
+            isPending.value = false;
+            return true;
+        } catch (err) {
+            error.value = err.message;
+            isPending.value = false;
+            return false;
+        }
+    };
 
-        await updateProfile(userCredential.user, { displayName });
-
-        error.value = null;
-    } catch (err) {
-        error.value = err.message;
-    } finally {
-        isPending.value = false;
-    }
-};
-
-const useSignIn = () => {
     return { error, isPending, signin };
-};
-
-export default useSignIn;
+}

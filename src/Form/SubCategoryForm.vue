@@ -13,20 +13,37 @@
         />
       </div>
 
-      <!-- Image Upload Input -->
+      <!-- Image Upload Input using PrimeVue FileUpload -->
       <div class="flex flex-col space-y-2 mt-4">
         <label for="category-image">Upload Image:</label>
-        <input
-          type="file"
-          id="category-image"
-          @change="handleImageUpload"
+        <FileUpload
+          name="category-image"
           accept="image/*"
+          :customUpload="true"
+          :maxFileSize="1000000"
+          :auto="true"
+          @select="handleImageUpload"
+          chooseLabel="Choose"
+          uploadLabel="Upload"
+          cancelLabel="Cancel"
         />
+        <!-- Image Preview -->
+        <div v-if="imagePreview" class="mt-4">
+          <img
+            :src="imagePreview"
+            alt="Image Preview"
+            class="w-32 h-32 object-cover"
+          />
+        </div>
       </div>
 
       <div class="flex items-center justify-end mt-8 gap-3">
-        <button class="add_new_button">Cancel</button>
-        <button class="add_new_button" type="submit">Save</button>
+        <button class="add_new_button" type="button" @click="handleCancel">
+          Cancel
+        </button>
+        <button class="add_new_button" type="submit">
+          {{ dataToEdit ? "Update" : "Save" }}
+        </button>
       </div>
     </form>
   </div>
@@ -34,26 +51,34 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { collection, addDoc } from "firebase/firestore";
-import { projectFirestore } from "@/config/config";
+import { collection, doc } from "firebase/firestore";
+import { projectFirestore, projectStorage } from "@/config/config";
 import { where } from "firebase/firestore";
 import { projectAuth } from "@/config/config";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { timestamp } from "@/config/config";
+import useCollection from "@/composible/useCollection";
 import {
-  getStorage,
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
+import { FileUpload } from "primevue/fileupload";
+import InputText from "primevue/inputtext";
 
 export default {
-  setup() {
+  components: {
+    FileUpload,
+    InputText,
+  },
+  props: ["dataToEdit"],
+  setup(props, { emit }) {
     const categoryName = ref("");
     const selectedBranchId = ref(null);
     const currentUser = ref(null);
     const marts = ref([]);
     const imageFile = ref(null);
+    const imagePreview = ref(null);
 
     const fetchMartsForCurrentUser = async () => {
       if (currentUser?.value) {
@@ -68,21 +93,25 @@ export default {
       }
     };
 
-    const handleImageUpload = (event) => {
-      const file = event.target.files[0];
+    const handleImageUpload = async ({ files }) => {
+      const file = files[0];
       if (file) {
         imageFile.value = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imagePreview.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
       }
     };
-
+    const { addDocs, updateDocs } = useCollection("subcategories");
     const handleSubmit = async () => {
       if (categoryName.value) {
         try {
           let imageUrl = null;
           if (imageFile.value) {
-            const storage = getStorage();
             const storageReference = storageRef(
-              storage,
+              projectStorage,
               `images/${imageFile.value.name}`
             );
             const snapshot = await uploadBytes(
@@ -92,21 +121,34 @@ export default {
             imageUrl = await getDownloadURL(snapshot.ref);
           }
 
-          await addDoc(collection(projectFirestore, "subcategories"), {
-            name: categoryName.value,
-            branch_id: marts.value[0]?.id,
-            status: true,
-            created_at: timestamp(),
-            image_url: imageUrl,
-          });
-
+          if (props.dataToEdit) {
+            const docRef = doc(
+              projectFirestore,
+              "subcategories",
+              props.dataToEdit.id
+            );
+            await updateDocs(props.dataToEdit.id, {
+              name: categoryName.value,
+              image_url: imageUrl || props.dataToEdit.image_url,
+            });
+            alert("Category updated successfully!");
+          } else {
+            // Add new document
+            await addDocs({
+              name: categoryName.value,
+              branch_id: marts.value[0]?.id,
+              status: true,
+              created_at: timestamp(),
+              image_url: imageUrl,
+            });
+            alert("Category created successfully!");
+          }
           categoryName.value = "";
           imageFile.value = null;
-
-          alert("Category created successfully!");
+          imagePreview.value = null;
         } catch (error) {
-          console.error("Error creating category:", error);
-          alert("Failed to create category. Please try again.");
+          console.error("Error saving category:", error);
+          alert("Failed to save category. Please try again.");
         }
       } else {
         alert("Please fill out the category name.");
@@ -116,14 +158,24 @@ export default {
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
       await Promise.allSettled([fetchMartsForCurrentUser()]);
+      if (props.dataToEdit) {
+        categoryName.value = props.dataToEdit.name;
+        imagePreview.value = props.dataToEdit.image_url;
+      }
     });
-
+    const handleCancel = () => {
+      categoryName.value = "";
+      imageFile.value = null;
+      imagePreview.value = null;
+    };
     return {
       categoryName,
       marts,
       handleSubmit,
       currentUser,
       handleImageUpload,
+      handleCancel,
+      imagePreview,
     };
   },
 };
@@ -148,6 +200,12 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  background-color: #2779bd;
+}
+</style> -->
+
+<!-- 
 button:hover {
   background-color: #2779bd;
 }

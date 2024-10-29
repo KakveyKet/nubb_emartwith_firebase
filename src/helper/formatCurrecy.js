@@ -18,10 +18,20 @@ export const formatNumber = (value) => {
 };
 
 export const formatDate = (value) => {
-    return new Date(value).toLocaleDateString("en-US", {
+    // Check if the value is a Firestore Timestamp
+    if (value && typeof value.toDate === 'function') {
+        value = value.toDate();
+    }
+    // Ensure the value is a Date object
+    const date = new Date(value);
+    return date.toLocaleString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
+        // hour: "2-digit",
+        // minute: "2-digit",
+        // second: "2-digit",
+        // hour12: true, // Use 12-hour time format
     });
 };
 

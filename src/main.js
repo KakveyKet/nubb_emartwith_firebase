@@ -29,6 +29,10 @@ import Dropdown from 'primevue/dropdown';
 import FileUpload from 'primevue/fileupload';
 import Textarea from 'primevue/textarea';
 import Toast from 'primevue/toast';
+import Skeleton from 'primevue/skeleton';
+import ProgressSpinner from 'primevue/progressspinner';
+
+
 // Create Vue app instance
 const app = createApp(App);
 
@@ -67,6 +71,8 @@ app.component('Dropdown', Dropdown)
 app.component('FileUpload', FileUpload)
 app.component('Textarea', Textarea)
 app.component("Toast", Toast)
+app.component("Skeleton", Skeleton)
+app.component("ProgressSpinner", ProgressSpinner)
 // Mount the app
 app.use(ToastService);
 

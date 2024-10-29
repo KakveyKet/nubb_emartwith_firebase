@@ -10,6 +10,9 @@
         placeholder="Enter product name"
         class="w-full"
       />
+      <span v-if="isValidateName" class="text-red-500">{{
+        isValidateName
+      }}</span>
     </div>
 
     <!-- Description Input -->
@@ -28,8 +31,8 @@
       <label for="images">Product Images (1-3 images):</label>
       <FileUpload
         name="images"
-        :customUpload="true"
         :multiple="true"
+        :customUpload="true"
         accept="image/*"
         :maxFileSize="1000000"
         :maxFiles="3"
@@ -55,6 +58,9 @@
         />
       </div>
     </div>
+    <span v-if="isValidateImage" class="text-red-500">{{
+      isValidateImage
+    }}</span>
 
     <!-- Category, Price, and Stock Inputs -->
     <div class="flex gap-4 mt-4">
@@ -68,6 +74,9 @@
           filter
           class="w-full"
         />
+        <span v-if="isValidateCategory" class="text-red-500">{{
+          isValidateCategory
+        }}</span>
       </div>
       <div class="flex flex-col space-y-2">
         <label for="price">Price: </label>
@@ -78,6 +87,9 @@
           prefix="៛ "
           class="w-full"
         />
+        <span v-if="isValidatePrice" class="text-red-500">{{
+          isValidatePrice
+        }}</span>
       </div>
       <div class="flex flex-col space-y-2">
         <label for="stock">Stock: </label>
@@ -87,6 +99,9 @@
           placeholder="Enter stock"
           class="w-full"
         />
+        <span v-if="isValidateStock" class="text-red-500">{{
+          isValidateStock
+        }}</span>
       </div>
     </div>
 
@@ -95,22 +110,22 @@
       <button class="add_new_button" type="button" @click="handleClose">
         Cancel
       </button>
-      <button class="add_new_button" type="submit">
+      <button class="add_new_button" type="submit" :disabled="isLoading">
         {{ dataToEdit ? "Update" : "Save" }}
+        <span v-if="isLoading" class="loading loading-spinner"></span>
       </button>
     </div>
   </form>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import FileUpload from "primevue/fileupload";
 import { projectStorage, timestamp, projectAuth } from "@/config/config";
 import { where } from "firebase/firestore";
 import useStorage from "@/composible/useStorage";
 import { getCollectionQuery } from "@/composible/getCollection";
 import useCollection from "@/composible/useCollection";
-
 export default {
   props: ["dataToEdit"],
   components: { FileUpload },
@@ -125,7 +140,71 @@ export default {
     const stock = ref(null);
     const currentUser = ref(null);
     const marts = ref([]);
+    const isLoading = ref(false);
 
+    const isValidateName = ref("");
+    const isValidateDescription = ref("");
+    const isValidatePrice = ref("");
+    const isValidateStock = ref("");
+    const isValidateCategory = ref("");
+    const isValidateImage = ref("");
+
+    const validateName = () => {
+      if (!productName.value) {
+        isValidateName.value = "Please enter a product name.";
+        return false;
+      }
+      isValidateName.value = "";
+      return true;
+    };
+
+    const validateCategory = () => {
+      if (!selectCategory.value) {
+        isValidateCategory.value = "Please select a category.";
+        return false;
+      }
+      isValidateCategory.value = "";
+      return true;
+    };
+
+    const validatePrice = () => {
+      if (!price.value) {
+        isValidatePrice.value = "Please enter a price.";
+        return false;
+      }
+      isValidatePrice.value = "";
+      return true;
+    };
+
+    const validateStock = () => {
+      if (!stock.value) {
+        isValidateStock.value = "Please enter a stock.";
+        return false;
+      }
+      isValidateStock.value = "";
+      return true;
+    };
+    const validateImage = () => {
+      if (productImages.value.length === 0) {
+        isValidateImage.value = "Please upload at least one image.";
+        return false;
+      }
+      isValidateImage.value = "";
+      return true;
+    };
+    watch(stock, () => {
+      validateStock();
+    });
+
+    watch(selectCategory, () => {
+      validateCategory();
+    });
+    watch(price, () => {
+      validatePrice();
+    });
+    watch(productImages, () => {
+      validateImage();
+    });
     const { addDocs, updateDocs } = useCollection("products");
     const { uploadImage } = useStorage();
 
@@ -154,11 +233,24 @@ export default {
     };
 
     const handleSubmit = async () => {
-      if (!productName.value) {
-        alert("Please enter a product name.");
+      if (!validateName()) {
         return;
       }
-
+      if (!validateCategory()) {
+        return;
+      }
+      // if (!validateDescription()) {
+      //   return;
+      // }
+      if (!validatePrice()) {
+        return;
+      }
+      if (!validateStock()) {
+        return;
+      }
+      if (!validateImage()) {
+        return;
+      }
       let productImageUrls = [];
 
       // Upload new images if there are any
@@ -186,7 +278,6 @@ export default {
         return;
       }
 
-      // Construct product data
       const productData = {
         name: productName.value,
         images: productImageUrls,
@@ -195,6 +286,7 @@ export default {
         price: price.value,
         stock: stock.value,
         description: description.value,
+        branch_id: marts.value[0].id,
         created_at: timestamp(),
       };
 
@@ -204,17 +296,20 @@ export default {
         if (props.dataToEdit) {
           await updateDocs(props.dataToEdit.id, productData);
           console.log("Product updated successfully:", productData);
+          isLoading.value = false;
           emit("toast", "update");
           handleClose();
         } else {
           await addDocs(productData);
           console.log("Product added successfully:", productData);
+          isLoading.value = false;
           emit("toast", "create");
           handleClose();
         }
       } catch (error) {
         console.error("Error creating or updating product:", error);
         alert("There was an issue saving the product. Please try again.");
+        isLoading.value = false;
       }
     };
 
@@ -263,6 +358,13 @@ export default {
       price,
       stock,
       handleClose,
+      isLoading,
+      isValidateName,
+      isValidateDescription,
+      isValidatePrice,
+      isValidateStock,
+      isValidateCategory,
+      isValidateImage,
     };
   },
 };

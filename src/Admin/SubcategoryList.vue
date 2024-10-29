@@ -1,58 +1,21 @@
 <template>
   <div class="bg-white p-5 rounded-[10px]">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-xl font-semibold">Categories</h1>
+      <h1 class="text-xl font-semibold">Category List</h1>
 
       <div class="flex space-x-4">
-        <div class="w-[330px] px-2 searchInput flex">
-          <input
-            type="text"
-            placeholder="Search by name"
-            class="w-full border-none outline-none"
-          />
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6 text-[#89868D]"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-              />
-            </svg>
-          </div>
-        </div>
+        <InputText
+          v-model="searchTerm"
+          clearButton="true"
+          placeholder="Search by name"
+        />
         <DatePicker
-          v-model="dates"
-          placeholder="Filter by created at"
+          v-model="currentDate"
           selectionMode="range"
           :manualInput="false"
-          showIcon
-          fluid
-          :showOnFocus="false"
-          show-button-bar
+          placeholder="Filter by date"
+          showButtonBar
         />
-        <button class="btn_filter">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="size-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
-            />
-          </svg>
-        </button>
       </div>
       <button @click="handleAdd" class="add_new_button">
         <div class="flex items-center gap-2">
@@ -72,120 +35,135 @@
       </button>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded-lg">
-        <thead>
-          <tr class="bg-gray-100 text-left">
-            <th class="py-3 px-4 bg-grey-100 rounded-l-[10px] border-none">
-              <div class="flex gap-3 items-center">
-                <h2>No</h2>
-                <div class="-space-y-3">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-3"
-                    viewBox="0 0 1024 1344"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M1024 512q0 26-19 45t-45 19H64q-26 0-45-19T0 512t19-45L467 19q19-19 45-19t45 19l448 448q19 19 19 45"
-                    />
-                  </svg>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-3"
-                    viewBox="0 0 1024 1344"
-                  >
-                    <g transform="translate(0 1344) scale(1 -1)">
-                      <path
-                        fill="currentColor"
-                        d="M1024 512q0 26-19 45t-45 19H64q-26 0-45-19T0 512t19-45L467 19q19-19 45-19t45 19l448 448q19 19 19 45"
-                      />
-                    </g>
-                  </svg>
-                </div>
-              </div>
-            </th>
-            <th class="py-3 px-4 border-none">Created At</th>
-            <th class="py-3 px-4 border-none">
-              <div class="flex gap-3 items-center">
-                <h2>Name</h2>
-                <div class="-space-y-3">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-3"
-                    viewBox="0 0 1024 1344"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M1024 512q0 26-19 45t-45 19H64q-26 0-45-19T0 512t19-45L467 19q19-19 45-19t45 19l448 448q19 19 19 45"
-                    />
-                  </svg>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="size-3"
-                    viewBox="0 0 1024 1344"
-                  >
-                    <g transform="translate(0 1344) scale(1 -1)">
-                      <path
-                        fill="currentColor"
-                        d="M1024 512q0 26-19 45t-45 19H64q-26 0-45-19T0 512t19-45L467 19q19-19 45-19t45 19l448 448q19 19 19 45"
-                      />
-                    </g>
-                  </svg>
-                </div>
-              </div>
-            </th>
+      <DataTable
+        v-if="items.length > 0"
+        :value="items"
+        paginator
+        :rows="50"
+        :rowsPerPageOptions="[50, 100, 200, 500]"
+        tableStyle="min-width: 50rem"
+      >
+        <Column field="name" header="Name"></Column>
+        <Column field="image_url" header="Image">
+          <template #body="slotProps">
+            <img
+              :src="
+                slotProps.data.image_url
+                  ? slotProps.data.image_url
+                  : 'https://via.placeholder.com/150'
+              "
+              alt="Image"
+              class="size-20 rounded object-cover"
+            />
+          </template>
+        </Column>
+        <Column field="created_at" header="Created At">
+          <template #body="slotProps">
+            {{ formatDate(slotProps.data.created_at) }}
+          </template>
+        </Column>
+        <Column field="status" header="Status">
+          <template #body="slotProps">
+            <Tag
+              severity="success"
+              v-if="slotProps.data.status !== undefined"
+              :value="slotProps.data.status ? 'Active' : 'Inactive'"
+            />
+          </template>
+        </Column>
 
-            <th class="py-3 px-4 bg-grey-100 rounded-r-[10px]">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b" v-for="(data, i) in items" :key="data.id">
-            <td class="text-start">
-              {{ i + 1 }}
-            </td>
-            <td class="text-start">
-              {{
-                data && data.created_at
-                  ? new Date(data.created_at.seconds * 1000).toLocaleString()
-                  : "N/A"
-              }}
-            </td>
-
-            <td class="text-start">{{ data.name }}</td>
-            <td>
-              <button class="chip_btn">
-                {{ data.status ? "Active" : "Inactive" }}
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <Column field="action" header="Action" style="width: 20%">
+          <template #body="slotProps">
+            <div class="flex gap-2">
+              <Button
+                icon="pi pi-pencil"
+                text
+                @click="handleEdit(slotProps.data)"
+              />
+              <Button
+                @click="handleDeleteDialog(slotProps.data.id, slotProps.data)"
+                icon="pi pi-trash"
+                severity="danger"
+                text
+              />
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+      <div v-else class="card flex justify-center py-5">
+        <div class="flex flex-col items-center">
+          <ProgressSpinner
+            style="width: 50px; height: 50px"
+            strokeWidth="8"
+            fill="transparent"
+            animationDuration=".5s"
+            aria-label="Custom ProgressSpinner"
+          />
+          <p class="mt-2">Categories Loading...</p>
+        </div>
+      </div>
     </div>
+
     <Dialog
-      class="!w-[400px] !h-[270px]"
+      :modal="true"
+      :style="{ width: '50vw', position: 'absolute', top: '10vh' }"
+      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
       v-model:visible="visible"
       modal
       header="Add New Category"
     >
-      <component :is="currentComponent" />
+      <component
+        :is="currentComponent"
+        :dataToEdit="dataToEdit"
+        @toast="showToast"
+        @close="handleClose"
+      />
     </Dialog>
+    <Toast />
     <!-- {{ marts }} , {{ items }} -->
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import SubCategoryForm from "@/Form/SubCategoryForm.vue";
 import { getAuth } from "firebase/auth";
 import { projectAuth } from "@/config/config";
-import { where } from "firebase/firestore";
-
+import { where, Timestamp } from "firebase/firestore";
+import { formatDate } from "@/helper/formatCurrecy";
+import { useToast } from "primevue/usetoast";
 export default {
   components: {
     SubCategoryForm,
   },
   setup() {
+    const toast = useToast();
+    const showToast = (action, severity) => {
+      let summary;
+      switch (action) {
+        case "create":
+          severity = "success";
+          summary = "Product Created";
+          break;
+        case "update":
+          severity = "info";
+          summary = "Product Updated";
+          break;
+        case "delete":
+          summary = "Product Deleted";
+          break;
+        default:
+          severity = "info";
+          summary = "Action Completed";
+      }
+
+      toast.add({
+        severity: severity,
+        summary: summary,
+        life: 3000,
+      });
+    };
     const dates = ref();
     const visible = ref(false);
     const currentUser = ref(null);
@@ -214,18 +192,64 @@ export default {
       visible.value = false;
       currentComponent.value = "";
     };
+    const currentDate = ref(null);
+    const searchTerm = ref("");
     const fetchSubCategories = async (field, value) => {
       if (marts.value.length > 0) {
-        const conditions = [where(field, "==", value)]; // Dynamic condition based on the field and value provided
+        const conditions = [where(field, "==", value)];
 
-        await getCollectionQuery("subcategories", conditions, (data) => {
-          items.value = data;
-          console.log("data category", items.value);
-        });
+        if (currentDate.value && currentDate.value[0] && currentDate.value[1]) {
+          conditions.push(
+            where(
+              "created_at",
+              ">=",
+              Timestamp.fromDate(new Date(currentDate.value[0]))
+            ),
+            where(
+              "created_at",
+              "<=",
+              Timestamp.fromDate(new Date(currentDate.value[1]))
+            )
+          );
+        }
+
+        await getCollectionQuery(
+          "subcategories",
+          conditions,
+          (data) => {
+            items.value = data;
+            console.log("data category", items.value);
+          },
+          true, // Use snapshot for real-time updates
+          "name", // Assuming you want to search by the "name" field
+          searchTerm.value // The search term
+        );
       } else {
         console.error("Error fetching data: Marts data is empty.");
       }
     };
+
+    watch(searchTerm, () => {
+      fetchSubCategories("branch_id", marts.value[0].id);
+    });
+    watch(currentDate, () => {
+      fetchSubCategories("branch_id", marts.value[0].id);
+    });
+    const dataToEdit = ref(null);
+    const handleEdit = (data) => {
+      dataToEdit.value = data;
+      visible.value = true;
+      currentComponent.value = "SubCategoryForm";
+    };
+    watch(
+      marts,
+      async (newMarts) => {
+        if (newMarts.length > 0) {
+          await fetchSubCategories("branch_id", newMarts[0].id);
+        }
+      },
+      { immediate: true }
+    );
 
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
@@ -248,6 +272,12 @@ export default {
       handleClose,
       currentComponent,
       marts,
+      formatDate,
+      searchTerm,
+      currentDate,
+      dataToEdit,
+      handleEdit,
+      showToast,
     };
   },
 };

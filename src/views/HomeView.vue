@@ -171,13 +171,13 @@
           <div
             v-for="data in products"
             :key="data"
-            class="w-[180px] h-auto p-5 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
+            class="w-[200px] h-auto p-5 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
           >
-            <div class="w-[120px] h-[100px] overflow-hidden mx-auto">
+            <div class="w-full h-[150px] overflow-hidden rounded-md">
               <img :src="data.images[0]" class="object-cover" alt="" />
             </div>
             <div>
-              <h2 class="font-semibold text-black text-14px">
+              <h2 class="font-semibold text-black text-14px py-2">
                 {{ data.name }}
               </h2>
               <!-- <p class="text-slate-400 text-13px">1 pc</p> -->
@@ -206,7 +206,7 @@
                     class="size-3 text-yellow-400"
                   />
                 </div>
-                <h2>2000៛</h2>
+                <h2 class="py-2">{{ formatNumber(data.price) }} ៛</h2>
               </div>
               <div>
                 <button class="btnaddtocart">
@@ -244,6 +244,7 @@ import CategoryVue from "@/components/CategoryPage.vue";
 import { useRoute } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { ref, onMounted } from "vue";
+import { formatCurrency, formatNumber } from "@/helper/formatCurrecy";
 
 export default {
   components: {
@@ -254,32 +255,17 @@ export default {
     const route = useRoute();
     const subCategory = ref([]);
     const products = ref([]);
-    const loadFromCache = (key) => JSON.parse(localStorage.getItem(key)) || [];
-    const saveToCache = (key, data) =>
-      localStorage.setItem(key, JSON.stringify(data));
 
     const fetchProducts = async () => {
-      const cachedProducts = loadFromCache("productsCache");
-      if (cachedProducts.length) {
-        products.value = cachedProducts;
-      } else {
-        await getCollectionQuery("products", [], (data) => {
-          products.value = data;
-          saveToCache("productsCache", data);
-        });
-      }
+      await getCollectionQuery("products", [], (data) => {
+        products.value = data;
+      });
     };
 
     const fetchSubCategory = async () => {
-      const cachedSubCategory = loadFromCache("subCategoryCache");
-      if (cachedSubCategory.length) {
-        subCategory.value = cachedSubCategory;
-      } else {
-        await getCollectionQuery("subcategories", [], (data) => {
-          subCategory.value = data;
-          saveToCache("subCategoryCache", data);
-        });
-      }
+      await getCollectionQuery("subcategories", [], (data) => {
+        subCategory.value = data;
+      });
     };
 
     onMounted(async () => {
@@ -290,6 +276,8 @@ export default {
       route,
       products,
       subCategory,
+      formatCurrency,
+      formatNumber,
     };
   },
 };

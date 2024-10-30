@@ -99,7 +99,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -124,13 +124,23 @@
               >
                 Login
               </h3>
-              <h3
+              <!-- <h3
                 v-if="currentUser"
                 class="text-16px hover:cursor-pointer hover:text-primary-8 active:text-primary-8 duration-300"
                 @click="logout"
               >
                 Logout
-              </h3>
+              </h3> -->
+              <div
+                class="xl:hidden lg:hidden md:hidden flex items-center gap-2"
+              >
+                <Button
+                  icon="pi pi-bars"
+                  severity="secondary"
+                  rounded
+                  aria-label="Bookmark"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -200,11 +210,15 @@
           <div
             v-for="data in products"
             :key="data"
-            class="xl:w-[200px] lg:w-[200px] md:w-[200px] w-[180px] h-auto p-5 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
+            class="xl:h-[250px] lg:h-[250px] md:h-[250px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[200px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
           >
-            <div class="w-full h-[150px] overflow-hidden rounded-md">
-              <img :src="data.images[0]" class="object-cover" alt="" />
-            </div>
+            <OverlayBadge :value="data.stock" position="bottom-right">
+              <div
+                class="w-full xl:h-[150px] lg:h-[150px] md:h-[150px] h-[100px] overflow-hidden rounded-md"
+              >
+                <img :src="data.images[0]" class="object-cover" />
+              </div>
+            </OverlayBadge>
             <div>
               <h2 class="font-semibold text-black text-14px py-2">
                 {{ data.name }}
@@ -216,29 +230,31 @@
                 <div class="flex items-center gap-1">
                   <font-awesome-icon
                     :icon="['fas', 'star']"
-                    class="size-3 text-yellow-400"
+                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
                   />
                   <font-awesome-icon
                     :icon="['fas', 'star']"
-                    class="size-3 text-yellow-400"
+                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
                   />
                   <font-awesome-icon
                     :icon="['fas', 'star']"
-                    class="size-3 text-yellow-400"
+                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
                   />
                   <font-awesome-icon
                     :icon="['fas', 'star']"
-                    class="size-3 text-yellow-400"
+                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
                   />
                   <font-awesome-icon
                     :icon="['fas', 'star']"
-                    class="size-3 text-yellow-400"
+                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
                   />
                 </div>
                 <h2 class="py-2">{{ formatNumber(data.price) }} ៛</h2>
               </div>
               <div>
-                <button class="btnaddtocart">
+                <button
+                  class="btnaddtocart xl:w-[30px] lg:w-[30px] md:w-[30px] w-[30px] xl:h-[30px] lg:h-[30px] md:h-[30px] h-[30px] xl:text-14px lg:text-14px md:text-14px text-12px xl:px-2 lg:px-2 md:px-2 px-1 xl:flex lg:flex md:flex flex items-center justify-center justify-items-center"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

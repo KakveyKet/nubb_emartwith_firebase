@@ -14,6 +14,12 @@
         placeholder="Display Name"
         required
       />
+      <input
+        v-model="phoneNumber"
+        type="text"
+        placeholder="Phone Number"
+        required
+      />
 
       <!-- Role Selection -->
       <select v-model="role" required>
@@ -37,12 +43,19 @@ export default {
     const email = ref("");
     const password = ref("");
     const displayName = ref("");
-    const role = ref("manager"); // Default role selection
+    const role = ref("manager");
+    const phoneNumber = ref("");
     const router = useRouter();
     const { error, isPending, signup } = useSignUp();
 
     const handleSignUp = async () => {
-      await signup(email.value, password.value, displayName.value, role.value);
+      await signup(
+        email.value,
+        password.value,
+        displayName.value,
+        role.value,
+        phoneNumber.value
+      );
       router.push({ path: "/admindashboard" });
     };
 
@@ -51,6 +64,7 @@ export default {
       password,
       displayName,
       role,
+      phoneNumber,
       error,
       isPending,
       handleSignUp,

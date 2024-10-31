@@ -153,22 +153,39 @@
       <div
         class="flex items-center justify-items-start h-[47px] w-[80%] mx-auto gap-3"
       >
-        <router-link
+        <div
+          @click="handleTab('home')"
           :class="{
-            'text-primary-6 text-14px h-full flex items-center border-b-2 border-primary-6 px-4':
-              route.name === 'home',
-            'text-slate-500 text-14px': !route.name,
+            'text-primary-6 text-14px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300':
+              tab === 'home',
+            'text-slate-500 text-14px cursor-pointer duration-300':
+              tab !== 'home',
           }"
-          to="/"
         >
           Home
-        </router-link>
-        <router-link class="text-slate-500 text-14px" to="/">
+        </div>
+        <div
+          @click="handleTab('shop')"
+          :class="{
+            'text-primary-6 text-14px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300':
+              tab === 'shop',
+            'text-slate-500 text-14px cursor-pointer duration-300':
+              tab !== 'shop',
+          }"
+        >
           Shop
-        </router-link>
-        <router-link class="text-slate-500 text-14px" to="/">
+        </div>
+        <div
+          @click="handleTab('tracking_order')"
+          :class="{
+            'text-primary-6 text-14px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300':
+              tab === 'tracking_order',
+            'text-slate-500 text-14px cursor-pointer duration-300':
+              tab !== 'tracking_order',
+          }"
+        >
           Track Order
-        </router-link>
+        </div>
       </div>
     </div>
     <!-- category -->
@@ -176,7 +193,7 @@
       <CategoryVue :data="subCategory" />
     </div>
     <!-- body -->
-    <div class="w-full h-screen">
+    <div v-if="tab === 'home'" class="w-full h-screen">
       <div class="w-[80%] mx-auto">
         <div class="mt-6">
           <div class="text-black text-14px font-bold flex items-center gap-3">
@@ -210,7 +227,7 @@
           <div
             v-for="data in products"
             :key="data"
-            class="xl:h-[250px] lg:h-[250px] md:h-[250px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[200px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
+            class="xl:h-[270px] lg:h-[250px] md:h-[250px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[200px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
           >
             <OverlayBadge :value="data.stock" position="bottom-right">
               <div
@@ -253,7 +270,7 @@
               </div>
               <div>
                 <button
-                  class="btnaddtocart xl:w-[30px] lg:w-[30px] md:w-[30px] w-[30px] xl:h-[30px] lg:h-[30px] md:h-[30px] h-[30px] xl:text-14px lg:text-14px md:text-14px text-12px xl:px-2 lg:px-2 md:px-2 px-1 xl:flex lg:flex md:flex flex items-center justify-center justify-items-center"
+                  class="btnaddtocart xl:w-[50px] lg:w-[30px] md:w-[30px] w-[30px] xl:h-[50px] lg:h-[30px] md:h-[30px] h-[30px] xl:text-14px lg:text-14px md:text-14px text-12px xl:px-2 lg:px-2 md:px-2 px-1 xl:flex lg:flex md:flex flex items-center justify-center justify-items-center"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -274,6 +291,11 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div v-if="tab === 'shop'" class="w-full h-screen">
+      <div class="w-[80%] mx-auto">
+        <ShopComponent :markets="markets" />
       </div>
     </div>
     <!-- footer -->
@@ -302,11 +324,13 @@ import { projectAuth } from "@/config/config";
 import UserLoginForm from "@/user/UserLoginForm.vue";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "vue-router";
+import ShopComponent from "@/views/ShopComponent.vue";
 export default {
   components: {
     FooterVue,
     CategoryVue,
     UserLoginForm,
+    ShopComponent,
   },
   setup() {
     const route = useRoute();
@@ -316,7 +340,7 @@ export default {
     const visible = ref(false);
     const currentComponent = ref("");
     const router = useRouter();
-    const auth = getAuth(); // Get the Firebase auth instance
+    const auth = getAuth();
 
     const handleLogin = () => {
       visible.value = true;
@@ -327,15 +351,36 @@ export default {
       currentComponent.value = "";
     };
     const fetchProducts = async () => {
-      await getCollectionQuery("products", [], (data) => {
-        products.value = data;
-      });
+      await getCollectionQuery(
+        "products",
+        [],
+        (data) => {
+          products.value = data;
+        },
+        true
+      );
     };
 
     const fetchSubCategory = async () => {
-      await getCollectionQuery("subcategories", [], (data) => {
-        subCategory.value = data;
-      });
+      await getCollectionQuery(
+        "subcategories",
+        [],
+        (data) => {
+          subCategory.value = data;
+        },
+        true
+      );
+    };
+    const markets = ref([]);
+    const fetchMarket = async () => {
+      await getCollectionQuery(
+        "marts",
+        [],
+        (data) => {
+          markets.value = data;
+        },
+        true
+      );
     };
     const logout = async () => {
       try {
@@ -352,10 +397,19 @@ export default {
       onAuthStateChanged(auth, (user) => {
         currentUser.value = user;
       });
-      await Promise.allSettled([fetchProducts(), fetchSubCategory()]);
+      await Promise.allSettled([
+        fetchProducts(),
+        fetchSubCategory(),
+        fetchMarket(),
+      ]);
       console.log("currentUser", currentUser.value);
     });
     console.log(products.value);
+    const tab = ref("home");
+
+    const handleTab = (selectedTab) => {
+      tab.value = selectedTab;
+    };
     return {
       route,
       products,
@@ -368,6 +422,9 @@ export default {
       handleLogin,
       handleClose,
       logout,
+      handleTab,
+      tab,
+      markets,
     };
   },
 };

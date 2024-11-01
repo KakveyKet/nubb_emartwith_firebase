@@ -57,7 +57,13 @@
             </template>
           </Column>
           <Column field="role" header="Role" style="width: 20%" />
-          <Column field="status" header="Status" style="width: 20%" />
+          <Column field="status" header="Status" style="width: 20%">
+            <template #body="slotProps">
+              <Tag class="badge" :class="slotProps.data.status">
+                {{ slotProps.data.status === true ? " Inactive" : "Active" }}
+              </Tag>
+            </template>
+          </Column>
         </DataTable>
       </div>
     </div>

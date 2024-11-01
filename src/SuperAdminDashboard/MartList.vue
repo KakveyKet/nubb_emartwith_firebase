@@ -133,6 +133,7 @@
         :dataToEdit="dataToEdit"
       />
     </Dialog>
+    <Toast />
   </div>
 </template>
 
@@ -141,7 +142,8 @@ import { ref, onMounted } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { formatDate } from "@/helper/formatCurrecy";
 import AddNewMartForm from "@/SuperAdminForm/AddNewMartForm.vue";
-
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
 export default {
   components: {
     AddNewMartForm,
@@ -152,6 +154,32 @@ export default {
     const selectedCategory = ref(null);
     const searchTerm = ref("");
     const dataToEdit = ref(null);
+    const toast = useToast();
+    const showToast = (action, severity) => {
+      let summary;
+      switch (action) {
+        case "create":
+          severity = "success";
+          summary = "Product Created";
+          break;
+        case "update":
+          severity = "info";
+          summary = "Product Updated";
+          break;
+        case "delete":
+          summary = "Product Deleted";
+          break;
+        default:
+          severity = "info";
+          summary = "Action Completed";
+      }
+
+      toast.add({
+        severity: severity,
+        summary: summary,
+        life: 3000,
+      });
+    };
     const currentComponent = ref(null);
     // const handleAddNewMart = () => {
     //   currentComponent.value = "AddNewMartForm";
@@ -188,6 +216,8 @@ export default {
       currentComponent,
       dataToEdit,
       handleClose,
+      showToast,
+      toast,
     };
   },
 };

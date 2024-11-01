@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4">
     <div
-      class="w-full mx-auto flex flex-col items-center justify-center space-y-4"
+      class="w-full mx-auto flex flex-col items-center justify-center space-y-12"
     >
       <div class="xl:w-[100px] lg:w-[100px] md:w-[100px] w-[80px] h-[100px]">
         <img src="../assets/nubb.png" alt="" />

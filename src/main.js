@@ -33,6 +33,7 @@ import Toast from 'primevue/toast';
 import Skeleton from 'primevue/skeleton';
 import ProgressSpinner from 'primevue/progressspinner';
 import OverlayBadge from 'primevue/overlaybadge';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 // Create Vue app instance
 const app = createApp(App);
@@ -75,6 +76,7 @@ app.component("Toast", Toast)
 app.component("Skeleton", Skeleton)
 app.component("ProgressSpinner", ProgressSpinner)
 app.component("OverlayBadge", OverlayBadge)
+app.component("ToggleSwitch", ToggleSwitch)
 // Mount the app
 app.use(ToastService);
 

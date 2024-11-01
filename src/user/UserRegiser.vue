@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSignUp" class="space-y-4">
     <div
-      class="w-full mx-auto flex flex-col items-center justify-center space-y-4"
+      class="w-full mx-auto flex flex-col items-center justify-center space-y-12 mt-3"
     >
       <div class="xl:w-[100px] lg:w-[100px] md:w-[100px] w-[80px] h-[100px]">
         <img src="../assets/nubb.png" alt="" />
@@ -11,7 +11,7 @@
       </h1>
     </div>
     <div
-      class="w-full mx-auto flex flex-col items-center justify-center space-y-4"
+      class="w-[500px] mx-auto flex flex-col items-center justify-center space-y-4"
     >
       <input
         v-model="displayName"
@@ -37,25 +37,11 @@
         class="!w-3/4 loginInput"
         placeholder="Password"
       />
-    </div>
-    <!-- <div class="!w-3/4 mx-auto flex items-center justify-between space-x-2">
-      <div class="flex items-center space-x-2">
-        <input type="checkbox" class="loginInput" />
-        <label for="" class="xl:text-17px lg:text-16px md:text-16pxpx text-13px"
-          >Remember me</label
-        >
+      <div class="flex justify-center">
+        <button class="btncheckout !w-[385px]">Register</button>
       </div>
-      <div>
-        <router-link
-          class="xl:text-17px lg:text-16px md:text-16pxpx text-13px border-b border-primary-6 text-primary-6 cursor-pointer active:text-primary-6/80 hover:text-primary-6/80 duration-300"
-          to="/forgot-password"
-          >Forgot password?</router-link
-        >
-      </div>
-    </div> -->
-    <div class="flex justify-center">
-      <button class="btncheckout px-8 !w-3/4">Register</button>
     </div>
+
     <div class="flex justify-center">
       <router-link
         class="xl:text-17px lg:text-16px md:text-16pxpx text-13px border-b border-primary-6 text-primary-6 cursor-pointer active:text-primary-6/80 hover:text-primary-6/80 duration-300"

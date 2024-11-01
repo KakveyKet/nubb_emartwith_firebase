@@ -21,8 +21,7 @@ import MartList from '@/SuperAdminDashboard/MartList.vue';
 import UserList from '@/SuperAdminDashboard/UserList.vue';
 import MainCategoryList from '@/SuperAdminDashboard/MainCategoryList.vue';
 import DashboarManagement from '@/SuperAdminDashboard/DashboarManagement.vue';
-
-
+import AdminProfile from '@/SuperAdminDashboard/AdminProfile.vue';
 setPersistence(projectAuth, browserLocalPersistence).catch((error) => {
   console.error("Error setting persistence:", error);
 });
@@ -114,6 +113,11 @@ const routes = [
         path: '/dashboardmanagement',
         name: 'dashboardmanagement',
         component: DashboarManagement,
+      },
+      {
+        path: '/adminprofile',
+        name: 'adminprofile',
+        component: AdminProfile,
       },
     ],
   },

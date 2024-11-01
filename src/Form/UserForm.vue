@@ -1,36 +1,71 @@
 <template>
-  <div class="w-full h-screen flex items-center justify-center">
-    <form class="space-y-3" @submit.prevent="handleSignUp">
-      <input v-model="email" type="email" placeholder="Email" required />
-      <input
+  <div class="w-full h-screen flex items-center justify-center bg-gray-100">
+    <form
+      @submit.prevent="handleSignUp"
+      class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full space-y-5"
+    >
+      <!-- Form Title -->
+      <h1 class="text-2xl font-bold text-center text-gray-800">Sign Up</h1>
+
+      <!-- Email Input -->
+      <InputText
+        v-model="email"
+        type="email"
+        placeholder="Email"
+        required
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+
+      <!-- Password Input -->
+      <InputText
         v-model="password"
         type="password"
         placeholder="Password"
         required
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
-      <input
+
+      <!-- Display Name Input -->
+      <InputText
         v-model="displayName"
         type="text"
-        placeholder="Display Name"
+        placeholder="Username"
         required
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
-      <input
+
+      <!-- Phone Number Input -->
+      <InputText
         v-model="phoneNumber"
         type="text"
         placeholder="Phone Number"
         required
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
 
       <!-- Role Selection -->
-      <select v-model="role" required>
-        <option value="manager">Manager</option>
-        <option value="super admin">Super Admin</option>
-        <option value="staff">Staff</option>
-      </select>
+      <Select
+        v-model="role"
+        placeholder="Please Select Role"
+        :options="roles"
+        option-label="label"
+        option-value="value"
+        required
+        class="w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
 
-      <button type="submit" :disabled="isPending">Sign Up</button>
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        :disabled="isPending"
+        class="w-full py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg font-medium transition duration-150"
+      >
+        {{ isPending ? "Signing Up..." : "Sign Up" }}
+      </button>
+
+      <!-- Error Message -->
+      <p v-if="error" class="text-red-500 text-sm text-center">{{ error }}</p>
     </form>
-    <p v-if="error">{{ error }}</p>
   </div>
 </template>
 
@@ -38,13 +73,18 @@
 import { ref } from "vue";
 import useSignUp from "@/composible/SignUp";
 import { useRouter } from "vue-router";
+
 export default {
   setup() {
     const email = ref("");
     const password = ref("");
     const displayName = ref("");
-    const role = ref("manager");
     const phoneNumber = ref("");
+    const role = ref("manager");
+    const roles = ref([
+      { label: "Manager", value: "manager" },
+      { label: "Staff", value: "staff" },
+    ]);
     const router = useRouter();
     const { error, isPending, signup } = useSignUp();
 
@@ -64,6 +104,7 @@ export default {
       password,
       displayName,
       role,
+      roles,
       phoneNumber,
       error,
       isPending,
@@ -72,51 +113,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
-.form-container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
-  background: #f4f4f4;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-input,
-select {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
+/* Additional styles can be added if necessary */
 </style>

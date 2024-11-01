@@ -222,10 +222,10 @@ export default {
       try {
         if (props.dataToEdit) {
           await updateDocs(props.dataToEdit.id, martData);
-          alert("Mart updated successfully!");
+          emit("toast", "update");
         } else {
           await addDocs(martData);
-          alert("Mart created successfully!");
+          emit("toast", "create");
         }
         emit("close");
       } catch (error) {

@@ -1,6 +1,5 @@
 <template>
   <div>
-    this is mart cover list
     <MartForm />
   </div>
 </template>

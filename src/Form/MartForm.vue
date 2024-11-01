@@ -1,60 +1,113 @@
 <template>
-  <div class="form-container">
-    <h2>Create Product</h2>
+  <div class="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Create Mart</h2>
     <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="name">Product Name</label>
-        <InputText v-model="name" type="text" class="searchInput" />
+      <!-- Product Name -->
+      <div class="mb-4">
+        <label for="name" class="block text-gray-600 mb-1">Mart Name</label>
+        <InputText
+          v-model="name"
+          type="text"
+          placeholder="Please Enter Mart Name"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
-      <div class="form-group">
-        <label for="location">Location</label>
-        <InputText v-model="location" type="text" class="searchInput" />
+      <!-- Location -->
+      <div class="mb-4">
+        <label for="location" class="block text-gray-600 mb-1">Location</label>
+        <InputText
+          v-model="location"
+          type="text"
+          placeholder="Please Enter Location"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
-      <div class="form-group">
-        <label for="martImage">Profile Image (Max 1MB)</label>
+      <!-- Profile Image -->
+      <div class="mb-4">
+        <label class="block text-gray-600 mb-1">Profile Image (Max 1MB)</label>
         <input
           type="file"
           @change="handleProfileImage"
           accept="image/*"
           required
+          placeholder="Please Select Profile Image"
+          class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         />
-        <span v-if="profileImageError" class="error">{{
+        <span v-if="profileImageError" class="text-red-500 text-sm">{{
           profileImageError
         }}</span>
       </div>
 
-      <div class="form-group">
-        <label for="martCover">Cover Images (Max 3 images, 1MB each)</label>
+      <!-- Cover Images -->
+      <div class="mb-4">
+        <label class="block text-gray-600 mb-1"
+          >Cover Images (Max 3 images, 1MB each)</label
+        >
         <input
           type="file"
           @change="handleCoverImages"
           accept="image/*"
           multiple
           required
+          class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         />
-        <span v-if="coverImagesError" class="error">{{
+        <span v-if="coverImagesError" class="text-red-500 text-sm">{{
           coverImagesError
         }}</span>
       </div>
-      <Select v-model="Mart_category" :options="items" optionLabel="name" />
-      <div class="form-group">
-        <label for="Mart_Description">Description</label>
+
+      <!-- Category -->
+      <div class="mb-4">
+        <label class="block text-gray-600 mb-1">Category</label>
+        <Select
+          v-model="Mart_category"
+          :options="items"
+          optionLabel="name"
+          placeholder="Please Select Category"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <label for="Mart_Description" class="block text-gray-600 mb-1"
+          >Description</label
+        >
         <textarea
           v-model="Mart_Description"
           id="Mart_Description"
+          placeholder="Description"
+          rows="4"
           required
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         ></textarea>
       </div>
 
-      <div class="form-group">
-        <label for="Phone_number">Phone Number</label>
-        <input v-model="Phone_number" type="text" id="Phone_number" required />
+      <!-- Phone Number -->
+      <div class="mb-4">
+        <label for="Phone_number" class="block text-gray-600 mb-1"
+          >Phone Number</label
+        >
+        <input
+          v-model="Phone_number"
+          type="text"
+          id="Phone_number"
+          placeholder="Phone Number"
+          required
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
-      <div class="form-group">
-        <button type="submit">Create Product</button>
+      <!-- Submit Button -->
+      <div class="mt-6">
+        <button
+          type="submit"
+          class="w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Create Mart
+        </button>
       </div>
     </form>
   </div>
@@ -247,3 +300,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Additional styling if needed */
+</style>

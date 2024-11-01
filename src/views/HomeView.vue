@@ -124,13 +124,13 @@
               >
                 Login
               </h3>
-              <!-- <h3
+              <h3
                 v-if="currentUser"
                 class="text-16px hover:cursor-pointer hover:text-primary-8 active:text-primary-8 duration-300"
                 @click="logout"
               >
                 Logout
-              </h3> -->
+              </h3>
               <div
                 class="xl:hidden lg:hidden md:hidden flex items-center gap-2"
               >
@@ -363,7 +363,7 @@ export default {
 
     const fetchSubCategory = async () => {
       await getCollectionQuery(
-        "subcategories",
+        "maincategory",
         [],
         (data) => {
           subCategory.value = data;

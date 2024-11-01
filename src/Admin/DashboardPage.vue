@@ -16,7 +16,9 @@
             sidebarVisible ? 'text-primary-10 text-24px font-bold' : 'hidden',
           ]"
         >
-          <h1 class="text-20px">{{ marts[0]?.name }}</h1>
+          <h1 class="text-20px">
+            {{ marts[0]?.name ? marts[0]?.name : "No Shop regsiter" }}
+          </h1>
         </div>
       </div>
       <div class="w-full flex flex-col space-y-4 mt-4 p-3">
@@ -244,6 +246,7 @@
         </router-link>
         <!-- cover -->
         <router-link
+          v-if="!marts[0]"
           :class="
             $route.path === '/martcover'
               ? 'isSidebar_active'

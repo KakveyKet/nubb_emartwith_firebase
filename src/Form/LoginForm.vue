@@ -1,31 +1,61 @@
 <template>
-  <div class="login-container">
-    <h2>Login</h2>
-    <form @submit.prevent="handleSubmit">
-      <!-- Email -->
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input v-model="email" type="email" id="email" required />
-      </div>
+  <div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+      <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">
+        Login
+      </h2>
+      <form @submit.prevent="handleSubmit">
+        <!-- Email Input -->
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-gray-700"
+            >Email</label
+          >
+          <InputText
+            v-model="email"
+            type="email"
+            id="email"
+            placeholder="Email"
+            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-      <!-- Password -->
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input v-model="password" type="password" id="password" required />
-      </div>
+        <!-- Password Input -->
+        <div class="mb-6">
+          <label for="password" class="block text-sm font-medium text-gray-700"
+            >Password</label
+          >
+          <InputText
+            v-model="password"
+            type="password"
+            id="password"
+            placeholder="Password"
+            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-      <!-- Submit Button -->
-      <div class="form-group">
-        <button type="submit" :disabled="isPending">
-          {{ isPending ? "Logging in..." : "Login" }}
-        </button>
-      </div>
+        <!-- Submit Button -->
+        <div class="mb-4">
+          <Button
+            severity="success"
+            type="submit"
+            :disabled="isPending"
+            class="w-full py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold transition duration-150"
+          >
+            {{ isPending ? "Logging in..." : "Login" }}
+          </Button>
+        </div>
+        <div class="flex justify-center">
+          <Button severity="info" text @click="router.push('/userform')">
+            <span class="underline">Signup</span>
+          </Button>
+        </div>
 
-      <!-- Error Message -->
-      <div v-if="error" class="error-message">
-        {{ error }}
-      </div>
-    </form>
+        <!-- Error Message -->
+        <div v-if="error" class="text-red-500 text-sm text-center mt-2">
+          {{ error }}
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -33,6 +63,7 @@
 import { ref } from "vue";
 import useSignIn from "@/composible/SignIn";
 import { useRouter } from "vue-router";
+
 export default {
   setup() {
     const email = ref("");
@@ -51,62 +82,12 @@ export default {
       error,
       isPending,
       handleSubmit,
+      router,
     };
   },
 };
 </script>
 
 <style scoped>
-.login-container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
-  background: #f4f4f4;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:disabled {
-  background-color: #007bff88;
-  cursor: not-allowed;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
-  text-align: center;
-}
+/* Additional styles can be added here if needed */
 </style>

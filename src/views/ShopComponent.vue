@@ -19,7 +19,9 @@
         <span>All Restaurants</span>
       </div>
     </div>
-    <div class="grid grid-cols-2 gap-6 mt-8">
+    <div
+      class="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 grid-cols-1 gap-6 mt-8"
+    >
       <div
         v-for="market in markets"
         :key="market.id"

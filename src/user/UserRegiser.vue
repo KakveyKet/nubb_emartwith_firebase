@@ -55,6 +55,7 @@
 import { ref } from "vue";
 import useSignUp from "@/composible/SignUp";
 import { useRouter } from "vue-router";
+import { getTelegramUserId } from "@/composible/useDMTelegram";
 export default {
   setup() {
     const email = ref("");
@@ -63,6 +64,7 @@ export default {
     const role = ref("customer");
     const phoneNumber = ref("");
     const address = ref("");
+    const telegram_id = ref("");
     const router = useRouter();
     const { error, isPending, signup } = useSignUp();
     const handleSignUp = async () => {
@@ -76,10 +78,14 @@ export default {
         displayName.value,
         role.value,
         phoneNumber.value,
-        address.value
+        address.value,
+        telegram_id.value
       );
-      console.log("signup", signup);
-      router.push({ path: "/" });
+      if (signup) {
+        router.push({ path: "/" });
+        const telegramUserId = await getTelegramUserId(signup.uid);
+        console.log("telegramUserId", telegramUserId);
+      }
     };
 
     return {

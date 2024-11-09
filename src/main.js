@@ -10,6 +10,7 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 
+
 import ToastService from 'primevue/toastservice';
 
 import Drawer from 'primevue/drawer'; // PrimeVue Drawer component
@@ -42,7 +43,6 @@ const app = createApp(App);
 app.use(router);
 app.use(PrimeVue, {
     theme: {
-
         preset: Aura,
         options: {
             prefix: 'p',

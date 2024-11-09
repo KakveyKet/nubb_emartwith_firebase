@@ -9,6 +9,8 @@
             selectionMode="range"
             :manualInput="false"
             placeholder="Filter by date"
+            show-button-bar
+            style="width: 250px"
           />
           <Dropdown
             v-model="selectedCategory"
@@ -16,6 +18,8 @@
             filter
             optionLabel="name"
             placeholder="Filter by category"
+            style="width: 250px"
+            show-clear
           />
           <InputText v-model="searchTerm" placeholder="Search by name" />
           <Button

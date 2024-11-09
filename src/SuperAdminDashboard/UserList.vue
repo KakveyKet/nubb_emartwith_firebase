@@ -39,7 +39,13 @@
           :rows="50"
           :rowsPerPageOptions="[50, 100, 200, 500]"
           tableStyle="min-width: 50rem"
+          class="text-nowrap"
         >
+          <Column field="id" header="ID" style="width: 20%">
+            <template #body="slotProps">
+              {{ slotProps.data.id }}
+            </template>
+          </Column>
           <Column field="created_at" header="Created At" style="width: 20%">
             <template #body="slotProps">
               {{ formatDate(slotProps.data.createdAt) }}
@@ -50,8 +56,8 @@
           <Column field="phone_number" header="Phone" style="width: 20%">
             <template #body="slotProps">
               {{
-                slotProps.data.phone_number
-                  ? slotProps.data.phone_number
+                slotProps.data.phoneNumber
+                  ? slotProps.data.phoneNumber
                   : "No Number"
               }}
             </template>

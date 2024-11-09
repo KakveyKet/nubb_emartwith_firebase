@@ -270,6 +270,7 @@
               </div>
               <div>
                 <button
+                  @click="handleAddToCart(data)"
                   class="btnaddtocart xl:w-[50px] lg:w-[30px] md:w-[30px] w-[30px] xl:h-[50px] lg:h-[30px] md:h-[30px] h-[30px] xl:text-14px lg:text-14px md:text-14px text-12px xl:px-2 lg:px-2 md:px-2 px-1 xl:flex lg:flex md:flex flex items-center justify-center justify-items-center"
                 >
                   <svg
@@ -318,13 +319,16 @@ import FooterVue from "@/components/FooterPage.vue";
 import CategoryVue from "@/components/CategoryPage.vue";
 import { useRoute } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { formatCurrency, formatNumber } from "@/helper/formatCurrecy";
 import { projectAuth } from "@/config/config";
 import UserLoginForm from "@/user/UserLoginForm.vue";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "vue-router";
+import { where, doc, getDoc } from "@firebase/firestore";
 import ShopComponent from "@/views/ShopComponent.vue";
+import { sendTelegramMessage } from "@/composible/useDMTelegram";
+import { projectFirestore } from "@/config/config";
 export default {
   components: {
     FooterVue,
@@ -393,23 +397,97 @@ export default {
         alert("Failed to log out. Please try again.");
       }
     };
-    onMounted(async () => {
-      onAuthStateChanged(auth, (user) => {
-        currentUser.value = user;
-      });
-      await Promise.allSettled([
-        fetchProducts(),
-        fetchSubCategory(),
-        fetchMarket(),
-      ]);
-      console.log("currentUser", currentUser.value);
-    });
+
     console.log(products.value);
     const tab = ref("home");
 
     const handleTab = (selectedTab) => {
       tab.value = selectedTab;
     };
+
+    watch(currentUser, () => {
+      if (currentUser.value.uid) {
+        console.log("currentuser phone", currentUser.value?.uid);
+      }
+    });
+    const items = ref([]);
+    const fetchUser = async (field, value) => {
+      const conditions = [where(field, "==", value)];
+      await getCollectionQuery(
+        "users",
+        conditions,
+        (data) => {
+          items.value = data;
+          console.log("items", items.value);
+        },
+
+        true
+      );
+    };
+    const dataAddedToCart = ref([]);
+
+    const fetchTelegramUserId = async (uid) => {
+      try {
+        const userDocRef = doc(projectFirestore, "users", uid);
+        const docSnap = await getDoc(userDocRef);
+
+        if (docSnap.exists()) {
+          console.log("telegram_id", docSnap.data().telegram_id);
+          return docSnap.data().telegram_id;
+        } else {
+          console.log("No such user found!");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error fetching Telegram user ID:", error);
+        return null;
+      }
+    };
+
+    // Function to send a message to the user on Telegram
+    const sendMessageToUser = async (uid, message) => {
+      try {
+        const telegramUserId = await fetchTelegramUserId(uid);
+        if (telegramUserId) {
+          await sendTelegramMessage(telegramUserId, message); // Send the message if user has Telegram ID
+        } else {
+          console.log("User does not have a Telegram ID stored.");
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    };
+
+    // Function to handle adding to cart
+    const handleAddToCart = async (data) => {
+      try {
+        dataAddedToCart.value = data;
+        console.log("data to cart", dataAddedToCart.value);
+
+        // Create message for Telegram
+        const message = `You have added to your cart: ${dataAddedToCart.value.name}`;
+
+        if (currentUser.value?.uid) {
+          await sendMessageToUser(currentUser.value?.uid, message); // Send the message to the current user
+        } else {
+          console.log("No current user found.");
+        }
+      } catch (error) {
+        console.error("Error handling add to cart:", error);
+      }
+    };
+    onMounted(async () => {
+      onAuthStateChanged(auth, (user) => {
+        currentUser.value = user;
+      });
+      currentUser.value = projectAuth.currentUser;
+      await Promise.allSettled([
+        fetchProducts(),
+        fetchSubCategory(),
+        fetchMarket(),
+        fetchUser("id", currentUser.value?.uid),
+      ]);
+    });
     return {
       route,
       products,
@@ -425,6 +503,7 @@ export default {
       handleTab,
       tab,
       markets,
+      handleAddToCart,
     };
   },
 };

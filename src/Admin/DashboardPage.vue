@@ -381,7 +381,7 @@
           </svg>
         </button>
         <div class="flex marts-center gap-3 mr-6">
-          <div class="flex marts-center gap-2">
+          <!-- <div class="flex marts-center gap-2">
             <img
               class="w-[24px] h-[16px]"
               src="../assets/download.png"
@@ -404,8 +404,8 @@
                 />
               </svg>
             </div>
-          </div>
-          <div class="flex marts-center gap-2">
+          </div> -->
+          <!-- <div class="flex marts-center gap-2">
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -423,26 +423,30 @@
               </svg>
               <h3 class="text-16px">Cart</h3>
             </div>
-          </div>
+          </div> -->
           <div class="flex marts-center gap-2 border-r border-primary-4 px-2">
-            <div class="flex gap-2">
+            <div class="gap-2 relative flex right-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="size-6"
+                class="size-6 cursor-pointer"
               >
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                  d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"
                 />
               </svg>
-
-              <h3 class="text-16px">Favorite</h3>
+              <span
+                class="absolute -top-2 -right-1 text-sm text-white bg-red-500 size-4 flex items-center justify-center rounded-full"
+              >
+                2
+              </span>
             </div>
+            <h3 class="text-16px">Order</h3>
           </div>
           <div class="flex marts-center gap-2">
             <div class="flex gap-2">

@@ -327,8 +327,8 @@ import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { where, doc, getDoc } from "@firebase/firestore";
 import ShopComponent from "@/views/ShopComponent.vue";
-import { sendTelegramMessage } from "@/composible/useDMTelegram";
 import { projectFirestore } from "@/config/config";
+import { sendTelegramMessage } from "@/composible/useDMTelegram";
 export default {
   components: {
     FooterVue,
@@ -426,52 +426,15 @@ export default {
     };
     const dataAddedToCart = ref([]);
 
-    const fetchTelegramUserId = async (uid) => {
-      try {
-        const userDocRef = doc(projectFirestore, "users", uid);
-        const docSnap = await getDoc(userDocRef);
-
-        if (docSnap.exists()) {
-          console.log("telegram_id", docSnap.data().telegram_id);
-          return docSnap.data().telegram_id;
-        } else {
-          console.log("No such user found!");
-          return null;
-        }
-      } catch (error) {
-        console.error("Error fetching Telegram user ID:", error);
-        return null;
-      }
-    };
-
-    // Function to send a message to the user on Telegram
-    const sendMessageToUser = async (uid, message) => {
-      try {
-        const telegramUserId = await fetchTelegramUserId(uid);
-        if (telegramUserId) {
-          await sendTelegramMessage(telegramUserId, message); // Send the message if user has Telegram ID
-        } else {
-          console.log("User does not have a Telegram ID stored.");
-        }
-      } catch (error) {
-        console.error("Error sending message:", error);
-      }
-    };
-
-    // Function to handle adding to cart
     const handleAddToCart = async (data) => {
       try {
-        dataAddedToCart.value = data;
-        console.log("data to cart", dataAddedToCart.value);
+        console.log("Data added to cart:", data);
 
-        // Create message for Telegram
-        const message = `You have added to your cart: ${dataAddedToCart.value.name}`;
+        // Format message for Telegram
+        const message = `User ${currentUser.value?.displayName} added ${data.name} to their cart.`;
 
-        if (currentUser.value?.uid) {
-          await sendMessageToUser(currentUser.value?.uid, message); // Send the message to the current user
-        } else {
-          console.log("No current user found.");
-        }
+        // Send message to Telegram
+        await sendTelegramMessage(message);
       } catch (error) {
         console.error("Error handling add to cart:", error);
       }

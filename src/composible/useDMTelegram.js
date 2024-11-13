@@ -1,37 +1,19 @@
+// useDMTelegram.js
 import axios from "axios";
 
-const botToken = "7838683847:AAGTlTxOIMkT7bJ9QWqmDudNuw0lj4Pbhe8"; // Your Telegram Bot Token
+const botToken = "7838683847:AAGTlTxOIMkT7bJ9QWqmDudNuw0lj4Pbhe8";
+const chatId = "899957340"; // Replace with your group/channel chat ID or @username
 
-// Function to send a message to a user
-export const sendTelegramMessage = async (telegramUserId, message) => {
-    const url = `https://api.telegram.org/bot${botToken}/sendMessage`; // Correct API endpoint
-
+// Function to send a message to Telegram
+export const sendTelegramMessage = async (message) => {
+    const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
     try {
         const response = await axios.post(url, {
-            chat_id: telegramUserId,
+            chat_id: chatId,
             text: message,
         });
         console.log("Message sent successfully:", response.data);
     } catch (error) {
-        console.error("Error sending message:", error);
-    }
-};
-
-
-export const getTelegramUserId = async (telegramUserId) => {
-    try {
-        // Send a message to @raw_data_bot to trigger its response
-        const telegramBotUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-        const response = await axios.post(telegramBotUrl, {
-            chat_id: telegramUserId,
-            text: "/start", // Trigger the bot to respond with user info
-        });
-
-        // Assuming the bot replies with user information that includes user_id
-        const userId = response.data.result.message.text; // Extract the user ID from the response
-        return userId;
-    } catch (error) {
-        console.error('Error fetching Telegram user ID:', error);
-        return null;  // Return null in case of error
+        console.error("Error sending message:", error?.response?.data);
     }
 };

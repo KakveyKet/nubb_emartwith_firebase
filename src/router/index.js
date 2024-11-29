@@ -22,6 +22,7 @@ import UserList from '@/SuperAdminDashboard/UserList.vue';
 import MainCategoryList from '@/SuperAdminDashboard/MainCategoryList.vue';
 import DashboarManagement from '@/SuperAdminDashboard/DashboarManagement.vue';
 import AdminProfile from '@/SuperAdminDashboard/AdminProfile.vue';
+import CartView from '@/views/CartView.vue';
 setPersistence(projectAuth, browserLocalPersistence).catch((error) => {
   console.error("Error setting persistence:", error);
 });

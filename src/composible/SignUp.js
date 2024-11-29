@@ -6,12 +6,12 @@ import useCollection from "@/composible/useCollection";
 const error = ref(null);
 const isPending = ref(false);
 
-const signup = async (email, password, displayName, role, phoneNumber, telegram_id) => {
+const signup = async (email, password, displayName, role, phoneNumber) => {
     const { setDocs } = useCollection("users");
     try {
         isPending.value = true;
 
-        console.log("Attempting to sign up with:", { email, password, displayName, role, phoneNumber, telegram_id });
+        console.log("Attempting to sign up with:", { email, password, displayName, role, phoneNumber });
 
         // Create user in Firebase Authentication
         const response = await createUserWithEmailAndPassword(projectAuth, email, password);
@@ -30,7 +30,6 @@ const signup = async (email, password, displayName, role, phoneNumber, telegram_
             username: displayName,
             email: email,
             phoneNumber: phoneNumber,
-            telegram_id: telegram_id,
             role: role || "manager", // Default role if not provided
             createdAt: timestamp(),
         };
@@ -50,7 +49,6 @@ const signup = async (email, password, displayName, role, phoneNumber, telegram_
         isPending.value = false;
     }
 };
-
 
 const useSignUp = () => {
     return { error, isPending, signup };

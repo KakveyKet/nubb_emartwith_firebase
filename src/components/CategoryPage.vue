@@ -5,7 +5,9 @@
     </div>
     <div class="xl:flex lg:flex md:flex grid grid-cols-3 gap-8">
       <div v-for="category in data" class="mt-6" :key="data">
-        <div class="size-[96px] overflow-hidden rounded-full border">
+        <div
+          class="size-[96px] overflow-hidden rounded-full border animate-fade-left animate-duration-300"
+        >
           <img
             class="size-full object-cover"
             :src="

@@ -192,10 +192,10 @@ export default {
     DeleteDialog,
   },
   setup() {
-    const toast = useToast();
     const currentUser = ref(null);
     const selectedCategory = ref(null);
     const currentDate = ref(null);
+    const toast = useToast();
     const showToast = (action, severity) => {
       let summary;
       switch (action) {

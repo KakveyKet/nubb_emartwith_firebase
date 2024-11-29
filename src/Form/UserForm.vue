@@ -73,7 +73,7 @@
 import { ref } from "vue";
 import useSignUp from "@/composible/SignUp";
 import { useRouter } from "vue-router";
-
+import useCollection from "@/composible/useCollection";
 export default {
   setup() {
     const email = ref("");
@@ -81,22 +81,23 @@ export default {
     const displayName = ref("");
     const phoneNumber = ref("");
     const role = ref("manager");
-    const roles = ref([
-      { label: "Manager", value: "manager" },
-      { label: "Staff", value: "staff" },
-    ]);
+    const roles = ref([{ label: "Manager", value: "manager" }]);
+    const telegram_id = ref("");
+
     const router = useRouter();
     const { error, isPending, signup } = useSignUp();
-
     const handleSignUp = async () => {
-      await signup(
+      const response = await signup(
         email.value,
         password.value,
         displayName.value,
         role.value,
-        phoneNumber.value
+        phoneNumber.value,
+        telegram_id.value
       );
-      router.push({ path: "/admindashboard" });
+      if (response) {
+        router.push({ path: "/admindashboard" });
+      }
     };
 
     return {

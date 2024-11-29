@@ -59,34 +59,44 @@
           </div>
           <div class="xl:flex hidden lg:flex md:flex items-center gap-2">
             <div class="flex gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
+              <div
+                @click="handleTab('cart')"
+                class="size-9 bg-primary-5 rounded-full flex items-center justify-center relative"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-                />
-              </svg>
-              <h3 class="text-16px">Cart</h3>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6 text-white"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                  />
+                </svg>
+                <span
+                  class="text-primary-6 absolute text-16px bg-white size-5 box-shadow: 0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08); flex items-center justify-center rounded-full font-bold -top-2 right-0"
+                  >{{ cartAdded.length }}</span
+                >
+              </div>
             </div>
           </div>
           <div
             class="xl:flex hidden lg:flex md:flex items-center gap-2 border-r border-primary-4 px-2"
           >
-            <div class="flex gap-2">
+            <div
+              class="size-9 bg-primary-5 rounded-full flex items-center justify-center relative"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="size-6"
+                class="size-6 text-white"
               >
                 <path
                   stroke-linecap="round"
@@ -94,52 +104,52 @@
                   d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
                 />
               </svg>
-
-              <h3 class="text-16px">Favorite</h3>
+              <span
+                class="text-primary-6 absolute text-16px bg-white size-5 box-shadow: 0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08); flex items-center justify-center rounded-full font-bold -top-2 right-0"
+                >2</span
+              >
             </div>
           </div>
           <div class="flex items-center gap-2">
             <div class="flex gap-2 items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="size-6"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-
-              <h3 v-if="currentUser" class="text-16px">
-                Hi, {{ currentUser.displayName }}
-              </h3>
-
-              <h3
-                v-else
-                class="text-16px hover:cursor-pointer hover:text-primary-8 active:text-primary-8 duration-300"
-                @click="handleLogin"
-              >
-                Login
-              </h3>
-              <h3
-                v-if="currentUser"
-                class="text-16px hover:cursor-pointer hover:text-primary-8 active:text-primary-8 duration-300"
-                @click="logout"
-              >
-                Logout
-              </h3>
               <div
-                class="xl:hidden lg:hidden md:hidden flex items-center gap-2"
+                v-if="currentUser"
+                class="size-9 bg-primary-5 rounded-full flex items-center justify-center"
               >
+                <h2 class="text-white font-bold">
+                  {{ currentUser?.displayName[0] }}
+                </h2>
+              </div>
+              <div class="flex items-center space-x-3">
+                <div
+                  v-if="currentUser"
+                  class="text-16px px-2 py-1.5 bg-primary-5 text-white font-semibold rounded-md"
+                >
+                  Hi, {{ currentUser.displayName }}
+                </div>
                 <Button
-                  icon="pi pi-bars"
-                  severity="secondary"
-                  rounded
-                  aria-label="Bookmark"
+                  icon="pi pi-sign-in"
+                  v-else
+                  @click="handleLogin"
+                  aria-label="Save"
                 />
+                <Button
+                  icon="pi pi-sign-out
+  "
+                  v-if="currentUser"
+                  @click="logout"
+                  aria-label="Save"
+                />
+                <div
+                  class="xl:hidden lg:hidden md:hidden flex items-center gap-2"
+                >
+                  <Button
+                    icon="pi pi-bars"
+                    severity="secondary"
+                    rounded
+                    aria-label="Bookmark"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -189,11 +199,12 @@
       </div>
     </div>
     <!-- category -->
-    <div class="w-full mt-8">
-      <CategoryVue :data="subCategory" />
-    </div>
+
     <!-- body -->
     <div v-if="tab === 'home'" class="w-full h-screen">
+      <div class="w-full mt-8">
+        <CategoryVue :data="subCategory" />
+      </div>
       <div class="w-[80%] mx-auto">
         <div class="mt-6">
           <div class="text-black text-14px font-bold flex items-center gap-3">
@@ -227,7 +238,7 @@
           <div
             v-for="data in products"
             :key="data"
-            class="xl:h-[270px] lg:h-[250px] md:h-[250px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[200px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
+            class="xl:h-[270px] lg:h-[250px] md:h-[250px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[200px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] animate-fade-up animate-duration-300"
           >
             <OverlayBadge :value="data.stock" position="bottom-right">
               <div
@@ -299,6 +310,11 @@
         <ShopComponent :markets="markets" />
       </div>
     </div>
+    <div v-if="tab === 'cart'" class="w-full h-screen">
+      <div class="w-[80%] mx-auto">
+        <CartView />
+      </div>
+    </div>
     <!-- footer -->
     <div>
       <FooterVue />
@@ -311,6 +327,7 @@
     >
       <component :is="currentComponent" @close="handleClose" />
     </Dialog>
+    <Toast />
   </div>
 </template>
 
@@ -327,16 +344,53 @@ import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { where, doc, getDoc } from "@firebase/firestore";
 import ShopComponent from "@/views/ShopComponent.vue";
-import { projectFirestore } from "@/config/config";
-import { sendTelegramMessage } from "@/composible/useDMTelegram";
+import { timestamp } from "@/config/config";
+// import { projectFirestore } from "@/config/config";
+// import { sendTelegramMessage } from "@/composible/useDMTelegram";
+import useCollection from "@/composible/useCollection";
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
+import CartView from "./CartView.vue";
 export default {
   components: {
     FooterVue,
     CategoryVue,
     UserLoginForm,
     ShopComponent,
+    Toast,
+    CartView,
   },
   setup() {
+    const toast = useToast();
+    const showToast = (action, severity) => {
+      let summary;
+      switch (action) {
+        case "create":
+          severity = "success";
+          summary = "Cart Added Success";
+          break;
+        case "update":
+          severity = "info";
+          summary = "Product Updated";
+          break;
+        case "delete":
+          severity = "error";
+          summary = "Product Deleted";
+        case "delete":
+          severity = "warn";
+          summary = "You don't have account please register";
+          break;
+        default:
+          severity = "info";
+          summary = "Action Completed";
+      }
+
+      toast.add({
+        severity: severity,
+        summary: summary,
+        life: 3000,
+      });
+    };
     const route = useRoute();
     const subCategory = ref([]);
     const products = ref([]);
@@ -345,7 +399,7 @@ export default {
     const currentComponent = ref("");
     const router = useRouter();
     const auth = getAuth();
-
+    const { addDocs, removeDoc } = useCollection("carts");
     const handleLogin = () => {
       visible.value = true;
       currentComponent.value = "UserLoginForm";
@@ -406,8 +460,8 @@ export default {
     };
 
     watch(currentUser, () => {
-      if (currentUser.value.uid) {
-        console.log("currentuser phone", currentUser.value?.uid);
+      if (currentUser.value?.uid) {
+        console.log("currentuser ", currentUser.value?.uid);
       }
     });
     const items = ref([]);
@@ -424,19 +478,43 @@ export default {
         true
       );
     };
-    const dataAddedToCart = ref([]);
+    const cartAdded = ref([]);
+    const fetchCartAdded = async (field, value) => {
+      const conditions = [where(field, "==", value)];
+      await getCollectionQuery(
+        "carts",
+        conditions,
+        (data) => {
+          cartAdded.value = data;
+          console.log("cartAdded", cartAdded.value);
+        },
+
+        true
+      );
+    };
 
     const handleAddToCart = async (data) => {
       try {
-        console.log("Data added to cart:", data);
-
-        // Format message for Telegram
-        const message = `User ${currentUser.value?.displayName} added ${data.name} to their cart.`;
-
-        // Send message to Telegram
-        await sendTelegramMessage(message);
+        const cartItem = {
+          name: data.name,
+          price: data.price,
+          quantity: data.quantity || 1,
+          createdAt: timestamp(),
+          userId: currentUser.value?.uid,
+          category: data.category,
+          images: data.images,
+          branch_id: data.branch_id,
+        };
+        if (currentUser.value?.uid) {
+          const result = await addDocs(cartItem);
+          showToast("create", "success");
+          fetchCartAdded("userId", currentUser.value?.uid),
+            console.log("result", result);
+        } else {
+          showToast("delete", "warning");
+        }
       } catch (error) {
-        console.error("Error handling add to cart:", error);
+        console.error("Error adding to cart:", error);
       }
     };
     onMounted(async () => {
@@ -449,6 +527,7 @@ export default {
         fetchSubCategory(),
         fetchMarket(),
         fetchUser("id", currentUser.value?.uid),
+        fetchCartAdded("userId", currentUser.value?.uid),
       ]);
     });
     return {
@@ -467,6 +546,8 @@ export default {
       tab,
       markets,
       handleAddToCart,
+      cartAdded,
+      router,
     };
   },
 };

@@ -3,10 +3,12 @@
     <div class="py-2">
       <h2 class="font-bold text-black text-14px">Categories</h2>
     </div>
-    <div class="xl:flex lg:flex md:flex grid grid-cols-3 gap-8">
+    <div
+      class="xl:flex lg:flex md:flex grid grid-cols-3 xl:gap-9 lg:gap-6 md:gap-3 gap-2"
+    >
       <div v-for="category in data" class="mt-6" :key="data">
         <div
-          class="size-[96px] overflow-hidden rounded-full border animate-fade-left animate-duration-300"
+          class="xl:size-[96px] lg:size-14 md:size-14 size-14 overflow-hidden mx-auto rounded-full border animate-fade-left animate-duration-300"
         >
           <img
             class="size-full object-cover"

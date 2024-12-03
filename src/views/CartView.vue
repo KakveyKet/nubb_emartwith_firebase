@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full h-screen p-5">
-    <div class="w-[80%] mx-auto">
-      <div class="w-full justify-between flex items-start">
+  <div class="w-full p-5">
+    <div class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
+      <div class="cart_container">
         <div>
           <div>
             <h2 class="text-17px font-semibold">Shopping Cart</h2>
@@ -11,20 +11,24 @@
             <p>Je Pov 168 Shop</p>
           </div>
           <br />
+          <!-- {{ cartAdded }} -->
           <div class="space-y-4">
-            <div
-              v-for="cart in cartAdded"
-              class="w-[400px] px-2 py-2 flex rounded-md shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-            >
-              <div class="flex items-center w-full justify-between gap-4">
-                <div class="size-20 overflow-hidden">
+            <div v-for="cart in cartAdded" class="cart_added">
+              <div
+                class="flex items-center w-full justify-between gap-4 animate-fade-up animate-duration-300"
+              >
+                <div class="size-20 rounded-md overflow-hidden">
                   <img class="object-cover" :src="cart.images[0]" alt="" />
                 </div>
                 <div>
-                  <p class="font-semibold text-black text-16px">
+                  <p
+                    class="font-semibold text-black xl:text-16px lg:text-16px md:text-16px text-13px"
+                  >
                     {{ cart.name }}
                   </p>
-                  <div class="flex items-center gap-3">
+                  <div
+                    class="flex items-center gap-3 xl:text-16px lg:text-16px md:text-16px text-13px text-nowrap"
+                  >
                     <p>PRICE</p>
                     <span>{{ cart.price }} ៛</span>
                   </div>
@@ -51,40 +55,84 @@
           </div>
         </div>
         <div>
-          <div
-            class="bg-white w-[400px] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] p-5 rounded-lg"
-          >
+          <div class="summary">
             <div>
               <p class="text-17px font-semibold">Summary</p>
             </div>
             <div class="space-y-1 mt-4">
               <h2>Subtotal</h2>
-              <div class="flex space-x-4">
-                <p>Sandwich x4</p>
-                <p>8000៛</p>
+              <div
+                class="flex space-x-4 xl:text-16px lg:text-16px md:text-16px text-13px"
+              >
+                <div v-for="item in groupedItems" :key="item.id">
+                  <p>{{ item.name }} x {{ item.totalQuantity }}:</p>
+                  <p>{{ item.totalPrice }}៛</p>
+                </div>
               </div>
             </div>
-            <div class="mt-2 space-y-2">
+            <div
+              class="mt-2 space-y-2 xl:text-16px lg:text-16px md:text-16px text-13px"
+            >
               <label for="Special"> Special Instructions (Optional) </label>
               <InputText
                 id="Special"
+                v-model="instructions"
                 placeholder="Ex: I’m allergies to egg"
                 style="width: 250px"
               />
             </div>
-            <div class="mt-2 flex flex-col space-y-1">
+
+            <div
+              class="mt-4 flex flex-col space-y-1 xl:text-16px lg:text-16px md:text-16px text-13px"
+            >
               <label for="Special">
                 Delivery method <span class="text-red-500">*</span>
               </label>
+              <span
+                class="text-slate-400 xl:text-16px lg:text-16px md:text-16px text-13px"
+                >Location
+              </span>
 
-              <span class="text-16px text-slate-400">Location</span>
+              <div class="flex flex-wrap gap-4">
+                <div class="flex items-center gap-2">
+                  <RadioButton
+                    v-model="isArea"
+                    inputId="pay_by_bank"
+                    name="yourara"
+                    value="yourarea"
+                  />
+                  <label for="pay_by_bank">Your Area</label>
+                </div>
+                <div class="flex items-center gap-2">
+                  <RadioButton
+                    v-model="isArea"
+                    inputId="local"
+                    name="paymentMethod"
+                    value="local"
+                  />
+                  <label for="local">Local Area</label>
+                </div>
+              </div>
               <InputText
+                v-if="isArea === 'yourarea'"
                 id="Special"
-                placeholder="Ex: I’m allergies to egg"
+                v-model="location_selected"
+                placeholder="Ex: room 114"
                 style="width: 250px"
               />
+              <Select
+                v-else
+                v-model="location_selected"
+                :options="location"
+                optionLabel="name"
+                placeholder="Select a location"
+                filter
+                class="w-[250px]"
+              />
             </div>
-            <div class="mt-2 flex flex-col space-y-1">
+            <div
+              class="mt-4 flex flex-col space-y-1 xl:text-16px lg:text-16px md:text-16px text-13px"
+            >
               <label for="Special">
                 Payment method <span class="text-red-500">*</span>
               </label>
@@ -101,7 +149,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                   <RadioButton
-                    v-model="paymentMethod"
+                    v-model="isArea"
                     inputId="pay_by_cash"
                     name="paymentMethod"
                     value="cash"
@@ -112,7 +160,7 @@
             </div>
             <div class="w-[90%] mt-4 flex justify-between">
               <p>Total</p>
-              <p>8000 ៛</p>
+              <p>{{ totalPrice }} ៛</p>
             </div>
             <div
               class="
@@ -128,17 +176,43 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import useCollection from "@/composible/useCollection";
 import { projectAuth } from "@/config/config";
 import { where } from "@firebase/firestore";
 export default {
   setup() {
-    const cartAdded = ref([]);
     const paymentMethod = ref("bank"); // Default selected value
 
     const currentUser = ref(null);
+    const instructions = ref(null);
+    const loctions = ref(null);
+    const location_selected = ref(null);
+    const isArea = ref(null);
+    const location = ref([
+      {
+        name: "មាត់ទឹក",
+      },
+      {
+        name: "បណ្ណាល័យ",
+      },
+      {
+        name: "តារាងបាល់",
+      },
+      ,
+      {
+        name: "មុខសាលាផ្លូវទី1",
+      },
+      {
+        name: "មុខសាលាផ្លូវទី2",
+      },
+      ,
+      {
+        name: "កន្លែងចុះឈ្មោះសិស្ស",
+      },
+    ]);
+    const cartAdded = ref([]);
     const fetchCartAdded = async (field, value) => {
       const conditions = [where(field, "==", value)];
       await getCollectionQuery(
@@ -152,7 +226,29 @@ export default {
         true
       );
     };
+    const totalPrice = computed(() => {
+      return cartAdded.value.reduce(
+        (total, item) => total + item.quantity * item.price,
+        0
+      );
+    });
 
+    const groupedItems = computed(() => {
+      const grouped = {};
+      cartAdded.value.forEach((item) => {
+        if (!grouped[item.name]) {
+          grouped[item.name] = {
+            id: item.id,
+            name: item.name,
+            totalQuantity: 0,
+            totalPrice: 0,
+          };
+        }
+        grouped[item.name].totalQuantity += item.quantity;
+        grouped[item.name].totalPrice += item.quantity * item.price;
+      });
+      return Object.values(grouped);
+    });
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
       fetchCartAdded("userId", currentUser.value?.uid);
@@ -161,6 +257,13 @@ export default {
     return {
       cartAdded,
       paymentMethod,
+      totalPrice,
+      groupedItems,
+      instructions,
+      location,
+      loctions,
+      location_selected,
+      isArea,
     };
   },
 };

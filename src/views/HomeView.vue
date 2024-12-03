@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-auto relative">
+  <div class="w-full h-fit">
     <!-- navbar -->
     <div class="xl:w-full lg:w-full md:w-full w-full shadow-md">
       <div
@@ -114,7 +114,7 @@
             <div class="flex gap-2 items-center">
               <div
                 v-if="currentUser"
-                class="size-9 bg-primary-5 rounded-full flex items-center justify-center"
+                class="xl:block lg:block md:block hidden size-9 bg-primary-5 rounded-full items-center justify-center"
               >
                 <h2 class="text-white font-bold">
                   {{ currentUser?.displayName[0] }}
@@ -123,7 +123,7 @@
               <div class="flex items-center space-x-3">
                 <div
                   v-if="currentUser"
-                  class="text-16px px-2 py-1.5 bg-primary-5 text-white font-semibold rounded-md"
+                  class="xl:block lg:block md:block hidden text-nowrap text-16px px-2 py-1.5 bg-primary-5 text-white font-semibold rounded-md"
                 >
                   Hi, {{ currentUser.displayName }}
                 </div>
@@ -201,7 +201,7 @@
     <!-- category -->
 
     <!-- body -->
-    <div v-if="tab === 'home'" class="w-full h-screen">
+    <div v-if="tab === 'home'" class="w-full">
       <div class="w-full mt-8">
         <CategoryVue :data="subCategory" />
       </div>
@@ -232,17 +232,17 @@
         </div>
         <!-- cart container -->
         <div
-          class="mt-8 xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-12 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2"
+          class="mt-8 xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-12 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2 h-fit py-3"
         >
           <!-- cart -->
           <div
             v-for="data in products"
             :key="data"
-            class="xl:h-[270px] lg:h-[250px] md:h-[250px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[200px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] animate-fade-up animate-duration-300"
+            class="xl:h-[270px] lg:h-[250px] md:h-[220px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[150px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] animate-fade-up animate-duration-300"
           >
             <OverlayBadge :value="data.stock" position="bottom-right">
               <div
-                class="w-full xl:h-[150px] lg:h-[150px] md:h-[150px] h-[100px] overflow-hidden rounded-md"
+                class="w-full xl:h-[150px] lg:h-[150px] md:h-[100px] h-[100px] overflow-hidden rounded-md"
               >
                 <img :src="data.images[0]" class="object-cover" />
               </div>
@@ -305,20 +305,17 @@
         </div>
       </div>
     </div>
-    <div v-if="tab === 'shop'" class="w-full h-screen">
+    <div v-if="tab === 'shop'" class="w-full">
       <div class="w-[80%] mx-auto">
         <ShopComponent :markets="markets" />
       </div>
     </div>
-    <div v-if="tab === 'cart'" class="w-full h-screen">
+    <div v-if="tab === 'cart'" class="w-full">
       <div class="w-[80%] mx-auto">
         <CartView />
       </div>
     </div>
     <!-- footer -->
-    <div>
-      <FooterVue />
-    </div>
     <Dialog
       v-model:visible="visible"
       :modal="true"
@@ -328,6 +325,9 @@
       <component :is="currentComponent" @close="handleClose" />
     </Dialog>
     <Toast />
+  </div>
+  <div class="">
+    <FooterVue />
   </div>
 </template>
 

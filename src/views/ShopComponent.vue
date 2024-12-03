@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-screen">
     <div class="mt-6">
       <div class="text-black text-14px font-bold flex items-center gap-3">
         <svg

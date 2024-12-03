@@ -200,32 +200,36 @@ export default {
       {
         name: "តារាងបាល់",
       },
-      ,
+
       {
         name: "មុខសាលាផ្លូវទី1",
       },
       {
         name: "មុខសាលាផ្លូវទី2",
       },
-      ,
+
       {
         name: "កន្លែងចុះឈ្មោះសិស្ស",
       },
     ]);
     const cartAdded = ref([]);
     const fetchCartAdded = async (field, value) => {
-      const conditions = [where(field, "==", value)];
-      await getCollectionQuery(
-        "carts",
-        conditions,
-        (data) => {
-          cartAdded.value = data;
-          console.log("cartAdded", cartAdded.value);
-        },
-
-        true
-      );
+      try {
+        const conditions = [where(field, "==", value)];
+        await getCollectionQuery(
+          "carts",
+          conditions,
+          (data) => {
+            cartAdded.value = data;
+            console.log("cartAdded", cartAdded.value);
+          },
+          true
+        );
+      } catch (error) {
+        console.error("Error fetching cart data:", error);
+      }
     };
+
     const totalPrice = computed(() => {
       return cartAdded.value.reduce(
         (total, item) => total + item.quantity * item.price,

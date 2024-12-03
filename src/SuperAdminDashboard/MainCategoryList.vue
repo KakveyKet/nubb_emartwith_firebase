@@ -2,7 +2,7 @@
   <div class="w-full">
     <div class="mt-3 bg-white p-4 rounded-lg w-full">
       <div class="flex justify-between items-center w-full">
-        <h2 class="text-20px font-semibold">User List</h2>
+        <h2 class="text-20px font-semibold">Category List</h2>
         <div class="flex items-center gap-2">
           <DatePicker
             v-model="currentDate"
@@ -25,7 +25,7 @@
           />
           <Button
             icon="pi pi-plus"
-            label="Add Product"
+            label="Add Category"
             class="!bg-primary-6 !border-none"
             @click="handleAdd"
           />

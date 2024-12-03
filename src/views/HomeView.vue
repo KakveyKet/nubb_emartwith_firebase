@@ -110,11 +110,12 @@
               >
             </div>
           </div>
+
           <div class="flex items-center gap-2">
             <div class="flex gap-2 items-center">
               <div
                 v-if="currentUser"
-                class="xl:block lg:block md:block hidden size-9 bg-primary-5 rounded-full items-center justify-center"
+                class="xl:flex lg:flex md:flex hidden size-9 bg-primary-5 rounded-full items-center justify-center"
               >
                 <h2 class="text-white font-bold">
                   {{ currentUser?.displayName[0] }}
@@ -127,29 +128,44 @@
                 >
                   Hi, {{ currentUser.displayName }}
                 </div>
-                <Button
-                  icon="pi pi-sign-in"
-                  v-else
-                  @click="handleLogin"
-                  aria-label="Save"
-                />
-                <Button
-                  icon="pi pi-sign-out
-  "
-                  v-if="currentUser"
-                  @click="logout"
-                  aria-label="Save"
-                />
+
                 <div
                   class="xl:hidden lg:hidden md:hidden flex items-center gap-2"
                 >
                   <Button
+                    @click="visibleRight = true"
                     icon="pi pi-bars"
                     severity="secondary"
                     rounded
                     aria-label="Bookmark"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+          <div class="xl:flex lg:flex md:flex hidden items-center gap-2">
+            <div
+              v-if="currentUser"
+              @click="logout"
+              class="p-2 text-16px hover:bg-primary-2 transition-colors duration-200 cursor-pointer rounded-md"
+            >
+              <div
+                class="flex items-center text-primary-8 hover:text-primary-10"
+              >
+                <i class="pi pi-sign-out size-5 mr-3"></i>
+                <span class="text-16px">Logout</span>
+              </div>
+            </div>
+            <div
+              v-else
+              @click="handleLogin"
+              class="p-2 text-16px hover:bg-primary-2 transition-colors duration-200 cursor-pointer rounded-md"
+            >
+              <div
+                class="flex items-center text-primary-8 hover:text-primary-10"
+              >
+                <i class="pi pi-sign-in size-5 mr-3"></i>
+                <span class="text-16px">Login</span>
               </div>
             </div>
           </div>
@@ -161,14 +177,14 @@
     <!-- sub navbar  -->
     <div class="border-b w-full">
       <div
-        class="flex items-center justify-items-start h-[47px] w-[80%] mx-auto gap-3"
+        class="flex items-center justify-items-start h-[47px] xl:w-[80%] lg:w-[80%] md:w-[80%] mx-auto gap-3"
       >
         <div
           @click="handleTab('home')"
           :class="{
-            'text-primary-6 text-14px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300':
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
               tab === 'home',
-            'text-slate-500 text-14px cursor-pointer duration-300':
+            'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
               tab !== 'home',
           }"
         >
@@ -177,20 +193,39 @@
         <div
           @click="handleTab('shop')"
           :class="{
-            'text-primary-6 text-14px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300':
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
               tab === 'shop',
-            'text-slate-500 text-14px cursor-pointer duration-300':
+            'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
               tab !== 'shop',
           }"
         >
           Shop
         </div>
+        <OverlayBadge
+          class="xl:hidden lg:hidden md:block block"
+          severity="danger"
+          size="small"
+          :value="cartAdded.length"
+        >
+          <div
+            @click="handleTab('cart')"
+            :class="{
+              'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
+                tab === 'cart',
+              'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
+                tab !== 'cart',
+            }"
+          >
+            In Cart
+          </div>
+        </OverlayBadge>
+
         <div
           @click="handleTab('tracking_order')"
           :class="{
-            'text-primary-6 text-14px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300':
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
               tab === 'tracking_order',
-            'text-slate-500 text-14px cursor-pointer duration-300':
+            'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
               tab !== 'tracking_order',
           }"
         >
@@ -329,9 +364,19 @@
   <div class="">
     <FooterVue />
   </div>
+
+  <Drawer
+    v-model:visible="visibleRight"
+    :show-close-icon="false"
+    position="right"
+    class="h-screen"
+  >
+    <Sidebar />
+  </Drawer>
 </template>
 
 <script>
+import Sidebar from "@/mobile/Sidebar.vue";
 import FooterVue from "@/components/FooterPage.vue";
 import CategoryVue from "@/components/CategoryPage.vue";
 import { useRoute } from "vue-router";
@@ -342,7 +387,7 @@ import { projectAuth } from "@/config/config";
 import UserLoginForm from "@/user/UserLoginForm.vue";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "vue-router";
-import { where, doc, getDoc } from "@firebase/firestore";
+import { where } from "@firebase/firestore";
 import ShopComponent from "@/views/ShopComponent.vue";
 import { timestamp } from "@/config/config";
 // import { projectFirestore } from "@/config/config";
@@ -359,6 +404,7 @@ export default {
     ShopComponent,
     Toast,
     CartView,
+    Sidebar,
   },
   setup() {
     const toast = useToast();
@@ -399,6 +445,8 @@ export default {
     const currentComponent = ref("");
     const router = useRouter();
     const auth = getAuth();
+    const visibleRight = ref(false);
+
     const { addDocs, removeDoc } = useCollection("carts");
     const handleLogin = () => {
       visible.value = true;
@@ -466,31 +514,38 @@ export default {
     });
     const items = ref([]);
     const fetchUser = async (field, value) => {
-      const conditions = [where(field, "==", value)];
-      await getCollectionQuery(
-        "users",
-        conditions,
-        (data) => {
-          items.value = data;
-          console.log("items", items.value);
-        },
-
-        true
-      );
+      try {
+        const conditions = [where(field, "==", value)];
+        await getCollectionQuery(
+          "users",
+          conditions,
+          (data) => {
+            items.value = data;
+            console.log("items", items.value);
+          },
+          true
+        );
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
+
     const cartAdded = ref([]);
     const fetchCartAdded = async (field, value) => {
-      const conditions = [where(field, "==", value)];
-      await getCollectionQuery(
-        "carts",
-        conditions,
-        (data) => {
-          cartAdded.value = data;
-          console.log("cartAdded", cartAdded.value);
-        },
-
-        true
-      );
+      try {
+        const conditions = [where(field, "==", value)];
+        await getCollectionQuery(
+          "carts",
+          conditions,
+          (data) => {
+            cartAdded.value = data;
+            console.log("cartAdded", cartAdded.value);
+          },
+          true
+        );
+      } catch (error) {
+        console.error("Error fetching cart data:", error);
+      }
     };
 
     const handleAddToCart = async (data) => {
@@ -548,6 +603,7 @@ export default {
       handleAddToCart,
       cartAdded,
       router,
+      visibleRight,
     };
   },
 };

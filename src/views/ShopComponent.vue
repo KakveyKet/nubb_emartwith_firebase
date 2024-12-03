@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen">
+  <div class="h-fit py-6">
     <div class="mt-6">
       <div class="text-black text-14px font-bold flex items-center gap-3">
         <svg
@@ -25,7 +25,7 @@
       <div
         v-for="market in markets"
         :key="market.id"
-        class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 flex flex-col text-gray-800"
+        class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 flex flex-col text-gray-800 animate-fade-up animate-duration-300"
       >
         <!-- Cover Image Section -->
         <div class="relative w-full h-48 rounded-lg overflow-hidden">

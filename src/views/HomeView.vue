@@ -385,12 +385,13 @@ import { useRoute } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { ref, onMounted, watch } from "vue";
 import { formatCurrency, formatNumber } from "@/helper/formatCurrecy";
-import { projectAuth } from "@/config/config";
 import UserLoginForm from "@/user/UserLoginForm.vue";
-import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
+
 import { useRouter } from "vue-router";
-import { where } from "@firebase/firestore";
 import ShopComponent from "@/views/ShopComponent.vue";
+import { projectAuth } from "@/config/config";
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
+import { where } from "@firebase/firestore";
 import { timestamp } from "@/config/config";
 // import { projectFirestore } from "@/config/config";
 // import { sendTelegramMessage } from "@/composible/useDMTelegram";

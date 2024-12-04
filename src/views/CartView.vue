@@ -1,53 +1,62 @@
 <template>
   <div class="p-5 w-full">
-    <div class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
+    <div
+      v-if="cartAdded.length > 0"
+      class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto"
+    >
       <div class="cart_container">
         <div>
           <div>
             <h2 class="text-17px font-semibold">Shopping Cart</h2>
           </div>
-          <div class="flex gap-2 items-center mt-4">
-            <i class="pi pi-shop"></i>
-            <p>Je Pov 168 Shop</p>
-          </div>
           <br />
-          <!-- {{ cartAdded }} -->
           <div class="space-y-4">
-            <div v-for="cart in cartAdded" class="cart_added">
-              <div
-                class="flex items-center w-full justify-between gap-4 animate-fade-up animate-duration-300"
-              >
-                <div class="size-20 rounded-md overflow-hidden">
-                  <img class="object-cover" :src="cart.images[0]" alt="" />
-                </div>
-                <div>
-                  <p
-                    class="font-semibold text-black xl:text-16px lg:text-16px md:text-16px text-13px"
-                  >
-                    {{ cart.name }}
-                  </p>
-                  <div
-                    class="flex items-center gap-3 xl:text-16px lg:text-16px md:text-16px text-13px text-nowrap"
-                  >
-                    <p>PRICE</p>
-                    <span>{{ cart.price }} ៛</span>
+            <div
+              v-for="(item, branchId) in groupedByBranch"
+              :key="branchId"
+              class="space-y-3"
+            >
+              <div class="flex gap-2 items-center mt-4">
+                <i class="pi pi-shop"></i>
+                <p>{{ branchId }}</p>
+              </div>
+
+              <div v-for="cart in item" class="cart_added">
+                <div
+                  class="flex items-center w-full justify-between gap-4 animate-fade-up animate-duration-300"
+                >
+                  <div class="size-20 rounded-md overflow-hidden">
+                    <img class="object-cover" :src="cart.images[0]" alt="" />
                   </div>
-                </div>
-                <div>
-                  <div class="border flex items-center rounded-md">
-                    <button
-                      class="size-8 rounded flex items-center justify-center bg-blue-500"
+                  <div>
+                    <p
+                      class="font-semibold text-black xl:text-16px lg:text-16px md:text-16px text-13px"
                     >
-                      <i class="pi pi-minus text-white"></i>
-                    </button>
-                    <div class="size-8 flex items-center justify-center">
-                      <p>{{ cart.quantity }}</p>
+                      {{ cart.name }}
+                    </p>
+                    <div
+                      class="flex items-center gap-3 xl:text-16px lg:text-16px md:text-16px text-13px text-nowrap"
+                    >
+                      <p>PRICE</p>
+                      <span>{{ cart.price }} ៛</span>
                     </div>
-                    <button
-                      class="size-8 rounded flex items-center justify-center bg-slate-200"
-                    >
-                      <i class="pi pi-plus"></i>
-                    </button>
+                  </div>
+                  <div>
+                    <div class="border flex items-center rounded-md">
+                      <button
+                        class="size-8 rounded flex items-center justify-center bg-blue-500"
+                      >
+                        <i class="pi pi-minus text-white"></i>
+                      </button>
+                      <div class="size-8 flex items-center justify-center">
+                        <p>{{ cart.quantity }}</p>
+                      </div>
+                      <button
+                        class="size-8 rounded flex items-center justify-center bg-slate-200"
+                      >
+                        <i class="pi pi-plus"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -126,6 +135,7 @@
                 v-model="location_selected"
                 :options="location"
                 optionLabel="name"
+                option-value="name"
                 placeholder="Select a location"
                 filter
                 show-clear
@@ -168,11 +178,16 @@
               class="
             "
             >
-              <button class="btncheckout w-full mt-4">Check Out</button>
+              <button @click="handleCheckout" class="btncheckout w-full mt-4">
+                Check Out
+              </button>
             </div>
           </div>
         </div>
       </div>
+    </div>
+    <div v-else class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
+      <EmptyCart />
     </div>
   </div>
 </template>
@@ -182,14 +197,21 @@ import { ref, onMounted, computed } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import useCollection from "@/composible/useCollection";
 import { projectAuth } from "@/config/config";
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { where } from "@firebase/firestore";
+import { timestamp } from "@/config/config";
+import EmptyCart from "@/Form/EmptyCart.vue";
 export default {
+  components: {
+    EmptyCart,
+  },
   setup() {
     const paymentMethod = ref("bank"); // Default selected value
-
+    const auth = getAuth();
+    const items = ref([]);
     const currentUser = ref(null);
     const instructions = ref(null);
-    const loctions = ref(null);
+    const locations = ref(null);
     const location_selected = ref(null);
     const isArea = ref("yourarea");
     const location = ref([
@@ -255,9 +277,84 @@ export default {
       });
       return Object.values(grouped);
     });
+
+    const markets = ref([]);
+    const fetchMarket = async () => {
+      await getCollectionQuery(
+        "marts",
+        [],
+        (data) => {
+          markets.value = data;
+        },
+        true
+      );
+    };
+    const groupedByBranch = computed(() => {
+      const grouped = {};
+      const branchMap = Object.fromEntries(
+        markets.value.map((market) => [market.id, market.name])
+      );
+
+      cartAdded.value.forEach((item) => {
+        const branchName = branchMap[item.branch_id] || "Unknown Branch";
+        if (!grouped[branchName]) {
+          grouped[branchName] = [];
+        }
+        grouped[branchName].push(item);
+      });
+
+      return grouped;
+    });
+    const { addDocs, updateDocs } = useCollection("products");
+    const handleCheckout = async () => {
+      const productData = {
+        user: items.value,
+        items: cartAdded.value,
+        status: "pending",
+        instructions: instructions.value,
+        location: location_selected.value,
+        paymentMethod: paymentMethod.value,
+        // branch_id: marts.value[0].id,
+        created_at: timestamp(),
+      };
+
+      console.log("Product data to save:", productData);
+
+      // try {
+      //   await addDocs(productData);
+      //   console.log("Product added successfully:", productData);
+      // } catch (error) {
+      //   alert("There was an issue saving the product. Please try again.");
+      //   isLoading.value = false;
+      // }
+    };
+
+    const fetchUser = async (field, value) => {
+      try {
+        const conditions = [where(field, "==", value)];
+        await getCollectionQuery(
+          "users",
+          conditions,
+          (data) => {
+            items.value = data;
+            console.log("items", items.value);
+          },
+          true
+        );
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
-      fetchCartAdded("userId", currentUser.value?.uid);
+      onAuthStateChanged(auth, (user) => {
+        currentUser.value = user;
+      });
+      await Promise.allSettled([
+        fetchMarket(),
+        fetchCartAdded("userId", currentUser.value?.uid),
+        fetchUser("id", currentUser.value?.uid),
+      ]);
     });
 
     return {
@@ -266,10 +363,12 @@ export default {
       totalPrice,
       groupedItems,
       instructions,
-      location,
-      loctions,
+      locations,
       location_selected,
       isArea,
+      groupedByBranch,
+      location,
+      handleCheckout,
     };
   },
 };

@@ -220,9 +220,9 @@ export default {
             items.value = data;
             console.log("data category", items.value);
           },
-          true, // Use snapshot for real-time updates
-          "name", // Assuming you want to search by the "name" field
-          searchTerm.value // The search term
+          true,
+          "name",
+          searchTerm.value
         );
       } else {
         console.error("Error fetching data: Marts data is empty.");

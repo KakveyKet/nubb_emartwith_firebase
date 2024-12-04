@@ -1,5 +1,7 @@
 <template>
-  <div class="w-[80%] mx-auto">
+  <div
+    class="xl:w-[80%] lg:w-[80%] md:w-[90%] w-[90%] xl:mx-auto lg:mx-0 md:mx-auto mx-3"
+  >
     <div class="py-2">
       <h2 class="font-bold text-black text-14px">Categories</h2>
     </div>

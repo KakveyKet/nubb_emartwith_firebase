@@ -240,7 +240,9 @@
       <div class="w-full mt-8">
         <CategoryVue :data="subCategory" />
       </div>
-      <div class="w-[80%] mx-auto">
+      <div
+        class="xl:w-[80%] lg:w-[80%] md:w-[90%] w-[90%] xl:mx-auto lg:mx-0 md:mx-auto mx-3"
+      >
         <div class="mt-6">
           <div class="text-black text-14px font-bold flex items-center gap-3">
             <svg
@@ -273,7 +275,7 @@
           <div
             v-for="data in products"
             :key="data"
-            class="xl:h-[270px] lg:h-[250px] md:h-[220px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[150px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] animate-fade-up animate-duration-300"
+            class="xl:mx-0 lg:mx-0 md:mx-0 mx-auto xl:h-[270px] lg:h-[250px] md:h-[220px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[150px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] animate-fade-up animate-duration-300"
           >
             <OverlayBadge :value="data.stock" position="bottom-right">
               <div
@@ -346,7 +348,7 @@
       </div>
     </div>
     <div v-if="tab === 'cart'" class="w-full">
-      <div class="w-[80%] mx-auto">
+      <div class="">
         <CartView />
       </div>
     </div>

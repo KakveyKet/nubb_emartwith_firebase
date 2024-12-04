@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full p-5">
+  <div class="p-5 w-full">
     <div class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
       <div class="cart_container">
         <div>
@@ -71,7 +71,7 @@
               </div>
             </div>
             <div
-              class="mt-2 space-y-2 xl:text-16px lg:text-16px md:text-16px text-13px"
+              class="mt-2 flex flex-col space-y-2 xl:text-16px lg:text-16px md:text-16px text-13px"
             >
               <label for="Special"> Special Instructions (Optional) </label>
               <InputText
@@ -79,11 +79,12 @@
                 v-model="instructions"
                 placeholder="Ex: I’m allergies to egg"
                 style="width: 250px"
+                class="h-9"
               />
             </div>
 
             <div
-              class="mt-4 flex flex-col space-y-1 xl:text-16px lg:text-16px md:text-16px text-13px"
+              class="mt-4 flex flex-col xl:text-16px lg:text-16px md:text-16px text-13px space-y-2"
             >
               <label for="Special">
                 Delivery method <span class="text-red-500">*</span>
@@ -127,6 +128,7 @@
                 optionLabel="name"
                 placeholder="Select a location"
                 filter
+                show-clear
                 class="w-[250px]"
               />
             </div>
@@ -149,7 +151,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                   <RadioButton
-                    v-model="isArea"
+                    v-model="paymentMethod"
                     inputId="pay_by_cash"
                     name="paymentMethod"
                     value="cash"
@@ -189,7 +191,7 @@ export default {
     const instructions = ref(null);
     const loctions = ref(null);
     const location_selected = ref(null);
-    const isArea = ref(null);
+    const isArea = ref("yourarea");
     const location = ref([
       {
         name: "មាត់ទឹក",

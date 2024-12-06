@@ -17,7 +17,7 @@
           showButtonBar
         />
       </div>
-      <button @click="handleAdd" class="add_new_button">
+      <!-- <button @click="handleAdd" class="add_new_button">
         <div class="flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +32,7 @@
           </svg>
           <span class="mr-2"> Add New</span>
         </div>
-      </button>
+      </button> -->
     </div>
     <div class="overflow-x-auto">
       <DataTable
@@ -43,51 +43,56 @@
         :rowsPerPageOptions="[50, 100, 200, 500]"
         tableStyle="min-width: 50rem"
       >
-        <Column field="created_at" header="Product">
+        <Column field="items" header="Product">
           <template #body="slotProps">
-            {{ formatDate(slotProps.data.created_at) }}
+            <div v-for="item in slotProps.data.items" :key="item.id">
+              {{ item.name }}
+            </div>
           </template>
         </Column>
-        <Column field="image_url" header="Image">
+        <Column field="items" header="Image">
           <template #body="slotProps">
-            <img
-              :src="
-                slotProps.data.image_url
-                  ? slotProps.data.image_url
-                  : 'https://via.placeholder.com/150'
-              "
-              alt="Image"
-              class="size-20 rounded object-cover"
-            />
+            <div class="flex space-x-2">
+              <div v-for="item in slotProps.data.items" :key="item.id">
+                <OverlayBadge :value="item.quantity">
+                  <img
+                    :src="
+                      item.images[0]
+                        ? item.images[0]
+                        : 'https://via.placeholder.com/150'
+                    "
+                    alt="Image"
+                    class="size-20 rounded object-cover"
+                  />
+                </OverlayBadge>
+              </div>
+            </div>
           </template>
         </Column>
-        <Column field="image_url" header="Qty">
-          <template #body="slotProps">
-            <img
-              :src="
-                slotProps.data.image_url
-                  ? slotProps.data.image_url
-                  : 'https://via.placeholder.com/150'
-              "
-              alt="Image"
-              class="size-20 rounded object-cover"
-            />
-          </template>
-        </Column>
+
         <Column field="instructions" header="Instructions">
           <template #body="slotProps">
             {{ slotProps.data.instructions }}
           </template>
         </Column>
-        <Column field="name" header="Cusomter "></Column>
-        <Column field="created_at" header="Phone">
+        <Column field="total_price" header="Total Price">
           <template #body="slotProps">
-            {{ formatDate(slotProps.data.created_at) }}
+            {{ slotProps.data.total_price }} ៛
+          </template>
+        </Column>
+        <Column field="user" header="Cusomter ">
+          <template #body="slotProps">
+            {{ slotProps.data.user[0].username }}
+          </template>
+        </Column>
+        <Column field="user" header="Cusomter ">
+          <template #body="slotProps">
+            {{ slotProps.data.user[0].phoneNumber }}
           </template>
         </Column>
         <Column field="created_at" header="Location">
           <template #body="slotProps">
-            {{ formatDate(slotProps.data.created_at) }}
+            {{ slotProps.data.location }}
           </template>
         </Column>
         <Column field="status" header="Status" style="width: 20%">
@@ -126,7 +131,7 @@
             animationDuration=".5s"
             aria-label="Custom ProgressSpinner"
           />
-          <p class="mt-2">Categories Loading...</p>
+          <p class="mt-2">Orders Loading...</p>
         </div>
       </div>
     </div>
@@ -147,7 +152,6 @@
       />
     </Dialog>
     <Toast />
-    <!-- {{ marts }} , {{ items }} -->
   </div>
 </template>
 

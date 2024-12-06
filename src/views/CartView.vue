@@ -352,6 +352,7 @@ export default {
             location: location_selected.value,
             paymentMethod: paymentMethod.value,
             created_at: timestamp(),
+            total_price: totalPrice.value,
           };
 
           console.log("Order data to save:", orderData);

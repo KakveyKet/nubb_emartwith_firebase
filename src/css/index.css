@@ -59,7 +59,7 @@ body {
     xl:mx-0 lg:mx-0 md:mx-auto mx-auto;
   }
   .cart_added {
-    @apply xl:w-[400px] lg:w-[400px] md:w-full w-full px-2 py-2 flex rounded-md shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)];
+    @apply xl:w-[400px] lg:w-[400px] md:w-full w-full px-4 py-3 flex rounded-md shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)];
   }
   .summary {
     @apply xl:w-[400px] lg:w-[400px] md:w-full w-full bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] p-5 rounded-lg;

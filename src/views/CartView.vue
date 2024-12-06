@@ -21,14 +21,25 @@
                 <p>{{ branchId }}</p>
               </div>
 
-              <div v-for="cart in item" class="cart_added">
+              <div
+                @click="handleRemoveCart(cart.id)"
+                v-for="cart in item"
+                class="cart_added relative"
+              >
+                <div
+                  class="absolute size-3 rounded-full flex items-center justify-center right-2 top-2"
+                >
+                  <i
+                    class="pi pi-times hover:cursor-pointer hover:text-red-500"
+                  ></i>
+                </div>
                 <div
                   class="flex items-center w-full justify-between gap-4 animate-fade-up animate-duration-300"
                 >
                   <div class="size-20 rounded-md overflow-hidden">
                     <img class="object-cover" :src="cart.images[0]" alt="" />
                   </div>
-                  <div>
+                  <div class="mr-4">
                     <p
                       class="font-semibold text-black xl:text-16px lg:text-16px md:text-16px text-13px"
                     >
@@ -41,7 +52,7 @@
                       <span>{{ cart.price }} ៛</span>
                     </div>
                   </div>
-                  <div>
+                  <div class="mr-8">
                     <div class="border flex items-center rounded-md">
                       <button
                         class="size-8 rounded flex items-center justify-center bg-blue-500"
@@ -208,7 +219,7 @@ export default {
   setup() {
     const paymentMethod = ref("bank"); // Default selected value
     const auth = getAuth();
-    const items = ref([]);
+    const users = ref([]);
     const currentUser = ref(null);
     const instructions = ref(null);
     const locations = ref(null);
@@ -305,30 +316,58 @@ export default {
 
       return grouped;
     });
-    const { addDocs, updateDocs } = useCollection("products");
+    const groupedByBranchID = computed(() => {
+      const grouped = {};
+
+      // Create a mapping of branch IDs to their corresponding names or other data
+      const branchMap = Object.fromEntries(
+        markets.value.map((market) => [market.id, market])
+      );
+
+      cartAdded.value.forEach((item) => {
+        // Use the branch ID from the branchMap or default to "Unknown Branch"
+        const branchId = branchMap[item.branch_id]?.id || "Unknown Branch";
+        if (!grouped[branchId]) {
+          grouped[branchId] = [];
+        }
+        grouped[branchId].push(item);
+      });
+
+      return grouped;
+    });
+
+    const { addDocs, removeDoc } = useCollection("carts");
+    const { addDocs: addOrder } = useCollection("orders");
     const handleCheckout = async () => {
-      const productData = {
-        user: items.value,
-        items: cartAdded.value,
-        status: "pending",
-        instructions: instructions.value,
-        location: location_selected.value,
-        paymentMethod: paymentMethod.value,
-        // branch_id: marts.value[0].id,
-        created_at: timestamp(),
-      };
+      try {
+        for (const [branchId, items] of Object.entries(
+          groupedByBranchID.value
+        )) {
+          const orderData = {
+            branch_id: branchId,
+            user: users.value,
+            status: "pending",
+            items: cartAdded.value,
+            instructions: instructions.value,
+            location: location_selected.value,
+            paymentMethod: paymentMethod.value,
+            created_at: timestamp(),
+          };
 
-      console.log("Product data to save:", productData);
+          console.log("Order data to save:", orderData);
 
-      // try {
-      //   await addDocs(productData);
-      //   console.log("Product added successfully:", productData);
-      // } catch (error) {
-      //   alert("There was an issue saving the product. Please try again.");
-      //   isLoading.value = false;
-      // }
+          await addOrder(orderData); // Example database save function
+        }
+        console.log("All orders added successfully");
+      } catch (error) {
+        console.error("Error saving orders:", error);
+      }
     };
 
+    const handleRemoveCart = async (id) => {
+      await removeDoc(id);
+      console.log("id", id);
+    };
     const fetchUser = async (field, value) => {
       try {
         const conditions = [where(field, "==", value)];
@@ -336,8 +375,8 @@ export default {
           "users",
           conditions,
           (data) => {
-            items.value = data;
-            console.log("items", items.value);
+            users.value = data;
+            console.log("items", users.value);
           },
           true
         );
@@ -369,6 +408,8 @@ export default {
       groupedByBranch,
       location,
       handleCheckout,
+      handleRemoveCart,
+      groupedByBranchID,
     };
   },
 };

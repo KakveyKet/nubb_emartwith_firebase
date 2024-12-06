@@ -36,8 +36,8 @@
     </div>
     <div class="overflow-x-auto">
       <DataTable
-        v-if="items.length > 0"
-        :value="items"
+        v-if="orders.length > 0"
+        :value="orders"
         paginator
         :rows="50"
         :rowsPerPageOptions="[50, 100, 200, 500]"
@@ -74,6 +74,11 @@
             />
           </template>
         </Column>
+        <Column field="instructions" header="Instructions">
+          <template #body="slotProps">
+            {{ slotProps.data.instructions }}
+          </template>
+        </Column>
         <Column field="name" header="Cusomter "></Column>
         <Column field="created_at" header="Phone">
           <template #body="slotProps">
@@ -85,7 +90,15 @@
             {{ formatDate(slotProps.data.created_at) }}
           </template>
         </Column>
-
+        <Column field="status" header="Status" style="width: 20%">
+          <template #body="slotProps">
+            <div class="flex gap-2">
+              <span class="badge" :class="`badge-${slotProps.data.status}`">
+                {{ slotProps.data.status }}
+              </span>
+            </div>
+          </template>
+        </Column>
         <Column field="action" header="Action" style="width: 20%">
           <template #body="slotProps">
             <div class="flex gap-2">
@@ -242,7 +255,18 @@ export default {
         console.error("Error fetching data: Marts data is empty.");
       }
     };
-
+    const orders = ref([]);
+    const fetchOrders = async (field, value) => {
+      if (marts.value.length > 0) {
+        const conditions = [where(field, "==", value)];
+        await getCollectionQuery("orders", conditions, (data) => {
+          orders.value = data;
+          console.log("data orders", orders.value);
+        });
+      } else {
+        console.error("Error fetching data: Marts data is empty.");
+      }
+    };
     watch(searchTerm, () => {
       fetchSubCategories("branch_id", marts.value[0].id);
     });
@@ -270,7 +294,7 @@ export default {
 
       // Fetch marts first and wait for it to complete
       await fetchMarts("ownerId", currentUser.value.uid);
-
+      await fetchOrders("branch_id", marts.value[0].id);
       // Only fetch subcategories if marts were successfully fetched and marts.value is not empty
       if (marts.value.length > 0) {
         await fetchSubCategories("branch_id", marts.value[0].id);
@@ -292,6 +316,7 @@ export default {
       dataToEdit,
       handleEdit,
       showToast,
+      orders,
     };
   },
 };

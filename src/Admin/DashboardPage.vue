@@ -379,7 +379,10 @@
             />
           </svg>
         </button>
-        <div class="flex marts-center gap-3 mr-6">
+        <div
+          @click="router.push({ path: '/todayorder' })"
+          class="flex marts-center gap-3 mr-6"
+        >
           <div class="flex marts-center gap-2 border-r border-primary-4 px-2">
             <div class="gap-2 relative flex right-1">
               <svg
@@ -438,6 +441,7 @@ import { where } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
+import router from "@/router";
 
 export default {
   setup() {
@@ -488,6 +492,7 @@ export default {
       toggleSidebar,
       logout,
       marts,
+      router,
     };
   },
 };

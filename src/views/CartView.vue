@@ -355,7 +355,10 @@ export default {
 
           console.log("Order data to save:", orderData);
 
-          await addOrder(orderData); // Example database save function
+          await addOrder(orderData);
+          if (addDocs) {
+            await removeDoc(cartAdded.value[0].id);
+          }
         }
         console.log("All orders added successfully");
       } catch (error) {

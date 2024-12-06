@@ -201,6 +201,8 @@ export default {
     const auth = getAuth(); // Get the Firebase auth instance
     const items = ref([]);
     const marts = ref([]);
+    const orders = ref([]);
+    let unsubscribeOrders = null;
     const fetchMarts = async (field, value) => {
       if (currentUser?.value) {
         const conditions = [where(field, "==", value)]; // Dynamic condition based on the field and value provided
@@ -259,14 +261,20 @@ export default {
         console.error("Error fetching data: Marts data is empty.");
       }
     };
-    const orders = ref([]);
     const fetchOrders = async (field, value) => {
       if (marts.value.length > 0) {
         const conditions = [where(field, "==", value)];
-        await getCollectionQuery("orders", conditions, (data) => {
-          orders.value = data;
-          console.log("data orders", orders.value);
-        });
+        unsubscribeOrders = await getCollectionQuery(
+          "orders",
+          conditions,
+          (data) => {
+            orders.value = data;
+            console.log("data orders", orders.value);
+          },
+          true,
+          "created_at",
+          searchTerm.value
+        );
       } else {
         console.error("Error fetching data: Marts data is empty.");
       }
@@ -295,11 +303,8 @@ export default {
 
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
-
-      // Fetch marts first and wait for it to complete
       await fetchMarts("ownerId", currentUser.value.uid);
       await fetchOrders("branch_id", marts.value[0].id);
-      // Only fetch subcategories if marts were successfully fetched and marts.value is not empty
       if (marts.value.length > 0) {
         await fetchSubCategories("branch_id", marts.value[0].id);
       } else {

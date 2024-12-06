@@ -1,4 +1,13 @@
-import { collection, onSnapshot, query, getDocs, where, orderBy, startAt, endAt } from "firebase/firestore";
+import {
+    collection,
+    onSnapshot,
+    query,
+    getDocs,
+    where,
+    orderBy,
+    startAt,
+    endAt,
+} from "firebase/firestore";
 import { projectFirestore } from "../config/config";
 
 export const getCollectionQuery = async (
@@ -11,14 +20,14 @@ export const getCollectionQuery = async (
 ) => {
     const collectionRef = collection(projectFirestore, collectionName);
 
-    // Apply the where clauses dynamically if provided
+    // Validate and apply where clauses
     let queryRef = collectionRef;
-    if (whereDoc && whereDoc.length > 0) {
+    if (Array.isArray(whereDoc) && whereDoc.length > 0) {
         queryRef = query(collectionRef, ...whereDoc);
     }
 
-    // Apply search if searchField and searchTerm are provided
-    if (searchField && searchTerm) {
+    // Apply search functionality if both field and term are provided
+    if (searchField && typeof searchTerm === "string" && searchTerm.trim() !== "") {
         queryRef = query(
             queryRef,
             orderBy(searchField),
@@ -29,25 +38,32 @@ export const getCollectionQuery = async (
 
     try {
         if (useSnapshot) {
-            const unsubscribe = onSnapshot(queryRef, (snapshot) => {
-                const data = [];
-                snapshot.forEach((doc) => {
-                    data.push({ id: doc.id, ...doc.data() });
-                });
-                if (callback) {
-                    callback(data);
+            // Real-time updates
+            const unsubscribe = onSnapshot(
+                queryRef,
+                (snapshot) => {
+                    const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+                    try {
+                        if (callback) callback(data);
+                    } catch (callbackError) {
+                        console.error("Error in callback execution:", callbackError);
+                    }
+                },
+                (error) => {
+                    console.error("Real-time snapshot error:", error);
                 }
-            });
+            );
 
-            return unsubscribe;
+            return unsubscribe; // Caller should handle unsubscribe
         } else {
+            // One-time fetch
             const snapshot = await getDocs(queryRef);
-            const data = [];
-            snapshot.forEach((doc) => {
-                data.push({ id: doc.id, ...doc.data() });
-            });
-            if (callback) {
-                callback(data);
+            const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            try {
+                if (callback) callback(data);
+            } catch (callbackError) {
+                console.error("Error in callback execution:", callbackError);
             }
         }
     } catch (error) {

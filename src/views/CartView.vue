@@ -21,12 +21,9 @@
                 <p>{{ branchId }}</p>
               </div>
 
-              <div
-                @click="handleRemoveCart(cart.id)"
-                v-for="cart in item"
-                class="cart_added relative"
-              >
+              <div v-for="cart in item" class="cart_added relative">
                 <div
+                  @click="handleRemoveCart(cart.id)"
                   class="absolute size-3 rounded-full flex items-center justify-center right-2 top-2"
                 >
                   <i
@@ -353,6 +350,7 @@ export default {
             paymentMethod: paymentMethod.value,
             created_at: timestamp(),
             total_price: totalPrice.value,
+            userId: users.value[0].id,
           };
 
           console.log("Order data to save:", orderData);

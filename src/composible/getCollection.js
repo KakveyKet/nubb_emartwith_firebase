@@ -20,8 +20,10 @@ export const getCollectionQuery = async (
 ) => {
     const collectionRef = collection(projectFirestore, collectionName);
 
-    // Validate and apply where clauses
+    // Initialize the query reference
     let queryRef = collectionRef;
+
+    // Apply where clauses if provided
     if (Array.isArray(whereDoc) && whereDoc.length > 0) {
         queryRef = query(collectionRef, ...whereDoc);
     }
@@ -38,7 +40,7 @@ export const getCollectionQuery = async (
 
     try {
         if (useSnapshot) {
-            // Real-time updates
+            // Real-time updates using onSnapshot
             const unsubscribe = onSnapshot(
                 queryRef,
                 (snapshot) => {

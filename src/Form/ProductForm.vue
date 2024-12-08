@@ -91,7 +91,7 @@
           isValidatePrice
         }}</span>
       </div>
-      <div class="flex flex-col space-y-2">
+      <!-- <div class="flex flex-col space-y-2">
         <label for="stock">Stock: </label>
         <InputNumber
           v-model="stock"
@@ -102,7 +102,7 @@
         <span v-if="isValidateStock" class="text-red-500">{{
           isValidateStock
         }}</span>
-      </div>
+      </div> -->
     </div>
 
     <!-- Submit and Cancel Buttons -->
@@ -284,7 +284,6 @@ export default {
         status: true,
         category: selectCategory.value,
         price: price.value,
-        stock: stock.value,
         description: description.value,
         branch_id: marts.value[0].id,
         created_at: timestamp(),
@@ -341,7 +340,7 @@ export default {
         productName.value = props.dataToEdit.name;
         description.value = props.dataToEdit.description;
         price.value = props.dataToEdit.price;
-        stock.value = props.dataToEdit.stock;
+        // stock.value = props.dataToEdit.stock;
         selectCategory.value = props.dataToEdit.category;
         imagePreviews.value = [...props.dataToEdit.images]; // Set initial previews to existing images
       }

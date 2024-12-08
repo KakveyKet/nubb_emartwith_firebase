@@ -229,7 +229,7 @@
               tab !== 'tracking_order',
           }"
         >
-          Track Order
+          Tracking Order
         </div>
       </div>
     </div>
@@ -277,13 +277,11 @@
             :key="data"
             class="xl:mx-0 lg:mx-0 md:mx-0 mx-auto xl:h-[270px] lg:h-[250px] md:h-[220px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[150px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] animate-fade-up animate-duration-300"
           >
-            <OverlayBadge :value="data.stock" position="bottom-right">
-              <div
-                class="w-full xl:h-[150px] lg:h-[150px] md:h-[100px] h-[100px] overflow-hidden rounded-md"
-              >
-                <img :src="data.images[0]" class="object-cover" />
-              </div>
-            </OverlayBadge>
+            <div
+              class="w-full xl:h-[150px] lg:h-[150px] md:h-[100px] h-[100px] overflow-hidden rounded-md"
+            >
+              <img :src="data.images[0]" class="object-cover" />
+            </div>
             <div>
               <h2 class="font-semibold text-black text-14px py-2">
                 {{ data.name }}
@@ -352,6 +350,9 @@
         <CartView />
       </div>
     </div>
+    <div v-if="tab === 'tracking_order'" class="w-full">
+      <TrackingOrder :currentUser="currentUser" />
+    </div>
     <!-- footer -->
     <Dialog
       v-model:visible="visible"
@@ -378,6 +379,7 @@
 </template>
 
 <script>
+import TrackingOrder from "@/views/TrackingOrder.vue";
 import Sidebar from "@/mobile/Sidebar.vue";
 import FooterVue from "@/components/FooterPage.vue";
 import CategoryVue from "@/components/CategoryPage.vue";
@@ -408,6 +410,7 @@ export default {
     Toast,
     CartView,
     Sidebar,
+    TrackingOrder,
   },
   setup() {
     const toast = useToast();
@@ -569,7 +572,7 @@ export default {
           fetchCartAdded("userId", currentUser.value?.uid),
             console.log("result", result);
         } else {
-          showToast("delete", "warning");
+          handleLogin();
         }
       } catch (error) {
         console.error("Error adding to cart:", error);

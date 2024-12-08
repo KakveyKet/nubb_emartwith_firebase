@@ -75,7 +75,7 @@
             {{ slotProps.data.instructions }}
           </template>
         </Column>
-        <Column field="total_price" header="Total Price">
+        <Column field="total_price" class="text-nowrap" header="Total Price">
           <template #body="slotProps">
             {{ slotProps.data.total_price }} ៛
           </template>
@@ -97,26 +97,48 @@
         </Column>
         <Column field="status" header="Status" style="width: 20%">
           <template #body="slotProps">
-            <div class="flex gap-2">
+            <!-- <div class="flex gap-2">
               <span class="badge" :class="`badge-${slotProps.data.status}`">
                 {{ slotProps.data.status }}
               </span>
-            </div>
+            </div> -->
+            <Button
+              v-if="slotProps.data.status === 'pending'"
+              label="Pending"
+              icon="pi pi-clock"
+              class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
+              style="
+                background-color: #fec53d;
+                color: #000;
+                width: 100px !important;
+              "
+            />
+            <Button
+              v-else-if="slotProps.data.status === 'accepted'"
+              label="Accepted"
+              icon="pi pi-check"
+              class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
+              style="
+                background-color: #88bf68;
+                color: #000;
+                width: 100px !important;
+              "
+            />
           </template>
         </Column>
         <Column field="action" header="Action" style="width: 20%">
           <template #body="slotProps">
             <div class="flex gap-2">
               <Button
-                icon="pi pi-pencil"
-                text
+                icon="pi pi-check"
+                class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
                 @click="handleEdit(slotProps.data)"
               />
               <Button
                 @click="handleDeleteDialog(slotProps.data.id, slotProps.data)"
-                icon="pi pi-trash"
+                class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
+                icon="pi pi-times"
                 severity="danger"
-                text
               />
             </div>
           </template>
@@ -138,11 +160,11 @@
 
     <Dialog
       :modal="true"
-      :style="{ width: '50vw', position: 'absolute', top: '10vh' }"
+      :style="{ position: 'absolute', top: '10vh' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
       v-model:visible="visible"
       modal
-      header="Add New Category"
+      header="Order Confimation"
     >
       <component
         :is="currentComponent"
@@ -158,7 +180,7 @@
 <script>
 import { ref, onMounted, watch } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
-import SubCategoryForm from "@/Form/SubCategoryForm.vue";
+import OrderConfimation from "@/Form/OrderConfimation.vue";
 import { getAuth } from "firebase/auth";
 import { projectAuth } from "@/config/config";
 import { where, Timestamp } from "firebase/firestore";
@@ -166,7 +188,7 @@ import { formatDate } from "@/helper/formatCurrecy";
 import { useToast } from "primevue/usetoast";
 export default {
   components: {
-    SubCategoryForm,
+    OrderConfimation,
   },
   setup() {
     const toast = useToast();
@@ -219,7 +241,7 @@ export default {
     const currentComponent = ref(null);
     const handleAdd = () => {
       visible.value = true;
-      currentComponent.value = "SubCategoryForm";
+      currentComponent.value = "OrderConfimation";
     };
     const handleClose = () => {
       visible.value = false;
@@ -289,7 +311,7 @@ export default {
     const handleEdit = (data) => {
       dataToEdit.value = data;
       visible.value = true;
-      currentComponent.value = "SubCategoryForm";
+      currentComponent.value = "OrderConfimation";
     };
     watch(
       marts,

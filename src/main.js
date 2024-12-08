@@ -36,6 +36,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import OverlayBadge from 'primevue/overlaybadge';
 import ToggleSwitch from 'primevue/toggleswitch';
 import RadioButton from 'primevue/radiobutton';
+import Timeline from 'primevue/timeline';
 
 // Create Vue app instance
 const app = createApp(App);
@@ -79,6 +80,7 @@ app.component("ProgressSpinner", ProgressSpinner)
 app.component("OverlayBadge", OverlayBadge)
 app.component("ToggleSwitch", ToggleSwitch)
 app.component("RadioButton", RadioButton)
+app.component("Timeline", Timeline)
 // Mount the app
 app.use(ToastService);
 

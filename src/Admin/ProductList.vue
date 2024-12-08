@@ -79,7 +79,7 @@
               />
             </template>
           </Column>
-          <Column field="stock" header="Qty" style="width: 20%">
+          <!-- <Column field="stock" header="Qty" style="width: 20%">
             <template #body="slotProps">
               <h2 v-if="slotProps.data.stock === undefined">
                 <Skeleton shape="rectangle" size="2rem" />
@@ -88,7 +88,7 @@
                 {{ slotProps.data.stock }}
               </h2>
             </template>
-          </Column>
+          </Column> -->
 
           <Column field="price" header="Price" style="width: 20%">
             <template #body="slotProps">

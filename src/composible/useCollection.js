@@ -6,8 +6,8 @@ import {
     doc,
     updateDoc,
     setDoc,
+    where,
 } from "firebase/firestore";
-
 
 const useCollection = (collectionName) => {
     let collectionRef = collection(projectFirestore, collectionName); //items
@@ -54,9 +54,12 @@ const useCollection = (collectionName) => {
             return null;
         }
     };
+    const DeleteByUser = async (userId) => {
+        const conditions = [where("userId", "==", userId)];
+        await deleteDoc(conditions);
+    };
 
-
-    return { addDocs, setDocs, removeDoc, updateDocs, addUser };
+    return { addDocs, setDocs, removeDoc, updateDocs, addUser, DeleteByUser };
 };
 
 export default useCollection;

@@ -209,6 +209,8 @@ import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { where } from "@firebase/firestore";
 import { timestamp } from "@/config/config";
 import EmptyCart from "@/Form/EmptyCart.vue";
+import { writeBatch, getDocs, query, collection } from "firebase/firestore";
+import { projectFirestore } from "@/config/config";
 export default {
   components: {
     EmptyCart,
@@ -335,6 +337,26 @@ export default {
 
     const { addDocs, removeDoc } = useCollection("carts");
     const { addDocs: addOrder } = useCollection("orders");
+    const clearCartForUser = async (userId) => {
+      try {
+        const querySnapshot = await getDocs(
+          query(
+            collection(projectFirestore, "carts"),
+            where("userId", "==", userId)
+          )
+        );
+        const batch = writeBatch(projectFirestore);
+
+        querySnapshot.forEach((doc) => {
+          batch.delete(doc.ref); // Add each document to the batch for deletion
+        });
+
+        await batch.commit(); // Execute all deletes in one batch
+        console.log(`Cart cleared for user: ${userId}`);
+      } catch (error) {
+        console.error("Error clearing cart:", error);
+      }
+    };
     const handleCheckout = async () => {
       try {
         for (const [branchId, items] of Object.entries(
@@ -351,13 +373,14 @@ export default {
             created_at: timestamp(),
             total_price: totalPrice.value,
             userId: users.value[0].id,
+            pending_time: 0,
           };
 
           console.log("Order data to save:", orderData);
 
           await addOrder(orderData);
           if (addDocs) {
-            await removeDoc(cartAdded.value[0].id);
+            await clearCartForUser(users.value[0].id);
           }
         }
         console.log("All orders added successfully");

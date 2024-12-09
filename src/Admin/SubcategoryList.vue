@@ -125,9 +125,9 @@
 </template>
 
 <script>
+import SubCategoryForm from "@/Form/SubCategoryForm.vue";
 import { ref, onMounted, watch } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
-import SubCategoryForm from "@/Form/SubCategoryForm.vue";
 import { getAuth } from "firebase/auth";
 import { projectAuth } from "@/config/config";
 import { where, Timestamp } from "firebase/firestore";
@@ -254,7 +254,6 @@ export default {
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
 
-      // Fetch marts first and wait for it to complete
       await fetchMarts("ownerId", currentUser.value.uid);
 
       // Only fetch subcategories if marts were successfully fetched and marts.value is not empty

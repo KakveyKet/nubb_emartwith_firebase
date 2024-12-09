@@ -226,7 +226,7 @@ export default {
     const isArea = ref("yourarea");
     const location = ref([
       {
-        name: "មាត់ទឹក",
+        name: "ស្រះទឹក",
       },
       {
         name: "បណ្ណាល័យ",
@@ -234,14 +234,12 @@ export default {
       {
         name: "តារាងបាល់",
       },
-
       {
         name: "មុខសាលាផ្លូវទី1",
       },
       {
         name: "មុខសាលាផ្លូវទី2",
       },
-
       {
         name: "កន្លែងចុះឈ្មោះសិស្ស",
       },
@@ -374,6 +372,7 @@ export default {
             total_price: totalPrice.value,
             userId: users.value[0].id,
             pending_time: 0,
+            reject_reason: "",
           };
 
           console.log("Order data to save:", orderData);

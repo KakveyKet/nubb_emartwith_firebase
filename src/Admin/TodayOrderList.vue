@@ -2,20 +2,19 @@
   <div class="bg-white p-5 rounded-[10px]">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-xl font-semibold">To Day Order</h1>
-
       <div class="flex space-x-4">
         <InputText
           v-model="searchTerm"
           clearButton="true"
           placeholder="Search by name"
         />
-        <DatePicker
+        <!-- <DatePicker
           v-model="currentDate"
           selectionMode="range"
           :manualInput="false"
           placeholder="Filter by date"
           showButtonBar
-        />
+        /> -->
       </div>
       <!-- <button @click="handleAdd" class="add_new_button">
         <div class="flex items-center gap-2">
@@ -90,7 +89,7 @@
             {{ slotProps.data.user[0].phoneNumber }}
           </template>
         </Column>
-        <Column field="created_at" header="Location">
+        <Column class="text-nowrap" field="created_at" header="Location">
           <template #body="slotProps">
             {{ slotProps.data.location }}
           </template>
@@ -113,6 +112,7 @@
                 width: 100px !important;
               "
             />
+
             <Button
               v-else-if="slotProps.data.status === 'accepted'"
               label="Accepted"
@@ -120,6 +120,17 @@
               class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
               style="
                 background-color: #88bf68;
+                color: #000;
+                width: 100px !important;
+              "
+            />
+            <Button
+              v-else-if="slotProps.data.status === 'rejected'"
+              label="Rejected"
+              icon="pi pi-times"
+              class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
+              style="
+                background-color: #f44336;
                 color: #000;
                 width: 100px !important;
               "
@@ -135,7 +146,7 @@
                 @click="handleEdit(slotProps.data)"
               />
               <Button
-                @click="handleDeleteDialog(slotProps.data.id, slotProps.data)"
+                @click="handleRejectOrders(slotProps.data)"
                 class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
                 icon="pi pi-times"
                 severity="danger"
@@ -167,7 +178,7 @@
 
     <Dialog
       :modal="true"
-      :style="{ position: 'absolute', top: '10vh' }"
+      :style="{ width: '30vw', position: 'absolute', top: '10vh' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
       v-model:visible="visible"
       modal
@@ -180,6 +191,21 @@
         @close="handleClose"
       />
     </Dialog>
+    <Dialog
+      :modal="true"
+      :style="{ width: '30vw', position: 'absolute', top: '10vh' }"
+      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+      v-model:visible="isReject"
+      modal
+      header="Are You Sure ?"
+    >
+      <HandleRejectOrder
+        :dataToEdit="dataToEdit"
+        @close="isReject = false"
+        @toast="showToast"
+      />
+    </Dialog>
+
     <Toast />
   </div>
 </template>
@@ -193,9 +219,11 @@ import { projectAuth } from "@/config/config";
 import { where, Timestamp } from "firebase/firestore";
 import { formatDate } from "@/helper/formatCurrecy";
 import { useToast } from "primevue/usetoast";
+import HandleRejectOrder from "@/Form/HandleRejectOrder.vue";
 export default {
   components: {
     OrderConfimation,
+    HandleRejectOrder,
   },
   setup() {
     const toast = useToast();
@@ -225,17 +253,24 @@ export default {
       });
     };
     const dates = ref();
+    const dataToEdit = ref(null);
+
     const visible = ref(false);
     const currentUser = ref(null);
-    const auth = getAuth(); // Get the Firebase auth instance
+    const auth = getAuth();
     const items = ref([]);
     const marts = ref([]);
     const orders = ref([]);
+    const isReject = ref(false);
+    const handleRejectOrders = (data) => {
+      isReject.value = true;
+      dataToEdit.value = data;
+      console.log("data", data);
+    };
     let unsubscribeOrders = null;
     const fetchMarts = async (field, value) => {
       if (currentUser?.value) {
-        const conditions = [where(field, "==", value)]; // Dynamic condition based on the field and value provided
-
+        const conditions = [where(field, "==", value)];
         await getCollectionQuery("marts", conditions, (data) => {
           marts.value = data;
           console.log("data mart", marts.value);
@@ -314,7 +349,6 @@ export default {
     watch(currentDate, () => {
       fetchSubCategories("branch_id", marts.value[0].id);
     });
-    const dataToEdit = ref(null);
     const handleEdit = (data) => {
       dataToEdit.value = data;
       visible.value = true;
@@ -355,6 +389,8 @@ export default {
       handleEdit,
       showToast,
       orders,
+      handleRejectOrders,
+      isReject,
     };
   },
 };

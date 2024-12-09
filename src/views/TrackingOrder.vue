@@ -8,7 +8,7 @@
           <img src="../assets/nubb.png" alt="" />
         </div>
         <h1 class="text-17px font-semibold text-center">Tracking Order</h1>
-        <div class="w-full mx-auto">
+        <div class="w-full flex flex-col gap-3 mx-auto">
           <div v-for="order in orders" :key="order.id">
             <div class="w-full">
               <div class="flex items-center justify-between">
@@ -68,9 +68,15 @@
               </h2>
               <h2
                 class="text-13px p-2 text-green-500 rounded-md animate-fade-up animate-once animate-duration-[600ms]"
-                v-else
+                v-if="order.status === 'accepted'"
               >
                 Accepted
+              </h2>
+              <h2
+                class="text-13px p-2 text-red-500 rounded-md animate-fade-up animate-once animate-duration-[600ms]"
+                v-else-if="order.status === 'rejected'"
+              >
+                Rejected
               </h2>
             </div>
           </div>

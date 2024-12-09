@@ -21,8 +21,9 @@ import MartList from '@/SuperAdminDashboard/MartList.vue';
 import UserList from '@/SuperAdminDashboard/UserList.vue';
 import MainCategoryList from '@/SuperAdminDashboard/MainCategoryList.vue';
 import DashboarManagement from '@/SuperAdminDashboard/DashboarManagement.vue';
+import UserHistoy from '@/views/UserHistoy.vue';
+
 import AdminProfile from '@/SuperAdminDashboard/AdminProfile.vue';
-import CartView from '@/views/CartView.vue';
 setPersistence(projectAuth, browserLocalPersistence).catch((error) => {
   console.error("Error setting persistence:", error);
 });
@@ -81,7 +82,12 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+
+  }, {
+    path: '/userhistory',
+    name: 'userhistory',
+    component: UserHistoy,
   },
   {
     path: '/userregister',

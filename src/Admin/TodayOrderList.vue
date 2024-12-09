@@ -128,7 +128,7 @@
         </Column>
         <Column field="action" header="Action" style="width: 20%">
           <template #body="slotProps">
-            <div class="flex gap-2">
+            <div v-if="slotProps.data.status === 'pending'" class="flex gap-2">
               <Button
                 icon="pi pi-check"
                 class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
@@ -139,6 +139,13 @@
                 class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
                 icon="pi pi-times"
                 severity="danger"
+              />
+            </div>
+            <div v-else class="flex gap-2">
+              <Button
+                icon="pi pi-info-circle
+"
+                class="!border-none !text-white !rounded-[10px] !text-13px !px-1.5 !py-1.5"
               />
             </div>
           </template>

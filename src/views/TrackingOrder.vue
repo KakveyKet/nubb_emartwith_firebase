@@ -24,31 +24,31 @@
                 <p class="text-13px text-gray-500">Order ID</p>
                 <p class="text-13px text-gray-500">{{ order.id }}</p>
               </div>
-              <div class="w-full border-b border-t py-2 mt-4">
-                <div class="flex items-center justify-between">
+              <div class="w-full border-b border-t py-2 mt-4 space-y-2">
+                <div
+                  v-for="order_data in order.items"
+                  class="flex items-center justify-between"
+                >
                   <!-- img -->
                   <div class="w-[60px] h-[70px] rounded-md overflow-hidden">
-                    <img
-                      :src="order.items[0].images[0]"
-                      class="w-full h-full"
-                    />
+                    <img :src="order_data.images[0]" class="w-full h-full" />
                   </div>
                   <!-- name -->
                   <div class="w-fit">
                     <p class="text-13px text-black" v-if="order.items">
-                      {{ order.items[0].name }}
+                      {{ order_data.name }}
                     </p>
                   </div>
                   <!-- qty -->
                   <div class="w-fit">
                     <p class="text-13px text-black" v-if="order.items">
-                      {{ order.items[0].quantity }}
+                      {{ order_data.quantity }}
                     </p>
                   </div>
                   <!-- price -->
                   <div class="w-fit">
                     <p class="text-13px text-black" v-if="order.items">
-                      {{ order.items[0].price }} ៛
+                      {{ order_data.price }} ៛
                     </p>
                   </div>
                 </div>
@@ -67,8 +67,8 @@
                 <span class=""> ... </span>
               </h2>
               <h2
-                class="text-13px p-2 text-primary-5 rounded-md animate-fade-up animate-once animate-duration-[600ms]"
-                v-else-if="order.status === 'accepted'"
+                class="text-13px p-2 text-green-500 rounded-md animate-fade-up animate-once animate-duration-[600ms]"
+                v-else
               >
                 Accepted
               </h2>

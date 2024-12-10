@@ -1,6 +1,6 @@
 <template>
-  <div class="h-fit py-6">
-    <div class="mt-6">
+  <div class="h-fit py-2">
+    <div class="mt-3">
       <div class="text-black text-14px font-bold flex items-center gap-3">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -20,12 +20,13 @@
       </div>
     </div>
     <div
-      class="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 grid-cols-1 gap-6 mt-8"
+      class="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 grid-cols-1 gap-6 mt-4 xl:w-fit lg:w-fit md:w-fit w-full"
     >
       <div
         v-for="market in markets"
         :key="market.id"
-        class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 flex flex-col text-gray-800 animate-fade-up animate-duration-300"
+        @click.stop="router.push(`/shopdetail/${market.id}`)"
+        class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col text-gray-800 animate-fade-up animate-duration-300 border"
       >
         <!-- Cover Image Section -->
         <div class="relative w-full h-48 rounded-lg overflow-hidden">
@@ -95,7 +96,7 @@
           </div>
 
           <button
-            @click="router.push(`/shopdetail/${market.id}`)"
+            @click.stop="router.push(`/shopdetail/${market.id}`)"
             class="xl:block lg:block md:block block bg-primary-5 text-white xl:text-center lg:text-center md:text-center text-start py-1 px-4 rounded-full shadow-lg hover:bg-primary-6 transition duration-300"
           >
             View More

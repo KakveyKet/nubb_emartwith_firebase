@@ -1,6 +1,6 @@
 <template>
   <div class="w-full p-5">
-    <div class="w-[80%] mx-auto">
+    <div class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
       <div>
         <div class="mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
           <!-- Cover Image -->
@@ -26,7 +26,6 @@
               </span>
             </div>
           </div>
-
           <!-- Shop Details -->
           <div class="p-6">
             <div class="flex items-center space-x-4 mb-4">
@@ -70,42 +69,112 @@
         </div>
       </div>
       <div>
-        <div class="w-full md:mx-auto mx-3">
+        <!-- sort by category -->
+        <div class="py-4">
+          <h2 class="text-20px font-semibold text-gray-800 mb-4 px-4">
+            Sort by category
+          </h2>
+          <div class="">
+            <div
+              class="flex overflow-x-auto pb-4 px-4 space-x-3 snap-x hide-scrollbar bg-none"
+            >
+              <button
+                v-for="category in category"
+                :key="category.id"
+                @click="selectCategory(category)"
+                class="flex-shrink-0 snap-start focus:outline-none transition-all duration-300 ease-in-out border"
+                :class="[
+                  selectedCategory === category.id
+                    ? 'bg-primary-6 text-white'
+                    : 'bg-white text-gray-700 hover:bg-primary-2 hover:text-primary-8',
+                  'px-4 py-2 rounded-full text-16px font-medium shadow-md hover:shadow-lg',
+                ]"
+              >
+                {{ category.name }}
+              </button>
+            </div>
+            <div
+              class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-primary-1 to-transparent pointer-events-none"
+            ></div>
+            <div
+              class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-primary-1 to-transparent pointer-events-none"
+            ></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="w-full md:mx-auto">
           <!-- cart container -->
           <div
-            class="mt-8 xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-12 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2 h-fit py-3"
+            class="mt-8 xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-4 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2 h-fit py-3"
           >
             <div
               v-for="product in product"
               :key="product.id"
-              class="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 animate-fade-up animate-duration-300"
-              style="width: 200px; height: 270px"
+              class="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 animate-fade-up animate-duration-300 group xl:h-fit lg:h-fit md:h-fit h-fit border"
             >
-              <div class="relative h-[150px] overflow-hidden">
+              <!-- Image Container -->
+              <div
+                class="relative xl:w-[200px] lg:w-[200px] md:w-[150px] w-[150px] xl:h-[180px] lg:h-[180px] md:h-[150px] h-[150px] overflow-hidden"
+              >
                 <img
                   :src="product.images[0]"
                   :alt="product.name"
-                  class="w-full h-full object-cover"
+                  class="w-full h-full object-cover transform transition-transform group-hover:scale-110"
                 />
                 <div
-                  class="absolute top-2 right-2 bg-primary-6 text-white text-13px font-semibold px-2 py-1 rounded-full"
-                >
-                  New
+                  class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                ></div>
+                <div class="absolute top-2 right-2">
+                  <span
+                    class="bg-primary-6 text-white text-13px font-semibold px-3 py-1 rounded-full"
+                  >
+                    {{ product.category.name }}
+                  </span>
+                </div>
+                <div class="absolute bottom-2 right-2">
+                  <span
+                    class="bg-white/90 text-primary-8 text-13px font-semibold px-2 py-1 rounded-md"
+                  >
+                    20-30 min
+                  </span>
                 </div>
               </div>
-              <div class="p-4 flex flex-col justify-between h-[120px]">
-                <h2 class="font-semibold text-16px text-gray-800 mb-2 truncate">
-                  {{ product.name }}
-                </h2>
-                <div class="flex items-center justify-between">
-                  <span class="text-17px font-bold text-primary-8">
-                    {{ product.price }} ៛
-                  </span>
+
+              <!-- Content Container -->
+              <div class="p-4 flex flex-col justify-between h-[140px]">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <h2
+                      class="font-semibold text-16px text-gray-800 truncate flex-1"
+                    >
+                      {{ product.name }}
+                    </h2>
+                    <div class="flex items-center ml-2">
+                      <i class="pi pi-star text-yellow-400"></i>
+                      <span class="text-13px text-gray-600 ml-1">4.5</span>
+                    </div>
+                  </div>
+                  <p class="text-13px text-gray-600 line-clamp-2">
+                    {{ product.description }}
+                  </p>
+                </div>
+
+                <!-- Price and Action -->
+                <div class="flex items-center justify-between mt-3">
+                  <div class="flex flex-col">
+                    <span class="text-17px font-bold text-primary-8">
+                      {{ product.price }} ៛
+                    </span>
+                    <!-- <span class="text-13px text-gray-500 line-through">
+                      {{ Math.round(product.price * 1.2) }} ៛
+                    </span> -->
+                  </div>
                   <button
                     @click="handleAddToCart(product)"
-                    class="bg-primary-5 hover:bg-primary-6 text-white rounded-full p-2 transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-7 focus:ring-opacity-50"
+                    class="bg-primary-5 hover:bg-primary-6 text-white rounded-lg flex items-center justify-center size-10 transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-7 focus:ring-opacity-50"
                   >
-                    <PlusIcon class="w-5 h-5" />
+                    <i class="pi pi-plus size-5"></i>
                   </button>
                 </div>
               </div>
@@ -113,7 +182,6 @@
           </div>
         </div>
       </div>
-      <div></div>
     </div>
   </div>
 </template>
@@ -236,4 +304,15 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+/* For modern browsers */
+.hide-scrollbar {
+  overflow: auto; /* Enables scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+</style>

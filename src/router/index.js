@@ -24,6 +24,7 @@ import DashboarManagement from '@/SuperAdminDashboard/DashboarManagement.vue';
 import UserHistoy from '@/views/UserHistoy.vue';
 
 import AdminProfile from '@/SuperAdminDashboard/AdminProfile.vue';
+import ShopDetail from '@/views/ShopDetail.vue';
 setPersistence(projectAuth, browserLocalPersistence).catch((error) => {
   console.error("Error setting persistence:", error);
 });
@@ -94,7 +95,11 @@ const routes = [
     name: 'userregister',
     component: UserRegister,
   },
-
+  {
+    path: '/shopdetail/:id',
+    name: 'shopdetail',
+    component: ShopDetail,
+  },
   {
     path: '/supperadmin',
     name: 'supperadmin',

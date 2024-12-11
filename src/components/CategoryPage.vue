@@ -1,12 +1,12 @@
 <template>
   <div
-    class="xl:w-[80%] lg:w-[80%] md:w-[90%] w-[90%] xl:mx-auto lg:mx-0 md:mx-auto mx-3"
+    class="xl:w-[100%] lg:w-[100%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0"
   >
     <div class="py-2">
-      <h2 class="font-bold text-black text-14px">Categories</h2>
+      <h2 class="font-bold text-black text-14px">Sort by category</h2>
     </div>
     <div
-      class="xl:flex lg:flex md:flex grid grid-cols-3 xl:gap-9 lg:gap-6 md:gap-3 gap-2"
+      class="xl:flex lg:flex md:flex grid grid-cols-4 xl:gap-9 lg:gap-6 md:gap-3 gap-2"
     >
       <div v-for="category in data" class="mt-6" :key="data">
         <div

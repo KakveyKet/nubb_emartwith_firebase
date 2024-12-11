@@ -115,7 +115,7 @@
             >
               <!-- Image Container -->
               <div
-                class="relative xl:w-[200px] lg:w-[200px] md:w-[150px] w-[150px] xl:h-[180px] lg:h-[180px] md:h-[150px] h-[150px] overflow-hidden"
+                class="relative xl:w-[200px] lg:w-[200px] md:w-[150px] w-full xl:h-[180px] lg:h-[180px] md:h-[150px] h-[150px] overflow-hidden"
               >
                 <img
                   :src="product.images[0]"
@@ -299,7 +299,13 @@ export default {
         currentUser.value = user;
       });
     });
-    return { product, cartAdded, handleAddToCart, category, shop };
+    return {
+      product,
+      cartAdded,
+      handleAddToCart,
+      category,
+      shop,
+    };
   },
 };
 </script>

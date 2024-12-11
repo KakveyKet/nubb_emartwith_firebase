@@ -1,5 +1,8 @@
 <template>
   <div class="h-fit py-2">
+    <div class="w-full">
+      <CategoryPage :data="mainCategory" />
+    </div>
     <div class="mt-3">
       <div class="text-black text-14px font-bold flex items-center gap-3">
         <svg
@@ -19,6 +22,7 @@
         <span>All Shop</span>
       </div>
     </div>
+
     <div
       class="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 grid-cols-1 gap-6 mt-4 xl:w-fit lg:w-fit md:w-fit w-full"
     >
@@ -107,20 +111,38 @@
   </div>
 </template>
 <script>
+import CategoryPage from "@/components/CategoryPage.vue";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { getCollectionQuery } from "@/composible/getCollection";
 export default {
   props: ["markets"],
+  components: {
+    CategoryPage,
+  },
   setup(props, { emit }) {
+    const mainCategory = ref([]);
+    const fetchMainCategory = async () => {
+      await getCollectionQuery(
+        "maincategory",
+        [],
+        (data) => {
+          mainCategory.value = data;
+        },
+        true
+      );
+    };
     const router = useRouter();
     console.log(props.markets);
-    onMounted(() => {
+    onMounted(async () => {
       if (props.markets) {
         console.log("markets", props.markets);
       }
+      await fetchMainCategory();
     });
     return {
       router,
+      mainCategory,
     };
   },
 };

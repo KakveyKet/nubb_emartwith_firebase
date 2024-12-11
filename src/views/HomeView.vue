@@ -179,7 +179,7 @@
       <div
         class="flex items-center justify-items-start h-[47px] xl:w-[80%] lg:w-[80%] md:w-[80%] mx-auto gap-3"
       >
-        <div
+        <!-- <div
           @click="handleTab('home')"
           :class="{
             'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
@@ -189,7 +189,7 @@
           }"
         >
           Home
-        </div>
+        </div> -->
         <div
           @click="handleTab('shop')"
           :class="{
@@ -206,18 +206,14 @@
           severity="danger"
           size="small"
           :value="cartAdded.length"
+          :class="{
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
+              tab === 'cart',
+            'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
+              tab !== 'cart',
+          }"
         >
-          <div
-            @click="handleTab('cart')"
-            :class="{
-              'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
-                tab === 'cart',
-              'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
-                tab !== 'cart',
-            }"
-          >
-            In Cart
-          </div>
+          <div @click="handleTab('cart')">In Cart</div>
         </OverlayBadge>
 
         <div
@@ -236,14 +232,14 @@
     <!-- category -->
 
     <!-- body -->
-    <div v-if="tab === 'home'" class="w-full">
-      <div class="w-full mt-8">
+    <!-- <div v-if="tab === 'home'" class="w-full"> -->
+    <!-- <div class="w-full mt-8">
         <CategoryVue :data="subCategory" />
       </div>
       <div
         class="xl:w-[80%] lg:w-[80%] md:w-[90%] w-[90%] xl:mx-auto lg:mx-0 md:mx-auto mx-3"
-      >
-        <div class="mt-6">
+      > -->
+    <!-- <div class="mt-6">
           <div class="text-black text-14px font-bold flex items-center gap-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -266,12 +262,12 @@
             </svg>
             <span>Popular</span>
           </div>
-        </div>
-        <!-- cart container -->
-        <div
+        </div> -->
+    <!-- cart container -->
+    <!-- <div
           class="mt-8 xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-12 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2 h-fit py-3"
         >
-          <!-- cart -->
+         
           <div
             v-for="data in products"
             :key="data"
@@ -286,7 +282,6 @@
               <h2 class="font-semibold text-black text-14px py-2">
                 {{ data.name }}
               </h2>
-              <!-- <p class="text-slate-400 text-13px">1 pc</p> -->
             </div>
             <div class="flex items-center justify-between">
               <div>
@@ -337,9 +332,9 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
     <div v-if="tab === 'shop'" class="w-full">
       <div class="w-[80%] mx-auto">
         <ShopComponent :markets="markets" />
@@ -473,7 +468,7 @@ export default {
       );
     };
 
-    const fetchSubCategory = async () => {
+    const fetchCategory = async () => {
       await getCollectionQuery(
         "maincategory",
         [],
@@ -507,7 +502,7 @@ export default {
     };
 
     console.log(products.value);
-    const tab = ref("home");
+    const tab = ref("shop");
 
     const handleTab = (selectedTab) => {
       tab.value = selectedTab;
@@ -585,7 +580,7 @@ export default {
       currentUser.value = projectAuth.currentUser;
       await Promise.allSettled([
         fetchProducts(),
-        fetchSubCategory(),
+        fetchCategory(),
         fetchMarket(),
         fetchUser("id", currentUser.value?.uid),
         fetchCartAdded("userId", currentUser.value?.uid),

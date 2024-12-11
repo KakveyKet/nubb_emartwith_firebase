@@ -145,7 +145,7 @@ export default {
     const isValidateName = ref("");
     const isValidateDescription = ref("");
     const isValidatePrice = ref("");
-    const isValidateStock = ref("");
+    // const isValidateStock = ref("");
     const isValidateCategory = ref("");
     const isValidateImage = ref("");
 
@@ -176,14 +176,14 @@ export default {
       return true;
     };
 
-    const validateStock = () => {
-      if (!stock.value) {
-        isValidateStock.value = "Please enter a stock.";
-        return false;
-      }
-      isValidateStock.value = "";
-      return true;
-    };
+    // const validateStock = () => {
+    //   if (!stock.value) {
+    //     isValidateStock.value = "Please enter a stock.";
+    //     return false;
+    //   }
+    //   isValidateStock.value = "";
+    //   return true;
+    // };
     const validateImage = () => {
       if (productImages.value.length === 0) {
         isValidateImage.value = "Please upload at least one image.";
@@ -245,9 +245,7 @@ export default {
       if (!validatePrice()) {
         return;
       }
-      if (!validateStock()) {
-        return;
-      }
+
       if (!validateImage()) {
         return;
       }
@@ -361,7 +359,7 @@ export default {
       isValidateName,
       isValidateDescription,
       isValidatePrice,
-      isValidateStock,
+
       isValidateCategory,
       isValidateImage,
     };

@@ -146,13 +146,18 @@
       <div class="col-span-3 mt-6">
         <button
           type="submit"
+          :disabled="isLoading"
           class="w-full py-3 bg-primary-5 text-white font-semibold rounded-md hover:bg-primary-5/90 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          {{ marts.length > 0 ? "Update Mart" : "Create New Mart" }}
+          <span v-if="!isLoading">
+            {{ marts.length > 0 ? "Update Mart" : "Create New Mart" }}
+          </span>
+          <span v-else>Loading...</span>
         </button>
       </div>
     </form>
   </div>
+  <Toast />
 </template>
 
 <script>
@@ -164,11 +169,40 @@ import useStorage from "@/composible/useStorage";
 
 import { where } from "firebase/firestore";
 import { projectAuth } from "@/config/config";
+import { useToast } from "primevue/usetoast";
+
 export default {
   setup() {
     const { uploadImage } = useStorage();
-    const { addDocs } = useCollection("marts");
+    const { addDocs, updateDocs } = useCollection("marts");
+    const toast = useToast();
 
+    const showToast = (action, severity) => {
+      let summary;
+      switch (action) {
+        case "create":
+          severity = "success";
+          summary = "Product Created";
+          break;
+        case "update":
+          severity = "info";
+          summary = "Product Updated";
+          break;
+        case "delete":
+          summary = "Product Deleted";
+          break;
+        default:
+          severity = "info";
+          summary = "Action Completed";
+      }
+
+      toast.add({
+        severity: severity,
+        summary: summary,
+        life: 3000,
+      });
+    };
+    const isLoading = ref(false);
     const name = ref("");
     const location = ref("");
     const martImage = ref(null);
@@ -281,12 +315,17 @@ export default {
       };
 
       try {
-        const result = await addDocs(martData);
-        alert("Mart created successfully!");
-        // Optionally, reset the form or redirect
+        isLoading.value = true;
+        if (marts.value.length > 0) {
+          const result = await updateDocs(marts.value[0].id, martData);
+          showToast("update", "success");
+        } else {
+          const result = await addDocs(martData);
+          showToast("create", "success");
+        }
       } catch (error) {
         console.error("Error creating mart:", error);
-        alert("Failed to create Mart.");
+        showToast("create", "error");
       }
     };
 
@@ -326,6 +365,8 @@ export default {
           profileImagePreview.value = marts.value[0]?.profileImageUrl;
           Mart_category.value = marts.value[0]?.Mart_category;
           Mart_Description.value = marts.value[0]?.Mart_Description;
+          openTime.value = marts.value[0]?.openTime.toDate();
+          closeTime.value = marts.value[0]?.closeTime.toDate();
         }
       } else {
         console.error("No user is currently logged in.");
@@ -360,6 +401,7 @@ export default {
       closeTime,
       openTime,
       marts,
+      isLoading,
     };
   },
 };

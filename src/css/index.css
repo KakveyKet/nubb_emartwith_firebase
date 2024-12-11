@@ -39,7 +39,7 @@ body {
     @apply w-1 h-full bg-primary-5 absolute left-0;
   }
   .isSidebar_invisibleText {
-    @apply text-primary-10 text-16px font-bold;
+    @apply text-primary-10 text-16px font-bold text-nowrap;
   }
   .sidebar_collap_btn {
     @apply size-8 flex items-center justify-center -ml-4 rounded-full bg-primary-3 text-primary-11 shadow-lg;

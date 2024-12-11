@@ -22,86 +22,91 @@
         <span>All Shop</span>
       </div>
     </div>
-
     <div
       class="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 grid-cols-1 gap-6 mt-4 xl:w-fit lg:w-fit md:w-fit w-full"
     >
       <div
         v-for="market in markets"
-        :key="market.id"
-        @click.stop="router.push(`/shopdetail/${market.id}`)"
-        class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col text-gray-800 animate-fade-up animate-duration-300 border"
+        @click.stop="$router.push(`/shopdetail/${market.id}`)"
+        class="bg-white rounded-lg shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)] hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer animate-fade-up animate-duration-300 border"
       >
         <!-- Cover Image Section -->
-        <div class="relative w-full h-48 rounded-lg overflow-hidden">
+        <div class="relative">
           <img
             :src="market.coverImageUrls[0]"
-            alt="Market Cover Image"
-            class="w-full h-full object-cover"
+            :alt="market.name"
+            class="w-full h-48 object-cover"
           />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+          ></div>
           <!-- Floating Profile Image -->
           <div
-            class="absolute top-[60%] left-4 w-16 h-16 bg-white rounded-full overflow-hidden border-4 border-white shadow-lg"
+            class="absolute bottom-4 left-4 w-16 h-16 bg-white rounded-full overflow-hidden border-2 border-white shadow-lg"
           >
             <img
               :src="market.profileImageUrl"
-              alt="Profile Image"
+              :alt="market.name"
               class="w-full h-full object-cover"
             />
+          </div>
+          <!-- Category Badge -->
+          <div class="absolute top-4 right-4">
+            <span
+              class="bg-primary-7 text-white text-xs font-bold px-2 py-1 rounded-full"
+            >
+              {{ market.Mart_category.name }}
+            </span>
+          </div>
+          <div class="absolute bottom-4 right-4">
+            <span
+              class="bg-primary-7/40 text-white text-xs font-bold px-2 py-1 rounded-full"
+            >
+              {{ formatTime(market.openTime) }} -
+              {{ formatTime(market.closeTime) }}
+            </span>
           </div>
         </div>
 
         <!-- Card Content -->
-        <div
-          class="pt-12 pb-4 px-4 xl:text-center lg:text-center md:text-center text-start duration-300 transition-all"
-        >
-          <!-- Market Name -->
-          <h3 class="text-xl font-semibold text-gray-900 truncate">
+        <div class="p-4">
+          <h3
+            class="xl:text-16px lg:text-16px md:text-16px text-16px font-semibold text-primary-7 mb-1"
+          >
             {{ market.name }}
           </h3>
-          <!-- Category & Description -->
-          <p class="text-sm text-gray-500 mt-1">
-            {{ market.Mart_category.name }}
-          </p>
-          <p class="text-gray-600 text-sm mt-2 truncate">
+          <p class="text-sm text-gray-600 mb-2 line-clamp-2">
             {{ market.Mart_Description }}
           </p>
-        </div>
 
-        <div
-          class="xl:flex lg:flex md:flex flex-col space-y-3 items-center justify-between px-4 pb-4 mt-auto"
-        >
           <!-- Location with Icon -->
-          <div
-            class="xl:text-center lg:text-center md:text-center text-start flex items-center text-gray-500"
-          >
+          <div class="flex items-center text-gray-500 mb-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              class="w-5 h-5 text-red-500 mr-1"
+              class="w-4 h-4 text-red-500 mr-1"
             >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
               />
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            <span
-              class="xl:text-center lg:text-center md:text-center text-start text-sm"
-              >{{ market.location }}</span
-            >
+            <span class="text-sm">{{ market.location }}</span>
           </div>
 
           <button
             @click.stop="router.push(`/shopdetail/${market.id}`)"
-            class="xl:block lg:block md:block block bg-primary-5 text-white xl:text-center lg:text-center md:text-center text-start py-1 px-4 rounded-full shadow-lg hover:bg-primary-6 transition duration-300"
+            class="xl:text-14px lg:text-14px md:text-14px text-14px font-semibold bg-primary-5 text-white xl:text-center lg:text-center md:text-center text-start py-1 px-4 rounded-full shadow-lg hover:bg-primary-6 transition duration-300"
           >
             View More
           </button>
@@ -122,6 +127,14 @@ export default {
   },
   setup(props, { emit }) {
     const mainCategory = ref([]);
+    const formatTime = (time) => {
+      if (!time || !time.seconds) return "N/A";
+      const date = new Date(time.seconds * 1000);
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    };
     const fetchMainCategory = async () => {
       await getCollectionQuery(
         "maincategory",
@@ -143,6 +156,7 @@ export default {
     return {
       router,
       mainCategory,
+      formatTime,
     };
   },
 };

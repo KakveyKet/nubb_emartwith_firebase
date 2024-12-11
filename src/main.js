@@ -37,7 +37,7 @@ import OverlayBadge from 'primevue/overlaybadge';
 import ToggleSwitch from 'primevue/toggleswitch';
 import RadioButton from 'primevue/radiobutton';
 import Timeline from 'primevue/timeline';
-
+import Badge from 'primevue/badge';
 // Create Vue app instance
 const app = createApp(App);
 
@@ -81,6 +81,7 @@ app.component("OverlayBadge", OverlayBadge)
 app.component("ToggleSwitch", ToggleSwitch)
 app.component("RadioButton", RadioButton)
 app.component("Timeline", Timeline)
+app.component("Badge", Badge)
 // Mount the app
 app.use(ToastService);
 

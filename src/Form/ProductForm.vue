@@ -1,5 +1,6 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4 w-full">
+    {{ dataToEdits }}
     <!-- Product Name Input -->
     <div class="flex flex-col space-y-2">
       <label for="name">Product Name: </label>
@@ -45,7 +46,10 @@
     </div>
 
     <!-- Preview of Selected Images -->
-    <div v-if="imagePreviews.length" class="flex flex-wrap gap-4 mt-4">
+    <div v-if="imagePreviews.length" class="flex flex-wrap gap-4 mt-4 relative">
+      <div class="absolute top-0 right-0">
+        <Button icon="pi pi-times" @click="handleRemoverImage" />
+      </div>
       <div
         v-for="(image, index) in imagePreviews"
         :key="index"
@@ -63,7 +67,7 @@
     }}</span>
 
     <!-- Category, Price, and Stock Inputs -->
-    <div class="flex gap-4 mt-4">
+    <div class="grid grid-cols-2 gap-4 mt-4">
       <div class="flex flex-col space-y-2">
         <label for="category">Category: </label>
         <Select
@@ -91,18 +95,47 @@
           isValidatePrice
         }}</span>
       </div>
-      <!-- <div class="flex flex-col space-y-2">
-        <label for="stock">Stock: </label>
+      <div class="flex flex-col space-y-2">
+        <label for="starting_time">Starting Time: </label>
         <InputNumber
-          v-model="stock"
-          id="stock"
-          placeholder="Enter stock"
+          v-model="starting_time"
+          id="starting_time"
+          suffix=" mn"
+          placeholder="Enter starting time"
           class="w-full"
         />
-        <span v-if="isValidateStock" class="text-red-500">{{
-          isValidateStock
+        <span v-if="isValidateStartingTime" class="text-red-500">{{
+          isValidateStartingTime
         }}</span>
-      </div> -->
+      </div>
+      <div class="flex flex-col space-y-2">
+        <label for="ending_time">Ending Time: </label>
+        <InputNumber
+          v-model="ending_time"
+          id="ending_time"
+          suffix=" mn"
+          placeholder="Enter ending time"
+          class="w-full"
+        />
+        <span v-if="isValidateEndingTime" class="text-red-500">{{
+          isValidateEndingTime
+        }}</span>
+      </div>
+      <div class="flex flex-col space-y-2">
+        <label for="rate">Rate: </label>
+        <InputNumber
+          v-model="rate"
+          id="rate"
+          placeholder="Example: 4.5"
+          class="w-full"
+          max="5"
+          step="0.1"
+          min="0"
+        />
+        <span v-if="isValidateRate" class="text-red-500">{{
+          isValidateRate
+        }}</span>
+      </div>
     </div>
 
     <!-- Submit and Cancel Buttons -->
@@ -111,8 +144,10 @@
         Cancel
       </button>
       <button class="add_new_button" type="submit" :disabled="isLoading">
+        <span v-if="isLoading">
+          <i class="pi pi-spin pi-spinner mr-3" style="font-size: 1rem"></i>
+        </span>
         {{ dataToEdit ? "Update" : "Save" }}
-        <span v-if="isLoading" class="loading loading-spinner"></span>
       </button>
     </div>
   </form>
@@ -138,17 +173,21 @@ export default {
     const subcategory = ref([]);
     const price = ref(null);
     const stock = ref(null);
+    const rate = ref(null);
     const currentUser = ref(null);
     const marts = ref([]);
     const isLoading = ref(false);
-
+    const starting_time = ref(null);
+    const ending_time = ref(null);
     const isValidateName = ref("");
     const isValidateDescription = ref("");
     const isValidatePrice = ref("");
+    const isValidateRate = ref("");
     // const isValidateStock = ref("");
     const isValidateCategory = ref("");
     const isValidateImage = ref("");
-
+    const isValidateStartingTime = ref("");
+    const isValidateEndingTime = ref("");
     const validateName = () => {
       if (!productName.value) {
         isValidateName.value = "Please enter a product name.";
@@ -157,7 +196,14 @@ export default {
       isValidateName.value = "";
       return true;
     };
-
+    const validateRate = () => {
+      if (!rate.value) {
+        isValidateRate.value = "Please enter a rate.";
+        return false;
+      }
+      isValidateRate.value = "";
+      return true;
+    };
     const validateCategory = () => {
       if (!selectCategory.value) {
         isValidateCategory.value = "Please select a category.";
@@ -175,7 +221,26 @@ export default {
       isValidatePrice.value = "";
       return true;
     };
-
+    const validateStartingTime = () => {
+      if (!starting_time.value) {
+        isValidateStartingTime.value = "Please select a starting time.";
+        return false;
+      }
+      isValidateStartingTime.value = "";
+      return true;
+    };
+    const validateEndingTime = () => {
+      if (!ending_time.value) {
+        isValidateEndingTime.value = "Please select an ending time.";
+        return false;
+      }
+      isValidateEndingTime.value = "";
+      return true;
+    };
+    const handleRemoverImage = (index) => {
+      productImages.value.splice(index, 1);
+      imagePreviews.value.splice(index, 1);
+    };
     // const validateStock = () => {
     //   if (!stock.value) {
     //     isValidateStock.value = "Please enter a stock.";
@@ -205,6 +270,15 @@ export default {
     watch(productImages, () => {
       validateImage();
     });
+    watch(starting_time, () => {
+      validateStartingTime();
+    });
+    watch(ending_time, () => {
+      validateEndingTime();
+    });
+    watch(rate, () => {
+      validateRate();
+    });
     const { addDocs, updateDocs } = useCollection("products");
     const { uploadImage } = useStorage();
 
@@ -233,33 +307,39 @@ export default {
     };
 
     const handleSubmit = async () => {
-      if (!validateName()) {
-        return;
-      }
-      if (!validateCategory()) {
-        return;
-      }
-      // if (!validateDescription()) {
-      //   return;
-      // }
-      if (!validatePrice()) {
+      if (
+        !validateName() ||
+        !validateCategory() ||
+        !validatePrice() ||
+        !validateImage() ||
+        !validateStartingTime() ||
+        !validateEndingTime() ||
+        !validateRate()
+      ) {
         return;
       }
 
-      if (!validateImage()) {
-        return;
-      }
       let productImageUrls = [];
 
-      // Upload new images if there are any
+      // Process new and existing images
       if (productImages.value.length > 0) {
+        isLoading.value = true;
         try {
           productImageUrls = await Promise.all(
-            productImages.value.map((image) =>
-              uploadImage(`products/${Date.now()}-${image.name}`, image)
-            )
+            productImages.value.map(async (image) => {
+              if (typeof image === "string") {
+                // If the image is already a URL, retain it
+                return image;
+              } else {
+                // If the image is a file, upload it
+                return await uploadImage(
+                  `products/${Date.now()}-${image.name}`,
+                  image
+                );
+              }
+            })
           );
-          console.log("Uploaded image URLs:", productImageUrls);
+          console.log("Processed image URLs:", productImageUrls);
         } catch (error) {
           console.error("Error uploading images:", error);
           alert(
@@ -268,7 +348,7 @@ export default {
           return;
         }
       } else if (props.dataToEdit?.images) {
-        // Retain existing images if no new images are uploaded
+        // Retain existing images if no new images are provided
         productImageUrls = [...props.dataToEdit.images];
         console.log("Retaining existing images:", productImageUrls);
       } else {
@@ -276,6 +356,7 @@ export default {
         return;
       }
 
+      // Prepare the product data
       const productData = {
         name: productName.value,
         images: productImageUrls,
@@ -284,6 +365,9 @@ export default {
         price: price.value,
         description: description.value,
         branch_id: marts.value[0].id,
+        starting_time: starting_time.value,
+        ending_time: ending_time.value,
+        rate: rate.value,
         created_at: timestamp(),
       };
 
@@ -293,20 +377,17 @@ export default {
         if (props.dataToEdit) {
           await updateDocs(props.dataToEdit.id, productData);
           console.log("Product updated successfully:", productData);
-          isLoading.value = false;
           emit("toast", "update");
           handleClose();
         } else {
           await addDocs(productData);
           console.log("Product added successfully:", productData);
-          isLoading.value = false;
           emit("toast", "create");
           handleClose();
         }
       } catch (error) {
         console.error("Error creating or updating product:", error);
         alert("There was an issue saving the product. Please try again.");
-        isLoading.value = false;
       }
     };
 
@@ -338,9 +419,15 @@ export default {
         productName.value = props.dataToEdit.name;
         description.value = props.dataToEdit.description;
         price.value = props.dataToEdit.price;
-        // stock.value = props.dataToEdit.stock;
+        starting_time.value = props.dataToEdit.starting_time;
+        ending_time.value = props.dataToEdit.ending_time;
         selectCategory.value = props.dataToEdit.category;
-        imagePreviews.value = [...props.dataToEdit.images]; // Set initial previews to existing images
+        rate.value = props.dataToEdit.rate;
+
+        // Populate previews and productImages with existing image URLs
+        imagePreviews.value = [...props.dataToEdit.images];
+        productImages.value = [...props.dataToEdit.images];
+        console.log("productImages initialized:", productImages.value);
       }
     });
 
@@ -354,6 +441,8 @@ export default {
       subcategory,
       price,
       stock,
+      starting_time,
+      ending_time,
       handleClose,
       isLoading,
       isValidateName,
@@ -362,6 +451,11 @@ export default {
 
       isValidateCategory,
       isValidateImage,
+      isValidateStartingTime,
+      isValidateEndingTime,
+      handleRemoverImage,
+      rate,
+      isValidateRate,
     };
   },
 };

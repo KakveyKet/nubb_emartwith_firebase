@@ -1,7 +1,7 @@
 <template>
   <div class="w-full p-5">
     <div class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
-      <div>
+      <div v-if="shop">
         <div class="mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
           <!-- Cover Image -->
           <div class="relative h-48 md:h-64 overflow-hidden">
@@ -27,7 +27,7 @@
             </div>
           </div>
           <!-- Shop Details -->
-          <div class="p-6">
+          <div v-if="shop" class="p-6">
             <div class="flex items-center space-x-4 mb-4">
               <img
                 :src="shop.profileImageUrl"
@@ -59,15 +59,54 @@
                   <span class="text-primary-7">
                     <i class="pi pi-phone"></i>
                   </span>
-                  <p class="text-16px font-semibold">
+                  <a
+                    :href="`tel:${shop.Phone_number}`"
+                    class="text-16px font-semibold"
+                  >
                     {{ shop.Phone_number }}
-                  </p>
+                  </a>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div v-else>
+        <div
+          class="mx-auto bg-gray-300 rounded-xl shadow-lg overflow-hidden animate-pulse"
+        >
+          <!-- Cover Image -->
+          <div class="relative h-48 md:h-64 overflow-hidden">
+            <div class="w-full h-full bg-gray-200"></div>
+          </div>
+          <!-- Shop Details -->
+          <div class="p-6">
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="w-16 h-16 bg-gray-200 rounded-full"></div>
+              <div>
+                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div class="h-3 bg-gray-200 rounded w-2/3 mt-2"></div>
+              </div>
+            </div>
+
+            <div class="h-3 bg-gray-200 rounded w-full mb-6"></div>
+            <div class="h-3 bg-gray-200 rounded w-3/5 mb-2"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+
+            <div
+              class="flex items-center justify-between text-16px text-gray-700"
+            >
+              <div class="flex items-center space-x-2">
+                <div class="flex items-center gap-2">
+                  <p class="h-3 w-3 bg-gray-200 rounded-full"></p>
+                  <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div>
         <!-- sort by category -->
         <div class="py-4">
@@ -106,7 +145,7 @@
         <div class="w-full md:mx-auto">
           <!-- cart container -->
           <div
-            class="mt-8 xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-4 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2 h-fit py-3"
+            class="xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-4 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2 h-fit"
           >
             <div
               v-for="product in product"
@@ -136,7 +175,7 @@
                   <span
                     class="bg-white/90 text-primary-8 text-13px font-semibold px-2 py-1 rounded-md"
                   >
-                    20-30 min
+                    {{ product.starting_time }} - {{ product.ending_time }} min
                   </span>
                 </div>
               </div>
@@ -152,7 +191,9 @@
                     </h2>
                     <div class="flex items-center ml-2">
                       <i class="pi pi-star text-yellow-400"></i>
-                      <span class="text-13px text-gray-600 ml-1">4.5</span>
+                      <span class="text-13px text-gray-600 ml-1">{{
+                        product.rate
+                      }}</span>
                     </div>
                   </div>
                   <p class="text-13px text-gray-600 line-clamp-2">
@@ -291,7 +332,9 @@ export default {
       await Promise.all([
         fetchProducts("branch_id", route.params.id),
         fetchCategory("branch_id", route.params.id),
-        fetchShopsById(route.params.id),
+        setTimeout(() => {
+          fetchShopsById(route.params.id);
+        }, 1000),
       ]);
 
       currentUser.value = projectAuth.currentUser;

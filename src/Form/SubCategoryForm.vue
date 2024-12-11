@@ -131,7 +131,8 @@ export default {
               name: categoryName.value,
               image_url: imageUrl || props.dataToEdit.image_url,
             });
-            alert("Category updated successfully!");
+            emit("toast", "Category updated successfully!", "success");
+            emit("close");
           } else {
             // Add new document
             await addDocs({
@@ -141,14 +142,15 @@ export default {
               created_at: timestamp(),
               image_url: imageUrl,
             });
-            alert("Category created successfully!");
+            emit("toast", "Category created successfully!", "success");
+            emit("close");
           }
           categoryName.value = "";
           imageFile.value = null;
           imagePreview.value = null;
         } catch (error) {
           console.error("Error saving category:", error);
-          alert("Failed to save category. Please try again.");
+          emit("toast", "Failed to save category. Please try again.", "error");
         }
       } else {
         alert("Please fill out the category name.");

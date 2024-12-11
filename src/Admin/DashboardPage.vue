@@ -9,14 +9,14 @@
     >
       <div class="flex items-center gap-4 p-5 w-full">
         <div class="w-[45px] h-[60px]">
-          <img src="../assets/nubb.png" alt="" />
+          <img :src="marts[0]?.profileImageUrl" alt="" />
         </div>
         <div
           :class="[
             sidebarVisible ? 'text-primary-10 text-24px font-bold' : 'hidden',
           ]"
         >
-          <h1 class="text-20px">
+          <h1 class="text-16px">
             {{ marts[0]?.name ? marts[0]?.name : "No Shop regsiter" }}
           </h1>
         </div>

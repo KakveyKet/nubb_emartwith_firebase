@@ -6,7 +6,7 @@ import useCollection from "@/composible/useCollection";
 const error = ref(null);
 const isPending = ref(false);
 
-const signup = async (email, password, displayName, role, phoneNumber) => {
+const signup = async (email, password, displayName, role, phoneNumber, imageUrl) => {
     const { setDocs } = useCollection("users");
     try {
         isPending.value = true;
@@ -31,6 +31,7 @@ const signup = async (email, password, displayName, role, phoneNumber) => {
             email: email,
             phoneNumber: phoneNumber,
             role: role || "manager", // Default role if not provided
+            image: imageUrl,
             createdAt: timestamp(),
         };
 

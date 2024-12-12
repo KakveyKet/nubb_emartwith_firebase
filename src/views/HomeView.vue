@@ -84,7 +84,7 @@
               </div>
             </div>
           </div>
-          <div
+          <!-- <div
             class="xl:flex hidden lg:flex md:flex items-center gap-2 border-r border-primary-4 px-2"
           >
             <div
@@ -109,17 +109,29 @@
                 >2</span
               >
             </div>
-          </div>
+          </div> -->
 
-          <div class="flex items-center gap-2">
+          <div v-if="currentUser" class="flex items-center gap-2">
             <div class="flex gap-2 items-center">
               <div
-                v-if="currentUser"
+                v-if="items"
                 class="xl:flex lg:flex md:flex hidden size-9 bg-primary-5 rounded-full items-center justify-center"
               >
-                <h2 class="text-white font-bold">
-                  {{ currentUser?.displayName[0] }}
-                </h2>
+                <div v-if="items[0]?.image" class="text-white font-bold">
+                  <img
+                    @click="handleUserInfo"
+                    :src="items[0]?.image"
+                    alt=""
+                    class="w-full h-full rounded-full"
+                  />
+                </div>
+                <div
+                  @click="handleUserInfo"
+                  v-else
+                  class="text-white font-bold cursor-pointer"
+                >
+                  {{ items[0]?.username[0] }}
+                </div>
               </div>
               <div class="flex items-center space-x-3">
                 <div
@@ -369,7 +381,7 @@
     position="right"
     class="h-screen"
   >
-    <Sidebar />
+    <Sidebar @close="visibleRight = false" @toast="showToast" />
   </Drawer>
 </template>
 
@@ -378,13 +390,12 @@ import TrackingOrder from "@/views/TrackingOrder.vue";
 import Sidebar from "@/mobile/Sidebar.vue";
 import FooterVue from "@/components/FooterPage.vue";
 import CategoryVue from "@/components/CategoryPage.vue";
-import { useRoute } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { ref, onMounted, watch } from "vue";
 import { formatCurrency, formatNumber } from "@/helper/formatCurrecy";
 import UserLoginForm from "@/user/UserLoginForm.vue";
 
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import ShopComponent from "@/views/ShopComponent.vue";
 import { projectAuth } from "@/config/config";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
@@ -430,6 +441,19 @@ export default {
         default:
           severity = "info";
           summary = "Action Completed";
+          break;
+        case "logout":
+          severity = "info";
+          summary = "Logout Success";
+          break;
+        case "login":
+          severity = "info";
+          summary = "Login Success";
+          break;
+        case "register":
+          severity = "info";
+          summary = "Register Success";
+          break;
       }
 
       toast.add({
@@ -448,6 +472,9 @@ export default {
     const auth = getAuth();
     const visibleRight = ref(false);
 
+    const handleUserInfo = () => {
+      router.push(`/userinfo/${items.value[0]?.id}`);
+    };
     const { addDocs, removeDoc } = useCollection("carts");
     const handleLogin = () => {
       visible.value = true;
@@ -512,6 +539,7 @@ export default {
       if (currentUser.value?.uid) {
         console.log("currentuser ", currentUser.value?.uid);
       }
+      fetchUser("id", currentUser.value?.uid);
     });
     const items = ref([]);
     const fetchUser = async (field, value) => {
@@ -605,6 +633,9 @@ export default {
       cartAdded,
       router,
       visibleRight,
+      showToast,
+      items,
+      handleUserInfo,
     };
   },
 };

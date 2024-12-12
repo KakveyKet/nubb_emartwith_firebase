@@ -5,12 +5,21 @@
         <li
           class="p-4 hover:bg-primary-2 transition-colors duration-200 cursor-pointer"
         >
-          <div class="flex items-center text-primary-8 hover:text-primary-10">
-            <i class="pi pi-user size-5 mr-3"></i>
+          <div
+            @click="handleUserInfo"
+            class="flex items-center text-primary-8 hover:text-primary-10"
+          >
+            <i v-if="!items[0]?.image" class="pi pi-user size-5 mr-3"></i>
+            <img
+              v-else
+              :src="items[0]?.image"
+              alt="Profile Image"
+              class="size-8 rounded-full mr-3"
+            />
             <span class="text-16px">
               {{
-                currentUser
-                  ? currentUser.displayName
+                items[0]?.username
+                  ? items[0]?.username
                   : "Please create a account"
               }}
             </span>
@@ -58,31 +67,54 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted, onBeforeUnmount } from "vue";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { projectAuth } from "@/config/config";
 import UserLoginForm from "@/user/UserLoginForm.vue";
 import { getCollectionQuery } from "@/composible/getCollection";
+import { where } from "firebase/firestore";
+import { useRouter } from "vue-router";
 export default {
   components: { UserLoginForm },
-
-  setup() {
+  props: [""],
+  setup(props, { emit }) {
+    const router = useRouter();
     const currentUser = ref(null);
     const auth = getAuth();
     const visible = ref(false);
     const currentComponent = ref(null);
+    let unsubscribe = null;
     const logout = async () => {
       try {
-        await signOut(auth);
-        localStorage.removeItem("user");
-        router.push("/");
-        alert("You have been logged out successfully!");
+        if (currentUser.value?.uid) {
+          await signOut(auth);
+          localStorage.removeItem("user");
+          emit("toast", "logout");
+          emit("close");
+        }
       } catch (error) {
         console.error("Error logging out:", error);
         alert("Failed to log out. Please try again.");
       }
     };
 
+    const items = ref([]);
+    const fetchUser = async (field, value) => {
+      try {
+        const conditions = [where(field, "==", value)];
+        await getCollectionQuery(
+          "users",
+          conditions,
+          (data) => {
+            items.value = data;
+            console.log("items", items.value);
+          },
+          true
+        );
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
     const handleLogin = () => {
       visible.value = true;
       currentComponent.value = "UserLoginForm";
@@ -91,13 +123,25 @@ export default {
       visible.value = false;
       currentComponent.value = "";
     };
-    onMounted(() => {
+    onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
-      onAuthStateChanged(auth, (user) => {
+      unsubscribe = onAuthStateChanged(auth, (user) => {
         currentUser.value = user;
       });
+      if (currentUser.value?.uid) {
+        await fetchUser("id", currentUser.value?.uid);
+      }
+      console.log("items", items.value);
     });
-
+    onUnmounted(() => {
+      unsubscribe();
+    });
+    onBeforeUnmount(() => {
+      unsubscribe();
+    });
+    const handleUserInfo = () => {
+      router.push(`/userinfo/${items.value[0]?.id}`);
+    };
     return {
       currentUser,
       logout,
@@ -105,6 +149,9 @@ export default {
       currentComponent,
       handleClose,
       visible,
+      items,
+      router,
+      handleUserInfo,
     };
   },
 };

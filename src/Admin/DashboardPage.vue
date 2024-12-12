@@ -400,9 +400,9 @@
                 />
               </svg>
               <span
-                class="absolute -top-2 -right-1 text-sm text-white bg-red-500 size-4 flex items-center justify-center rounded-full"
+                class="absolute -top-2 -right-1 text-sm text-white bg-red-500 size-4 flex items-center justify-center rounded-full cursor-pointer"
               >
-                2
+                {{ orders.length }}
               </span>
             </div>
             <h3 class="text-16px">Order</h3>
@@ -470,12 +470,13 @@ export default {
     const router = useRouter();
     const currentUser = ref(null);
     const auth = getAuth(); // Get the Firebase auth instance
+    const orders = ref([]);
+    const marts = ref([]);
 
     // Function to toggle the sidebar visibility
     const toggleSidebar = () => {
       sidebarVisible.value = !sidebarVisible.value;
     };
-    const marts = ref([]);
     const fetchMartsForCurrentUser = async () => {
       if (currentUser?.value) {
         const userId = currentUser.value?.uid; // Get current user's ID
@@ -489,7 +490,23 @@ export default {
         console.error("No user is currently logged in.");
       }
     };
-
+    let unsubscribeOrders = null;
+    const fetchOrders = async (field, value) => {
+      if (marts.value.length > 0) {
+        const conditions = [where(field, "==", value)];
+        unsubscribeOrders = await getCollectionQuery(
+          "orders",
+          conditions,
+          (data) => {
+            orders.value = data;
+            console.log("data orders", orders.value);
+          },
+          true
+        );
+      } else {
+        console.error("Error fetching data: Marts data is empty.");
+      }
+    };
     const logout = async () => {
       try {
         await signOut(auth); // Sign out the user using Firebase
@@ -504,6 +521,7 @@ export default {
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
       await Promise.allSettled([fetchMartsForCurrentUser()]);
+      await fetchOrders("branch_id", marts.value[0]?.id);
     });
     const isLogout = ref(false);
     const logoutCofimation = () => {
@@ -519,6 +537,7 @@ export default {
       router,
       isLogout,
       logoutCofimation,
+      orders,
     };
   },
 };

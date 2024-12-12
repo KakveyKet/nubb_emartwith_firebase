@@ -22,12 +22,13 @@ import UserList from '@/SuperAdminDashboard/UserList.vue';
 import MainCategoryList from '@/SuperAdminDashboard/MainCategoryList.vue';
 import DashboarManagement from '@/SuperAdminDashboard/DashboarManagement.vue';
 import UserHistoy from '@/views/UserHistoy.vue';
-
+import UserInfo from '@/user/UserInfo.vue';
 import AdminProfile from '@/SuperAdminDashboard/AdminProfile.vue';
 import ShopDetail from '@/views/ShopDetail.vue';
 setPersistence(projectAuth, browserLocalPersistence).catch((error) => {
   console.error("Error setting persistence:", error);
 });
+
 const requireAuth = (to, from, next) => {
   // Return a promise to ensure Vue Router waits for auth check to complete
   return new Promise((resolve) => {
@@ -99,6 +100,11 @@ const routes = [
     path: '/shopdetail/:id',
     name: 'shopdetail',
     component: ShopDetail,
+  },
+  {
+    path: '/userinfo/:id',
+    name: 'userinfo',
+    component: UserInfo,
   },
   {
     path: '/supperadmin',

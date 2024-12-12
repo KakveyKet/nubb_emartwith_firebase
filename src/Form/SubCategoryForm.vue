@@ -38,10 +38,18 @@
       </div>
 
       <div class="flex items-center justify-end mt-8 gap-3">
-        <button class="add_new_button" type="button" @click="handleCancel">
+        <button
+          v-if="dataToEdit"
+          class="add_new_button"
+          type="button"
+          @click="emit('close')"
+        >
           Cancel
         </button>
-        <button class="add_new_button" type="submit">
+        <button class="add_new_button" type="submit" :disabled="isLoading">
+          <span v-if="isLoading">
+            <i class="pi pi-spin pi-spinner"></i>
+          </span>
           {{ dataToEdit ? "Update" : "Save" }}
         </button>
       </div>
@@ -79,7 +87,7 @@ export default {
     const marts = ref([]);
     const imageFile = ref(null);
     const imagePreview = ref(null);
-
+    const isLoading = ref(false);
     const fetchMartsForCurrentUser = async () => {
       if (currentUser?.value) {
         const userId = currentUser.value?.uid;
@@ -106,6 +114,7 @@ export default {
     };
     const { addDocs, updateDocs } = useCollection("subcategories");
     const handleSubmit = async () => {
+      isLoading.value = true;
       if (categoryName.value) {
         try {
           let imageUrl = null;

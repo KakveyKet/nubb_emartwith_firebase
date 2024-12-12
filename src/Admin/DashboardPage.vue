@@ -299,7 +299,7 @@
           </div>
         </router-link>
         <div
-          @click="logout"
+          @click="logoutCofimation"
           class="text-red-500 cursor-pointer absolute bottom-2"
         >
           <div
@@ -430,6 +430,26 @@
       <div class="bg-[#F5F6FA] h-screen p-7">
         <router-view></router-view>
       </div>
+      <Dialog
+        modal
+        v-model:visible="isLogout"
+        @update:visible="isLogout = false"
+      >
+        <template #header>
+          <h3 class="text-24px font-bold">Logout</h3>
+        </template>
+        <template #default>
+          <p>Are you sure you want to logout?</p>
+        </template>
+        <template #footer>
+          <Button
+            label="Cancel"
+            severity="secondary"
+            @click="isLogout = false"
+          />
+          <Button label="Logout" severity="danger" @click="logout" />
+        </template>
+      </Dialog>
     </div>
   </div>
 </template>
@@ -442,6 +462,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import router from "@/router";
+import Dialog from "primevue/dialog";
 
 export default {
   setup() {
@@ -474,7 +495,6 @@ export default {
         await signOut(auth); // Sign out the user using Firebase
         localStorage.removeItem("user"); // Remove any stored user info
         router.push("/login"); // Redirect to login page
-        alert("You have been logged out successfully!");
       } catch (error) {
         console.error("Error logging out:", error);
         alert("Failed to log out. Please try again.");
@@ -485,6 +505,10 @@ export default {
       currentUser.value = projectAuth.currentUser;
       await Promise.allSettled([fetchMartsForCurrentUser()]);
     });
+    const isLogout = ref(false);
+    const logoutCofimation = () => {
+      isLogout.value = true;
+    };
 
     return {
       sidebarVisible,
@@ -493,6 +517,8 @@ export default {
       logout,
       marts,
       router,
+      isLogout,
+      logoutCofimation,
     };
   },
 };

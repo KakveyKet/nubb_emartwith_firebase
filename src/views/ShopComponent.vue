@@ -60,7 +60,7 @@
           </div>
           <div class="absolute bottom-4 right-4">
             <span
-              class="bg-primary-7/40 text-white text-xs font-bold px-2 py-1 rounded-full"
+              class="bg-primary-1 text-primary-7 text-xs font-bold px-2 py-1 rounded-full"
             >
               {{ formatTime(market.openTime) }} -
               {{ formatTime(market.closeTime) }}

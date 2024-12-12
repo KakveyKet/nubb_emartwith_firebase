@@ -1,6 +1,10 @@
 <template>
-  <div class="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Create Mart</h2>
+  <div
+    class="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md animate-fade-up animate-once animate-duration-300"
+  >
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">
+      {{ marts.length > 0 ? "Update Mart" : "Create Mart" }}
+    </h2>
     <form @submit.prevent="handleSubmit" class="grid grid-cols-3 gap-6">
       <!-- Mart Name -->
 

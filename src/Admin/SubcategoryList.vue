@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-white p-5 rounded-[10px]">
+  <div
+    class="bg-white p-5 rounded-[10px] animate-fade-up animate-once animate-duration-300"
+  >
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-xl font-semibold">Category List</h1>
 

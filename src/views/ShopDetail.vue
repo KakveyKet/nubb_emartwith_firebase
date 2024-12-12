@@ -2,7 +2,9 @@
   <div class="w-full p-5">
     <div class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
       <div v-if="shop">
-        <div class="mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <div
+          class="mx-auto bg-white rounded-xl shadow-lg overflow-hidden animate-fade-down animate-once animate-duration-300"
+        >
           <!-- Cover Image -->
           <div class="relative h-48 md:h-64 overflow-hidden">
             <img
@@ -31,7 +33,7 @@
             <div class="flex items-center space-x-4 mb-4">
               <img
                 :src="shop.profileImageUrl"
-                alt="Shop Profile"
+                alt=""
                 class="w-16 h-16 rounded-full border-4 border-primary-3"
               />
               <div>
@@ -71,43 +73,49 @@
           </div>
         </div>
       </div>
-      <div v-else>
-        <div
-          class="mx-auto bg-gray-300 rounded-xl shadow-lg overflow-hidden animate-pulse"
-        >
-          <!-- Cover Image -->
-          <div class="relative h-48 md:h-64 overflow-hidden">
-            <div class="w-full h-full bg-gray-200"></div>
+      <div
+        v-else
+        class="mx-auto bg-gray-200 rounded-xl shadow-lg overflow-hidden animate-pulse"
+      >
+        <!-- Cover Image -->
+        <div class="relative h-48 md:h-64 overflow-hidden bg-gray-400">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+          ></div>
+          <div
+            class="absolute bottom-4 left-4 right-4 flex items-end justify-between"
+          >
+            <div class="w-1/2 bg-gray-300 rounded h-8"></div>
+            <div class="px-3 py-1 h-6 bg-gray-300 rounded-full"></div>
           </div>
-          <!-- Shop Details -->
-          <div class="p-6">
-            <div class="flex items-center space-x-4 mb-4">
-              <div class="w-16 h-16 bg-gray-200 rounded-full"></div>
-              <div>
-                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div class="h-3 bg-gray-200 rounded w-2/3 mt-2"></div>
-              </div>
+        </div>
+        <!-- Shop Details -->
+        <div class="p-6">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-16 h-16 rounded-full bg-gray-300"></div>
+            <div>
+              <div class="h-6 bg-gray-300 rounded w-32"></div>
+              <div class="h-4 bg-gray-300 rounded w-24 mt-2"></div>
             </div>
-
-            <div class="h-3 bg-gray-200 rounded w-full mb-6"></div>
-            <div class="h-3 bg-gray-200 rounded w-3/5 mb-2"></div>
-            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-
-            <div
-              class="flex items-center justify-between text-16px text-gray-700"
-            >
-              <div class="flex items-center space-x-2">
-                <div class="flex items-center gap-2">
-                  <p class="h-3 w-3 bg-gray-200 rounded-full"></p>
-                  <div class="h-3 bg-gray-200 rounded w-1/4"></div>
-                </div>
+          </div>
+          <div class="h-4 bg-gray-300 rounded w-full"></div>
+          <div class="h-4 bg-gray-300 rounded w-2/3 mt-2"></div>
+          <div class="h-4 bg-gray-300 rounded w-1/2 mt-2 mb-2"></div>
+          <div
+            class="flex items-center justify-between text-16px text-gray-700"
+          >
+            <div class="flex items-center space-x-2">
+              <div class="flex items-center gap-2">
+                <div class="h-6 bg-gray-300 rounded w-8"></div>
+                <div
+                  class="text-16px font-semibold h-6 bg-gray-300 rounded w-20"
+                ></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <div>
+      <div v-if="shop">
         <!-- sort by category -->
         <div class="py-4">
           <h2 class="text-20px font-semibold text-gray-800 mb-4 px-4">
@@ -117,13 +125,26 @@
             <div
               class="flex overflow-x-auto pb-4 px-4 space-x-3 snap-x hide-scrollbar bg-none"
             >
+              <!-- viwe all -->
               <button
-                v-for="category in category"
-                :key="category.id"
-                @click="selectCategory(category)"
+                @click="selectedCategory = null"
                 class="flex-shrink-0 snap-start focus:outline-none transition-all duration-300 ease-in-out border"
                 :class="[
-                  selectedCategory === category.id
+                  selectedCategory === null
+                    ? 'bg-primary-6 text-white'
+                    : 'bg-white text-gray-700 hover:bg-primary-2 hover:text-primary-8',
+                  'px-4 py-2 rounded-full text-16px font-medium shadow-md hover:shadow-lg',
+                ]"
+              >
+                All
+              </button>
+              <button
+                v-for="category in categories"
+                :key="category.id"
+                @click="selectedCategory = category"
+                class="flex-shrink-0 snap-start focus:outline-none transition-all duration-300 ease-in-out border"
+                :class="[
+                  selectedCategory === category
                     ? 'bg-primary-6 text-white'
                     : 'bg-white text-gray-700 hover:bg-primary-2 hover:text-primary-8',
                   'px-4 py-2 rounded-full text-16px font-medium shadow-md hover:shadow-lg',
@@ -141,7 +162,24 @@
           </div>
         </div>
       </div>
-      <div>
+      <div v-else>
+        <!-- sort by category -->
+        <div class="py-4 animate-pulse">
+          <div class="h-5 bg-gray-200 rounded w-1/4 mb-4 px-4"></div>
+          <div class="">
+            <div
+              class="flex overflow-x-auto pb-4 px-4 space-x-3 snap-x bg-none"
+            >
+              <div class="h-8 bg-gray-200 rounded w-16"></div>
+              <div class="h-8 bg-gray-200 rounded w-16"></div>
+              <div class="h-8 bg-gray-200 rounded w-16"></div>
+            </div>
+            <div class="absolute left-0 top-0 bottom-0 w-8 bg-gray-200"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-8 bg-gray-200"></div>
+          </div>
+        </div>
+      </div>
+      <div v-if="product.length > 0">
         <div class="w-full md:mx-auto">
           <!-- cart container -->
           <div
@@ -223,6 +261,52 @@
           </div>
         </div>
       </div>
+      <div v-else-if="product.length > 0 && selectedCategory">
+        <!-- sort by category -->
+        <div class="py-4 animate-pulse">
+          <div class="h-5 bg-gray-200 rounded w-1/4 mb-4 px-4"></div>
+          <div class="">
+            <div
+              class="flex overflow-x-auto pb-4 px-4 space-x-3 snap-x bg-none"
+            >
+              <div class="h-8 bg-gray-200 rounded w-16"></div>
+              <div class="h-8 bg-gray-200 rounded w-16"></div>
+              <div class="h-8 bg-gray-200 rounded w-16"></div>
+            </div>
+            <div class="absolute left-0 top-0 bottom-0 w-8 bg-gray-200"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-8 bg-gray-200"></div>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="product.length === 0 && selectedCategory">
+        <div class="flex flex-col items-center justify-center p-8">
+          <div class="mb-6">
+            <svg
+              class="size-14 text-primary-5 animate-bounce"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              ></path>
+            </svg>
+          </div>
+          <h2
+            class="xl:text-24px lg:text-24px md:text-24px text-16px font-bold text-primary-9 mb-2"
+          >
+            No Data Available
+          </h2>
+          <p class="text-16px text-primary-7 text-center max-w-md">
+            There are currently no items to display in this category. Please try
+            selecting a different category or check back later.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -238,6 +322,7 @@ import useCollection from "@/composible/useCollection";
 import { onAuthStateChanged } from "firebase/auth";
 import { timestamp } from "@/config/config";
 import { useToast } from "primevue/usetoast";
+
 export default {
   setup() {
     const route = useRoute();
@@ -245,33 +330,62 @@ export default {
     const auth = getAuth();
     const { addDocs } = useCollection("carts");
     const product = ref([]);
+    const selectedCategory = ref(null);
 
     const fetchProducts = async (field, value) => {
       try {
-        const conditions = [where(field, "==", value)];
+        // Validate inputs
+        if (!field || !value) {
+          throw new Error("Invalid field or value for query.");
+        }
+
+        let conditions = [where(field, "==", value)]; // Add branch filter
+
+        // Add category filter only if selectedCategory is valid
+        if (selectedCategory.value && selectedCategory.value.id) {
+          conditions.push(
+            where("category.id", "==", selectedCategory.value.id)
+          );
+        } else {
+          console.warn("No category selected or category ID is missing.");
+        }
+
+        // Fetch data
         await getCollectionQuery("products", conditions, (data) => {
           product.value = data;
         });
-        console.log("product", product.value);
+
+        console.log("Filtered Products:", product.value);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
-    const shop = ref([]);
+
+    const shop = ref(null);
+    const isLoading = ref(false);
+    const error = ref(null);
+
     const fetchShopsById = async (id) => {
+      isLoading.value = true;
+      error.value = null;
+
       try {
         const docRef = doc(projectFirestore, "marts", id);
         const docSnap = await getDoc(docRef);
+
         if (docSnap.exists()) {
           shop.value = { id: docSnap.id, ...docSnap.data() };
-          console.log("Fetched shop:", shop.value);
         } else {
-          console.error("No document found with the provided ID.");
+          error.value = "No document found with the provided ID.";
         }
       } catch (error) {
         console.error("Error fetching shops by document ID:", error);
+        error.value = "An error occurred while fetching the shop.";
+      } finally {
+        isLoading.value = false;
       }
     };
+
     const handleAddToCart = async (data) => {
       try {
         const cartItem = {
@@ -314,14 +428,14 @@ export default {
         console.error("Error fetching cart data:", error);
       }
     };
-    const category = ref([]);
+    const categories = ref([]);
     const fetchCategory = async (field, value) => {
       try {
         const conditions = [where(field, "==", value)];
         await getCollectionQuery("subcategories", conditions, (data) => {
-          category.value = data;
+          categories.value = data;
         });
-        console.log("category", category.value);
+        console.log("category", categories.value);
       } catch (error) {
         console.error("Error fetching category:", error);
       }
@@ -330,11 +444,9 @@ export default {
     onMounted(async () => {
       console.log("route", route.params.id);
       await Promise.all([
+        fetchShopsById(route.params.id),
         fetchProducts("branch_id", route.params.id),
         fetchCategory("branch_id", route.params.id),
-        setTimeout(() => {
-          fetchShopsById(route.params.id);
-        }, 1000),
       ]);
 
       currentUser.value = projectAuth.currentUser;
@@ -342,12 +454,21 @@ export default {
         currentUser.value = user;
       });
     });
+
+    // Watch for changes to the selected category and refetch products
+    watch(selectedCategory, (newCategory) => {
+      console.log("Selected Category Changed:", newCategory);
+      fetchProducts("branch_id", route.params.id); // Pass branch ID
+    });
+
     return {
       product,
       cartAdded,
       handleAddToCart,
-      category,
+      categories,
       shop,
+      selectedCategory,
+      route,
     };
   },
 };

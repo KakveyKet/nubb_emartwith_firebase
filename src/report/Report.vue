@@ -1,5 +1,7 @@
 <template>
-  <div>this is report</div>
+  <div class="animate-fade-up animate-once animate-duration-300">
+    this is report
+  </div>
 </template>
 
 <script>

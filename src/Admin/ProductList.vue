@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full">
+  <div class="w-full animate-fade-up animate-once animate-duration-300">
     <div class="mt-3 bg-white p-4 rounded-lg w-full">
       <div class="flex justify-between items-center w-full">
         <h2 class="text-20px font-semibold">Product List</h2>

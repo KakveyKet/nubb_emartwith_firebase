@@ -140,20 +140,17 @@
                 >
                   Hi, {{ currentUser.displayName }}
                 </div>
-
-                <div
-                  class="xl:hidden lg:hidden md:hidden flex items-center gap-2"
-                >
-                  <Button
-                    @click="visibleRight = true"
-                    icon="pi pi-bars"
-                    severity="secondary"
-                    rounded
-                    aria-label="Bookmark"
-                  />
-                </div>
               </div>
             </div>
+          </div>
+          <div class="xl:hidden lg:hidden md:hidden flex items-center gap-2">
+            <Button
+              @click="visibleRight = true"
+              icon="pi pi-bars"
+              severity="secondary"
+              rounded
+              aria-label="Bookmark"
+            />
           </div>
           <div class="xl:flex lg:flex md:flex hidden items-center gap-2">
             <div

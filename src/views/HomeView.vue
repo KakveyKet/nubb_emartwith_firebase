@@ -28,6 +28,7 @@
             class="w-full border-none input_webpage"
             placeholder="What are you looking for?"
             type="text"
+            @click="handleSearch"
           />
           <button class="btncheckout px-12">Search</button>
         </div>
@@ -78,7 +79,7 @@
                   />
                 </svg>
                 <span
-                  class="text-primary-6 absolute text-16px bg-white size-5 box-shadow: 0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08); flex items-center justify-center rounded-full font-bold -top-2 right-0"
+                  class="text-primary-6 absolute animate-flip-up animate-once animate-duration-300 text-16px bg-white size-5 box-shadow: 0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08); flex items-center justify-center rounded-full font-bold -top-2 right-0"
                   >{{ cartAdded.length }}</span
                 >
               </div>
@@ -145,6 +146,13 @@
           </div>
           <div class="xl:hidden lg:hidden md:hidden flex items-center gap-2">
             <Button
+              @click="is_search = true"
+              icon="pi pi-search"
+              severity="secondary"
+              rounded
+              aria-label="Bookmark"
+            />
+            <Button
               @click="visibleRight = true"
               icon="pi pi-bars"
               severity="secondary"
@@ -188,19 +196,9 @@
       <div
         class="flex items-center justify-items-start h-[47px] xl:w-[80%] lg:w-[80%] md:w-[80%] mx-auto gap-3"
       >
-        <!-- <div
-          @click="handleTab('home')"
-          :class="{
-            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
-              tab === 'home',
-            'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
-              tab !== 'home',
-          }"
-        >
-          Home
-        </div> -->
         <div
           @click="handleTab('shop')"
+          class="flex items-center gap-2"
           :class="{
             'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
               tab === 'shop',
@@ -208,13 +206,13 @@
               tab !== 'shop',
           }"
         >
+          <span>
+            <i class="pi pi-shop"></i>
+          </span>
           Shop
         </div>
-        <OverlayBadge
-          class="xl:hidden lg:hidden md:block block"
-          severity="danger"
-          size="small"
-          :value="cartAdded.length"
+        <div
+          class="xl:hidden lg:hidden md:block block relative"
           :class="{
             'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
               tab === 'cart',
@@ -222,11 +220,32 @@
               tab !== 'cart',
           }"
         >
-          <div @click="handleTab('cart')">In Cart</div>
-        </OverlayBadge>
+          <div @click="handleTab('cart')" class="flex items-center gap-2">
+            <i class="pi pi-shopping-cart"></i>
+            In Cart
+          </div>
+          <div
+            :class="{
+              'absolute top-1 -right-2 size-5 bg-primary-6 rounded-full flex items-center justify-center text-white text-10px ':
+                tab === 'cart',
+              'absolute -top-2.5   -right-2 size-5 bg-primary-6 rounded-full flex items-center justify-center text-white text-10px ':
+                tab !== 'cart',
+            }"
+          >
+            <p
+              :class="{
+                'animate-flip-up animate-once animate-duration-300':
+                  tab === 'cart',
+              }"
+            >
+              {{ cartAdded.length }}
+            </p>
+          </div>
+        </div>
 
         <div
           @click="handleTab('tracking_order')"
+          class="flex items-center gap-2"
           :class="{
             'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
               tab === 'tracking_order',
@@ -234,119 +253,19 @@
               tab !== 'tracking_order',
           }"
         >
+          <span>
+            <i class="pi pi-send"></i>
+          </span>
           Tracking Order
         </div>
       </div>
+      <!-- search -->
     </div>
     <!-- category -->
 
-    <!-- body -->
-    <!-- <div v-if="tab === 'home'" class="w-full"> -->
-    <!-- <div class="w-full mt-8">
-        <CategoryVue :data="subCategory" />
-      </div>
-      <div
-        class="xl:w-[80%] lg:w-[80%] md:w-[90%] w-[90%] xl:mx-auto lg:mx-0 md:mx-auto mx-3"
-      > -->
-    <!-- <div class="mt-6">
-          <div class="text-black text-14px font-bold flex items-center gap-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-8"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"
-              />
-            </svg>
-            <span>Popular</span>
-          </div>
-        </div> -->
-    <!-- cart container -->
-    <!-- <div
-          class="mt-8 xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-12 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2 h-fit py-3"
-        >
-         
-          <div
-            v-for="data in products"
-            :key="data"
-            class="xl:mx-0 lg:mx-0 md:mx-0 mx-auto xl:h-[270px] lg:h-[250px] md:h-[220px] h-[200px] xl:w-[200px] lg:w-[200px] md:w-[150px] w-[150px] xl:p-5 lg:p-5 md:p-5 p-3 rounded-[10px] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] animate-fade-up animate-duration-300"
-          >
-            <div
-              class="w-full xl:h-[150px] lg:h-[150px] md:h-[100px] h-[100px] overflow-hidden rounded-md"
-            >
-              <img :src="data.images[0]" class="object-cover" />
-            </div>
-            <div>
-              <h2 class="font-semibold text-black text-14px py-2">
-                {{ data.name }}
-              </h2>
-            </div>
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="flex items-center gap-1">
-                  <font-awesome-icon
-                    :icon="['fas', 'star']"
-                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
-                  />
-                  <font-awesome-icon
-                    :icon="['fas', 'star']"
-                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
-                  />
-                  <font-awesome-icon
-                    :icon="['fas', 'star']"
-                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
-                  />
-                  <font-awesome-icon
-                    :icon="['fas', 'star']"
-                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
-                  />
-                  <font-awesome-icon
-                    :icon="['fas', 'star']"
-                    class="xl:size-3 lg:size-3 md:size-3 size-2 text-yellow-400"
-                  />
-                </div>
-                <h2 class="py-2">{{ formatNumber(data.price) }} ៛</h2>
-              </div>
-              <div>
-                <button
-                  @click="handleAddToCart(data)"
-                  class="btnaddtocart xl:w-[50px] lg:w-[30px] md:w-[30px] w-[30px] xl:h-[50px] lg:h-[30px] md:h-[30px] h-[30px] xl:text-14px lg:text-14px md:text-14px text-12px xl:px-2 lg:px-2 md:px-2 px-1 xl:flex lg:flex md:flex flex items-center justify-center justify-items-center"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-6"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 4.5v15m7.5-7.5h-15"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div> -->
-    <!-- </div> -->
-    <!-- </div> -->
     <div v-if="tab === 'shop'" class="w-full">
       <div class="w-[80%] mx-auto">
-        <ShopComponent :markets="markets" />
+        <ShopComponent @tab="handleTab" :markets="markets" />
       </div>
     </div>
     <div v-if="tab === 'cart'" class="w-full">
@@ -371,7 +290,9 @@
   <div class="">
     <FooterVue />
   </div>
-
+  <div class="fixed bottom-5 right-5 hidden">
+    <ShopDetail @tab="handleTab('cart')" />
+  </div>
   <Drawer
     v-model:visible="visibleRight"
     :show-close-icon="false"
@@ -380,10 +301,47 @@
   >
     <Sidebar @close="visibleRight = false" @toast="showToast" />
   </Drawer>
+  <Dialog
+    v-model:visible="is_search"
+    :modal="true"
+    :class="{ 'w-full h-full': is_search, 'w-0 h-0': !is_search }"
+    :style="{ width: '50vw', position: 'absolute', top: '5vh' }"
+    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    :closable="false"
+  >
+    <div class="w-[100%] mx-auto flex gap-2 relative">
+      <div class="w-[100%] flex items-center mx-auto gap-3">
+        <div class="flex items-center gap-2">
+          <Button
+            @click="is_search = false"
+            text
+            icon="pi pi-chevron-left"
+            severity="secondary"
+            rounded
+            aria-label="Bookmark"
+            class="size-4"
+          />
+        </div>
+        <IconField class="w-full">
+          <InputIcon class="pi pi-search" />
+          <InputText
+            v-model="search_value"
+            placeholder="Search by shop name ..."
+            class="w-full h-12 !rounded-3xl"
+          />
+        </IconField>
+      </div>
+    </div>
+
+    <div class="w-[100%] mx-auto">
+      <ShopFilter :markets="markets" :search_value="search_value" />
+    </div>
+  </Dialog>
 </template>
 
 <script>
 import TrackingOrder from "@/views/TrackingOrder.vue";
+import ShopFilter from "@/views/ShopFilter.vue";
 import Sidebar from "@/mobile/Sidebar.vue";
 import FooterVue from "@/components/FooterPage.vue";
 import CategoryVue from "@/components/CategoryPage.vue";
@@ -391,7 +349,7 @@ import { getCollectionQuery } from "@/composible/getCollection";
 import { ref, onMounted, watch } from "vue";
 import { formatCurrency, formatNumber } from "@/helper/formatCurrecy";
 import UserLoginForm from "@/user/UserLoginForm.vue";
-
+import ShopDetail from "@/views/ShopDetail.vue";
 import { useRouter, useRoute } from "vue-router";
 import ShopComponent from "@/views/ShopComponent.vue";
 import { projectAuth } from "@/config/config";
@@ -414,9 +372,13 @@ export default {
     CartView,
     Sidebar,
     TrackingOrder,
+    ShopFilter,
+    ShopDetail,
   },
   setup() {
     const toast = useToast();
+    const is_search = ref(false);
+    const search_value = ref("");
     const showToast = (action, severity) => {
       let summary;
       switch (action) {
@@ -468,7 +430,9 @@ export default {
     const router = useRouter();
     const auth = getAuth();
     const visibleRight = ref(false);
-
+    const handleSearch = () => {
+      is_search.value = true;
+    };
     const handleUserInfo = () => {
       router.push(`/userinfo/${items.value[0]?.id}`);
     };
@@ -589,8 +553,7 @@ export default {
         if (currentUser.value?.uid) {
           const result = await addDocs(cartItem);
           showToast("create", "success");
-          fetchCartAdded("userId", currentUser.value?.uid),
-            console.log("result", result);
+          console.log("result", result);
         } else {
           handleLogin();
         }
@@ -608,8 +571,8 @@ export default {
         fetchCategory(),
         fetchMarket(),
         fetchUser("id", currentUser.value?.uid),
-        fetchCartAdded("userId", currentUser.value?.uid),
       ]);
+      await fetchCartAdded("userId", currentUser.value?.uid);
     });
     return {
       route,
@@ -633,6 +596,10 @@ export default {
       showToast,
       items,
       handleUserInfo,
+      is_search,
+      search_value,
+      handleSearch,
+      tab,
     };
   },
 };

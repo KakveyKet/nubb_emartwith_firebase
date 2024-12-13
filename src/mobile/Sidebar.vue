@@ -6,7 +6,7 @@
           class="p-4 hover:bg-primary-2 transition-colors duration-200 cursor-pointer"
         >
           <div
-            @click="handleUserInfo"
+            @click="currentUser ? handleUserInfo() : handleLogin()"
             class="flex items-center text-primary-8 hover:text-primary-10"
           >
             <i v-if="!items[0]?.image" class="pi pi-user size-5 mr-3"></i>

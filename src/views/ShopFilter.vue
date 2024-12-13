@@ -1,9 +1,6 @@
 <template>
   <div class="h-fit py-2">
-    <div class="w-full">
-      <CategoryPage :data="mainCategory" />
-    </div>
-    <div class="mt-3">
+    <div v-if="filteredMarkets.length > 0" class="mt-3">
       <div class="text-black text-14px font-bold flex items-center gap-3">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -23,10 +20,11 @@
       </div>
     </div>
     <div
+      v-if="filteredMarkets.length > 0"
       class="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 grid-cols-1 gap-6 mt-4 xl:w-fit lg:w-fit md:w-fit w-full"
     >
       <div
-        v-for="market in markets"
+        v-for="market in filteredMarkets"
         @click.stop="$router.push(`/shopdetail/${market.id}`)"
         class="bg-white rounded-lg shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)] hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer animate-fade-up animate-duration-300 border"
       >
@@ -113,17 +111,20 @@
         </div>
       </div>
     </div>
+    <div v-else class="flex items-center justify-center h-full">
+      <EmptyShop />
+    </div>
   </div>
 </template>
 <script>
-import CategoryPage from "@/components/CategoryPage.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
+import EmptyShop from "@/Form/EmptyShop.vue";
 export default {
-  props: ["markets"],
+  props: ["markets", "search_value"],
   components: {
-    CategoryPage,
+    EmptyShop,
   },
   setup(props, { emit }) {
     const mainCategory = ref([]);
@@ -145,22 +146,36 @@ export default {
         true
       );
     };
+    const filteredMarkets = computed(() => {
+      if (!props.search_value || props.search_value.trim() === "") {
+        return props.markets;
+      }
+      const searchTerm = props.search_value.toLowerCase();
+      return props.markets.filter((market) => {
+        return (
+          market.name.toLowerCase().includes(searchTerm) ||
+          market.location.toLowerCase().includes(searchTerm) ||
+          (market.Mart_category?.name &&
+            market.Mart_category.name.toLowerCase().includes(searchTerm))
+        );
+      });
+    });
+
     const router = useRouter();
-    const handleTab = () => {
-      emit("tab");
-    };
     console.log(props.markets);
     onMounted(async () => {
       if (props.markets) {
         console.log("markets", props.markets);
       }
-      await fetchMainCategory();
+      if (props.search_value) {
+        console.log("search_value", props.search_value);
+      }
     });
     return {
       router,
       mainCategory,
       formatTime,
-      handleTab,
+      filteredMarkets,
     };
   },
 };

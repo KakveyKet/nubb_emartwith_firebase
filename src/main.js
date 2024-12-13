@@ -38,6 +38,8 @@ import ToggleSwitch from 'primevue/toggleswitch';
 import RadioButton from 'primevue/radiobutton';
 import Timeline from 'primevue/timeline';
 import Badge from 'primevue/badge';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
 // Create Vue app instance
 const app = createApp(App);
 
@@ -82,6 +84,8 @@ app.component("ToggleSwitch", ToggleSwitch)
 app.component("RadioButton", RadioButton)
 app.component("Timeline", Timeline)
 app.component("Badge", Badge)
+app.component("IconField", IconField)
+app.component("InputIcon", InputIcon)
 // Mount the app
 app.use(ToastService);
 

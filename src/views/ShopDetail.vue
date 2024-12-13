@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full p-5">
+  <div class="w-full p-5 relative">
     <div class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
       <div v-if="shop">
         <div
@@ -119,7 +119,7 @@
         <!-- sort by category -->
         <div class="py-4">
           <h2 class="text-20px font-semibold text-gray-800 mb-4 px-4">
-            Sort by category
+            Category
           </h2>
           <div class="">
             <div
@@ -308,6 +308,26 @@
         </div>
       </div>
     </div>
+    <!-- floating cart  and back to cart view-->
+    <div class="fixed bottom-5 right-5">
+      <button
+        @click="handleTab('cart')"
+        class="bg-primary-6 text-white rounded-full size-10 hover:bg-primary-7 active:bg-primary-8 animate-bounce animate-once animate-duration-300"
+      >
+        <i class="pi pi-shopping-cart"></i>
+        <span
+          class="absolute top-0 right-0 size-4 bg-white rounded-full"
+          :class="[
+            cartAdded.length
+              ? ' text-primary-8 flex items-center justify-center font-bold text-13px border b'
+              : 'hidden',
+            'animate-bounce animate-once animate-duration-300',
+          ]"
+        >
+          {{ cartAdded.length }}
+        </span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -322,11 +342,18 @@ import useCollection from "@/composible/useCollection";
 import { onAuthStateChanged } from "firebase/auth";
 import { timestamp } from "@/config/config";
 import { useToast } from "primevue/usetoast";
-
+import { useRouter } from "vue-router";
 export default {
-  setup() {
+  setup(props, { emit }) {
     const route = useRoute();
+    const router = useRouter();
     const currentUser = ref(null);
+    // get funtion by emit from shop component
+    const handleTab = (t) => {
+      emit("tab", t);
+      router.push("/");
+    };
+
     const auth = getAuth();
     const { addDocs } = useCollection("carts");
     const product = ref([]);
@@ -411,11 +438,12 @@ export default {
         console.error("Error adding to cart:", error);
       }
     };
+    let subscription = ref(null);
     const cartAdded = ref([]);
     const fetchCartAdded = async (field, value) => {
       try {
         const conditions = [where(field, "==", value)];
-        await getCollectionQuery(
+        subscription.value = await getCollectionQuery(
           "carts",
           conditions,
           (data) => {
@@ -453,6 +481,7 @@ export default {
       onAuthStateChanged(auth, (user) => {
         currentUser.value = user;
       });
+      fetchCartAdded("userId", currentUser.value?.uid);
     });
 
     // Watch for changes to the selected category and refetch products
@@ -469,6 +498,7 @@ export default {
       shop,
       selectedCategory,
       route,
+      handleTab,
     };
   },
 };

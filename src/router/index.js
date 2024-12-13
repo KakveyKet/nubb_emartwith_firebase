@@ -25,6 +25,7 @@ import UserHistoy from '@/views/UserHistoy.vue';
 import UserInfo from '@/user/UserInfo.vue';
 import AdminProfile from '@/SuperAdminDashboard/AdminProfile.vue';
 import ShopDetail from '@/views/ShopDetail.vue';
+import PaymentMethod from '@/Admin/PaymentMethod.vue';
 setPersistence(projectAuth, browserLocalPersistence).catch((error) => {
   console.error("Error setting persistence:", error);
 });
@@ -180,6 +181,11 @@ const routes = [
         path: '/todayreport',
         name: 'todayreport',
         component: TodayReport,
+      },
+      {
+        path: '/paymentmethod',
+        name: 'paymentmethod',
+        component: PaymentMethod,
       },
 
     ]

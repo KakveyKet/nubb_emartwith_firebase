@@ -52,15 +52,24 @@
                   <div class="mr-8">
                     <div class="border flex items-center rounded-md">
                       <button
-                        class="size-8 rounded flex items-center justify-center bg-blue-500"
+                        :disabled="cart.quantity <= 1"
+                        @click="handleDecrementCart(cart.id, cart.quantity)"
+                        class="size-8 rounded flex items-center justify-center bg-slate-200 text-black"
                       >
-                        <i class="pi pi-minus text-white"></i>
+                        <i class="pi pi-minus text-primary-6"></i>
                       </button>
-                      <div class="size-8 flex items-center justify-center">
-                        <p>{{ cart.quantity }}</p>
+                      <div
+                        class="size-8 flex items-center justify-center text-13px text-primary-6 font-semibold"
+                      >
+                        <p
+                          class="animate-flip-up animate-once animate-duration-300"
+                        >
+                          {{ cart.quantity }}
+                        </p>
                       </div>
                       <button
-                        class="size-8 rounded flex items-center justify-center bg-slate-200"
+                        @click="handleAddMoreCart(cart.id)"
+                        class="size-8 rounded flex items-center justify-center bg-primary-6 text-white"
                       >
                         <i class="pi pi-plus"></i>
                       </button>
@@ -297,6 +306,7 @@ export default {
         true
       );
     };
+
     const groupedByBranch = computed(() => {
       const grouped = {};
       const branchMap = Object.fromEntries(
@@ -333,7 +343,7 @@ export default {
       return grouped;
     });
 
-    const { addDocs, removeDoc } = useCollection("carts");
+    const { addDocs, removeDoc, updateDocs } = useCollection("carts");
     const { addDocs: addOrder } = useCollection("orders");
     const clearCartForUser = async (userId) => {
       try {
@@ -355,6 +365,57 @@ export default {
         console.error("Error clearing cart:", error);
       }
     };
+    // click to update the quantity of the cart
+    const handleAddMoreCart = async (id) => {
+      try {
+        const cartItem = cartAdded.value.find((item) => item.id === id);
+        if (cartItem) {
+          const newQuantity = cartItem.quantity + 1; // Increment quantity by 1
+          await updateDocs(id, { quantity: newQuantity });
+          console.log(
+            `Updated cart item ${id} with new quantity: ${newQuantity}`
+          );
+        } else {
+          console.error("Cart item not found");
+        }
+      } catch (error) {
+        console.error("Error updating cart quantity:", error);
+      }
+    };
+    const handleRemoveCart = async (id) => {
+      try {
+        // Remove the cart item from Firestore
+        await removeDoc(id);
+
+        // Update the local cartAdded array to reflect the change
+        cartAdded.value = cartAdded.value.filter((item) => item.id !== id);
+
+        console.log(`Cart item ${id} removed successfully`);
+        fetchCartAdded("userId", currentUser.value?.uid);
+      } catch (error) {
+        console.error("Error removing cart item:", error);
+      }
+    };
+    const handleDecrementCart = async (id, currentQty) => {
+      try {
+        // Update the quantity in Firestore
+        await updateDocs(id, {
+          quantity: currentQty - 1,
+        });
+
+        // Update the local cartAdded array to reflect the change
+        const updatedCart = cartAdded.value.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+        );
+        cartAdded.value = updatedCart;
+
+        console.log(`Decremented quantity for cart item ${id}`);
+        fetchCartAdded("userId", currentUser.value?.uid);
+      } catch (error) {
+        console.error("Error decrementing cart item quantity:", error);
+      }
+    };
+
     const handleCheckout = async () => {
       try {
         for (const [branchId, items] of Object.entries(
@@ -388,10 +449,6 @@ export default {
       }
     };
 
-    const handleRemoveCart = async (id) => {
-      await removeDoc(id);
-      console.log("id", id);
-    };
     const fetchUser = async (field, value) => {
       try {
         const conditions = [where(field, "==", value)];
@@ -434,6 +491,8 @@ export default {
       handleCheckout,
       handleRemoveCart,
       groupedByBranchID,
+      handleAddMoreCart,
+      handleDecrementCart,
     };
   },
 };

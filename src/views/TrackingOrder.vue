@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5 w-full h-screen">
+  <div :class="orders.length > 0 ? 'p-5 w-full h-fit' : 'w-full h-screen'">
     <div v-if="orders.length > 0" class="w-[80%] mx-auto">
       <div
         class="w-full bg-white p-4 rounded-md shadow-md mt-4 animate-fade-up animate-duration-300 space-y-3 h-auto"

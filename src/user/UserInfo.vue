@@ -11,7 +11,7 @@
             <div class="flex-shrink-0">
               <img
                 v-if="i.image"
-                class="mx-auto h-20 w-20 rounded-full border-4 border-white z-10"
+                class="mx-auto h-20 w-20 rounded-full border-4 border-white z-10 object-cover"
                 :src="i.image"
                 :alt="i.username || 'User Avatar'"
               />

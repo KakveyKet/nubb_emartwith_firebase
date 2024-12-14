@@ -14,7 +14,7 @@
               v-else
               :src="items[0]?.image"
               alt="Profile Image"
-              class="size-8 rounded-full mr-3"
+              class="size-8 rounded-full mr-3 object-cover"
             />
             <span class="text-16px">
               {{
@@ -35,7 +35,7 @@
         </li>
         <li
           v-if="currentUser"
-          @click="logout"
+          @click="is_logout = true"
           class="p-4 hover:bg-primary-2 transition-colors duration-200 cursor-pointer"
         >
           <div class="flex items-center text-primary-8 hover:text-primary-10">
@@ -61,8 +61,37 @@
       :style="{ width: '50vw', position: 'absolute', top: '10vh' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     >
-      <component :is="currentComponent" @close="handleClose" />
+      <component
+        :is="currentComponent"
+        @close="handleClose"
+        @close_drawer="handleCloseDrawer"
+      />
     </Dialog>
+    <Dialog
+      v-model:visible="is_logout"
+      :modal="true"
+      :closable="true"
+      header="Do you want to logout?"
+      :style="{ width: '50vw', position: 'absolute', top: '10vh' }"
+      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    >
+      <div class="w-[100%] mx-auto flex flex-col space-y-5">
+        <!-- <h1 class="xl:text-24px lg:text-20px md:text-16px text-16px font-bold">
+      Are you sure you want to logout?
+    </h1> -->
+        <div class="flex items-center gap-2">
+          <Button
+            @click="is_logout = false"
+            severity="secondary"
+            label="Cancel"
+          />
+          <Button @click="logout" severity="contrast" text label="Yes " />
+        </div>
+      </div>
+    </Dialog>
+    <Notivue v-slot="item">
+      <Notification :item="item" />
+    </Notivue>
   </div>
 </template>
 
@@ -74,27 +103,37 @@ import UserLoginForm from "@/user/UserLoginForm.vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { where } from "firebase/firestore";
 import { useRouter } from "vue-router";
+import { Notivue, Notification, push } from "notivue";
+
 export default {
-  components: { UserLoginForm },
+  components: { UserLoginForm, Notivue, Notification },
   props: [""],
   setup(props, { emit }) {
     const router = useRouter();
     const currentUser = ref(null);
     const auth = getAuth();
+    const handleCloseDrawer = () => {
+      emit("close_drawer");
+    };
+
     const visible = ref(false);
     const currentComponent = ref(null);
     let unsubscribe = null;
+    const is_logout = ref(false);
+
     const logout = async () => {
       try {
         if (currentUser.value?.uid) {
           await signOut(auth);
           localStorage.removeItem("user");
-          emit("toast", "logout");
-          emit("close");
+          visible.value = false;
+          is_logout.value = false;
+          handleCloseDrawer();
+          push.success("Logout Success");
         }
       } catch (error) {
         console.error("Error logging out:", error);
-        alert("Failed to log out. Please try again.");
+        push.error("Failed to log out. Please try again.");
       }
     };
 
@@ -152,6 +191,8 @@ export default {
       items,
       router,
       handleUserInfo,
+      handleCloseDrawer,
+      is_logout,
     };
   },
 };

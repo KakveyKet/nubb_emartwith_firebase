@@ -58,8 +58,16 @@
               {{ market.Mart_category.name }}
             </span>
           </div>
+          <!-- change close when open time is 00:00 -->
           <div class="absolute bottom-4 right-4">
             <span
+              v-if="isShopClose(market.openTime, market.closeTime)"
+              class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+            >
+              Closed
+            </span>
+            <span
+              v-else
               class="bg-primary-1 text-primary-7 text-xs font-bold px-2 py-1 rounded-full"
             >
               {{ formatTime(market.openTime) }} -
@@ -103,7 +111,7 @@
             </svg>
             <span class="text-sm">{{ market.location }}</span>
           </div>
-
+          <!-- if user is login can view more -->
           <button
             @click.stop="router.push(`/shopdetail/${market.id}`)"
             class="xl:text-14px lg:text-14px md:text-14px text-14px font-semibold bg-primary-5 text-white xl:text-center lg:text-center md:text-center text-start py-1 px-4 rounded-full shadow-lg hover:bg-primary-6 transition duration-300"
@@ -120,12 +128,18 @@ import CategoryPage from "@/components/CategoryPage.vue";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
+import moment from "moment-timezone";
 export default {
-  props: ["markets"],
+  props: ["markets", "currentUser"],
   components: {
     CategoryPage,
   },
   setup(props, { emit }) {
+    // convert time to 8 hour format start 7 to 17
+    const isShopClose = (openTime, closeTime) => {
+      const currentTime = moment().tz("Asia/Phnom_Penh").format("HH:mm");
+      return currentTime < openTime || currentTime > closeTime;
+    };
     const mainCategory = ref([]);
     const formatTime = (time) => {
       if (!time || !time.seconds) return "N/A";
@@ -156,13 +170,21 @@ export default {
       if (props.markets) {
         console.log("markets", props.markets);
       }
+      if (props.currentUser) {
+        console.log("currentUser", props.currentUser);
+      }
       await fetchMainCategory();
     });
+    const handleLogin = () => {
+      emit("login");
+    };
     return {
       router,
       mainCategory,
       formatTime,
       handleTab,
+      handleLogin,
+      isShopClose,
     };
   },
 };

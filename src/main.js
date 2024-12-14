@@ -40,11 +40,32 @@ import Timeline from 'primevue/timeline';
 import Badge from 'primevue/badge';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+
+
+import Popover from 'primevue/popover';
+
+// notivue
+import { createNotivue } from 'notivue'
+
+import 'notivue/notification.css'
+import 'notivue/animations.css'
 // Create Vue app instance
 const app = createApp(App);
 
 // Set up router
+const notivue = createNotivue({
+    position: 'top-center',
+    limit: 1,
+    enqueue: false,
+    notifications: {
+        global: {
+            duration: 2000
+        }
+    }
+})
 app.use(router);
+app.use(notivue)
+
 app.use(PrimeVue, {
     theme: {
         preset: Aura,
@@ -86,6 +107,7 @@ app.component("Timeline", Timeline)
 app.component("Badge", Badge)
 app.component("IconField", IconField)
 app.component("InputIcon", InputIcon)
+app.component("Popover", Popover)
 // Mount the app
 app.use(ToastService);
 

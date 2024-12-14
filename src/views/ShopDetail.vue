@@ -34,7 +34,7 @@
               <img
                 :src="shop.profileImageUrl"
                 alt=""
-                class="w-16 h-16 rounded-full border-4 border-primary-3"
+                class="w-16 h-16 rounded-full border border-primary-3 shadow-md"
               />
               <div>
                 <h2 class="text-20px font-semibold text-gray-800">
@@ -328,6 +328,17 @@
         </span>
       </button>
     </div>
+    <Dialog
+      v-model:visible="visible"
+      :modal="true"
+      :style="{ width: '50vw', position: 'absolute', top: '10vh' }"
+      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    >
+      <UserLoginForm />
+    </Dialog>
+    <Notivue v-slot="item">
+      <Notification :item="item" />
+    </Notivue>
   </div>
 </template>
 
@@ -341,9 +352,17 @@ import { where, doc, getDoc } from "firebase/firestore";
 import useCollection from "@/composible/useCollection";
 import { onAuthStateChanged } from "firebase/auth";
 import { timestamp } from "@/config/config";
-import { useToast } from "primevue/usetoast";
 import { useRouter } from "vue-router";
+import UserLoginForm from "@/user/UserLoginForm.vue";
+// notivue
+import { Notivue, Notification, push } from "notivue";
+
 export default {
+  components: {
+    UserLoginForm,
+    Notivue,
+    Notification,
+  },
   setup(props, { emit }) {
     const route = useRoute();
     const router = useRouter();
@@ -353,7 +372,7 @@ export default {
       emit("tab", t);
       router.push("/");
     };
-
+    const visible = ref(false);
     const auth = getAuth();
     const { addDocs } = useCollection("carts");
     const product = ref([]);
@@ -427,12 +446,12 @@ export default {
         };
         if (currentUser.value?.uid) {
           const result = await addDocs(cartItem);
-          showToast("create", "success");
           fetchCartAdded("userId", currentUser.value?.uid);
+          push.success("Add to cart success");
           console.log("result", result);
           console.log("cartAdded", cartAdded.value);
         } else {
-          handleLogin();
+          visible.value = true;
         }
       } catch (error) {
         console.error("Error adding to cart:", error);
@@ -499,6 +518,7 @@ export default {
       selectedCategory,
       route,
       handleTab,
+      visible,
     };
   },
 };

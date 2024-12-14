@@ -7,7 +7,11 @@
           alt="Logo"
           class="w-24 h-24 object-contain"
         />
-        <h1 class="text-24px font-bold text-primary-8">User Login</h1>
+        <h1
+          class="xl:text-24px lg:text-20px md:text-16px text-16px font-bold text-primary-8"
+        >
+          Welcome! Please Log In
+        </h1>
       </div>
 
       <form @submit.prevent="handleSubmit" class="space-y-6">
@@ -54,6 +58,9 @@
         </router-link>
       </div>
     </div>
+    <Notivue v-slot="item">
+      <Notification :item="item" />
+    </Notivue>
   </div>
 </template>
 
@@ -61,8 +68,14 @@
 import { ref } from "vue";
 import useSignIn from "@/composible/SignIn";
 import { useRouter } from "vue-router";
+import { Notivue, Notification, push } from "notivue";
+
 export default {
   emits: ["close"],
+  components: {
+    Notivue,
+    Notification,
+  },
   setup(props, { emit }) {
     const email = ref("");
     const password = ref("");
@@ -78,7 +91,9 @@ export default {
         const success = await signin(email.value, password.value);
         if (success) {
           console.log("Login successful");
+          push.success("Welcome Back");
           emit("close");
+          emit("close_drawer");
           router.push({ path: "/" });
         }
       } catch (err) {

@@ -3,7 +3,7 @@
     <!-- navbar -->
     <div class="xl:w-full lg:w-full md:w-full w-full shadow-md">
       <div
-        class="xl:w-[80%] lg:w-[80%] md:w-[100%] w-[90%] mx-auto py-2 flex items-center justify-between"
+        class="xl:w-[90%] lg:w-[90%] md:w-[90%] w-[90%] mx-auto py-2 flex items-center justify-between"
       >
         <!-- logo -->
         <div class="flex items-center gap-4">
@@ -20,45 +20,10 @@
             </h1>
           </div>
         </div>
-        <!-- search -->
-        <div
-          class="w-[450px] xl:flex hidden lg:flex md:flex p-0.5 border-[#646464] border rounded-[40px] overflow-hidden"
-        >
-          <input
-            class="w-full border-none input_webpage"
-            placeholder="What are you looking for?"
-            type="text"
-            @click="handleSearch"
-          />
-          <button class="btncheckout px-12">Search</button>
-        </div>
-        <!-- tool -->
+
         <div class="flex items-center gap-3">
-          <div class="xl:flex hidden lg:flex md:flex items-center gap-2">
-            <img
-              class="w-[24px] h-[16px]"
-              src="../assets/download.png"
-              alt=""
-            />
-            <div class="flex gap-2">
-              <h3 class="text-16px font-bold">KH</h3>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="m19.5 8.25-7.5 7.5-7.5-7.5"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="xl:flex hidden lg:flex md:flex items-center gap-2">
+          <!-- cart -->
+          <div class="xl:flex hidden lg:flex md:hidden items-center gap-2">
             <div class="flex gap-2">
               <div
                 @click="handleTab('cart')"
@@ -85,66 +50,7 @@
               </div>
             </div>
           </div>
-          <!-- <div
-            class="xl:flex hidden lg:flex md:flex items-center gap-2 border-r border-primary-4 px-2"
-          >
-            <div
-              class="size-9 bg-primary-5 rounded-full flex items-center justify-center relative"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6 text-white"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                />
-              </svg>
-              <span
-                class="text-primary-6 absolute text-16px bg-white size-5 box-shadow: 0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08); flex items-center justify-center rounded-full font-bold -top-2 right-0"
-                >2</span
-              >
-            </div>
-          </div> -->
-
-          <div v-if="currentUser" class="flex items-center gap-2">
-            <div class="flex gap-2 items-center">
-              <div
-                v-if="items"
-                class="xl:flex lg:flex md:flex hidden size-9 bg-primary-5 rounded-full items-center justify-center"
-              >
-                <div v-if="items[0]?.image" class="text-white font-bold">
-                  <img
-                    @click="handleUserInfo"
-                    :src="items[0]?.image"
-                    alt=""
-                    class="w-full h-full rounded-full"
-                  />
-                </div>
-                <div
-                  @click="handleUserInfo"
-                  v-else
-                  class="text-white font-bold cursor-pointer"
-                >
-                  {{ items[0]?.username[0] }}
-                </div>
-              </div>
-              <div class="flex items-center space-x-3">
-                <div
-                  v-if="currentUser"
-                  class="xl:block lg:block md:block hidden text-nowrap text-16px px-2 py-1.5 bg-primary-5 text-white font-semibold rounded-md"
-                >
-                  Hi, {{ currentUser.displayName }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="xl:hidden lg:hidden md:hidden flex items-center gap-2">
+          <div class="xl:hidden lg:hidden md:flex flex items-center gap-2">
             <Button
               @click="is_search = true"
               icon="pi pi-search"
@@ -160,35 +66,45 @@
               aria-label="Bookmark"
             />
           </div>
-          <div class="xl:flex lg:flex md:flex hidden items-center gap-2">
-            <div
-              v-if="currentUser"
-              @click="logout"
-              class="p-2 text-16px hover:bg-primary-2 transition-colors duration-200 cursor-pointer rounded-md"
-            >
+          <div
+            v-if="currentUser"
+            class="xl:flex lg:flex md:hidden hidden items-center gap-2"
+          >
+            <!-- image can not move to download -->
+            <div class="text-white font-bold">
+              <img
+                v-if="items[0]?.image"
+                @click="toggle"
+                :src="items[0]?.image"
+                alt=""
+                class="size-9 border border-primary-5 rounded-full object-cover cursor-pointer"
+              />
               <div
-                class="flex items-center text-primary-8 hover:text-primary-10"
+                @click="handleUserInfo"
+                v-else
+                class="text-white font-bold cursor-pointer"
               >
-                <i class="pi pi-sign-out size-5 mr-3"></i>
-                <span class="text-16px">Logout</span>
-              </div>
-            </div>
-            <div
-              v-else
-              @click="handleLogin"
-              class="p-2 text-16px hover:bg-primary-2 transition-colors duration-200 cursor-pointer rounded-md"
-            >
-              <div
-                class="flex items-center text-primary-8 hover:text-primary-10"
-              >
-                <i class="pi pi-sign-in size-5 mr-3"></i>
-                <span class="text-16px">Login</span>
+                {{ items[0]?.username[0] }}
               </div>
             </div>
           </div>
+          <Button
+            v-if="!currentUser"
+            @click="handleLogin"
+            severity="secondary"
+            rounded
+            icon="pi pi-user"
+            class="xl:!flex lg:!flex md:!hidden !hidden"
+          >
+          </Button>
+          <!-- translate  update to select language 
+           -->
+          <div
+            class="border overflow-hidden size-10 cursor-pointer rounded-full"
+          >
+            <img class="w-full h-full" src="../assets/download.png" alt="" />
+          </div>
         </div>
-        <!-- pf -->
-        <!-- <div></div> -->
       </div>
     </div>
     <!-- sub navbar  -->
@@ -265,7 +181,12 @@
 
     <div v-if="tab === 'shop'" class="w-full">
       <div class="w-[80%] mx-auto">
-        <ShopComponent @tab="handleTab" :markets="markets" />
+        <ShopComponent
+          @tab="handleTab"
+          :markets="markets"
+          @login="handleLogin"
+          :currentUser="currentUser"
+        />
       </div>
     </div>
     <div v-if="tab === 'cart'" class="w-full">
@@ -299,7 +220,7 @@
     position="right"
     class="h-screen"
   >
-    <Sidebar @close="visibleRight = false" @toast="showToast" />
+    <Sidebar @close_drawer="handleCloseDrawer" @toast="showToast" />
   </Drawer>
   <Dialog
     v-model:visible="is_search"
@@ -337,6 +258,99 @@
       <ShopFilter :markets="markets" :search_value="search_value" />
     </div>
   </Dialog>
+  <!-- pop over -->
+  <Popover ref="op">
+    <div class="flex flex-col gap-4 items-center w-[10rem]">
+      <!-- User Info Section -->
+      <div>
+        <div v-if="currentUser" class="flex items-center gap-4">
+          <!-- User Avatar -->
+          <div class="flex items-center gap-2">
+            <div
+              class="flex flex-col items-center justify-center space-x-3 text-nowrap mx-auto"
+            >
+              <div
+                v-if="items"
+                class="hidden xl:flex lg:flex md:flex size-12 bg-primary-5 rounded-full items-center justify-center mx-auto space-y-2"
+              >
+                <img
+                  v-if="items[0]?.image"
+                  @click="handleUserInfo"
+                  :src="items[0]?.image"
+                  alt="User Avatar"
+                  class="size-12 rounded-full object-cover cursor-pointer mx-auto"
+                />
+                <div
+                  v-else
+                  @click="handleUserInfo"
+                  class="text-white font-bold cursor-pointer"
+                >
+                  {{ items[0]?.username[0] }}
+                </div>
+              </div>
+              <div v-if="currentUser" class="text-primary-8 text-16px mt-2">
+                Hi, <span class="font-bold">{{ items[0]?.username }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div>
+        <div class="hidden md:flex flex-col items-start">
+          <!-- Logout Button -->
+          <div class="w-[90%] border-b mx-auto"></div>
+          <div
+            class="p-3 w-full text-16px text-primary-8 hover:bg-primary-2 hover:text-primary-10 transition-colors duration-200 cursor-pointer rounded-md flex items-center gap-2"
+          >
+            <i class="pi pi-history size-5"></i>
+            <span>History</span>
+          </div>
+
+          <div class="w-[90%] border-b mx-auto"></div>
+
+          <div
+            v-if="currentUser"
+            @click="isLogout = true"
+            class="p-3 w-full text-16px text-primary-8 hover:bg-primary-2 hover:text-primary-10 transition-colors duration-200 cursor-pointer rounded-md flex items-center gap-2"
+          >
+            <i class="pi pi-sign-out size-5"></i>
+            <span>Logout</span>
+          </div>
+          <div
+            v-else
+            @click="handleLogin"
+            class="p-3 w-full text-16px text-primary-8 hover:bg-primary-2 hover:text-primary-10 transition-colors duration-200 cursor-pointer rounded-md flex items-center gap-2"
+          >
+            <i class="pi pi-sign-in size-5"></i>
+            <span>Login</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Popover>
+  <!-- logout -->
+  <Dialog
+    v-model:visible="isLogout"
+    :modal="true"
+    :closable="true"
+    header="Do you want to logout?"
+    :style="{ width: '30vw', position: 'absolute', top: '10vh' }"
+  >
+    <div class="w-[100%] mx-auto flex flex-col space-y-5">
+      <!-- <h1 class="xl:text-24px lg:text-20px md:text-16px text-16px font-bold">
+        Are you sure you want to logout?
+      </h1> -->
+      <div class="flex items-center gap-2">
+        <Button @click="isLogout = false" severity="secondary" label="Cancel" />
+        <Button @click="logout" severity="contrast" text label="Yes " />
+      </div>
+    </div>
+  </Dialog>
+  <Notivue v-slot="item">
+    <Notification :item="item" />
+  </Notivue>
 </template>
 
 <script>
@@ -362,6 +376,8 @@ import useCollection from "@/composible/useCollection";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import CartView from "./CartView.vue";
+import { Notivue, Notification, push } from "notivue";
+
 export default {
   components: {
     FooterVue,
@@ -374,11 +390,27 @@ export default {
     TrackingOrder,
     ShopFilter,
     ShopDetail,
+    Notivue,
+    Notification,
   },
   setup() {
     const toast = useToast();
+    const op = ref(null);
     const is_search = ref(false);
     const search_value = ref("");
+    const route = useRoute();
+    const subCategory = ref([]);
+    const products = ref([]);
+    const currentUser = ref(null);
+    const visible = ref(false);
+    const currentComponent = ref("");
+    const router = useRouter();
+    const auth = getAuth();
+    const visibleRight = ref(false);
+    const isLogout = ref(false);
+    const toggle = (e) => {
+      op.value.toggle(e);
+    };
     const showToast = (action, severity) => {
       let summary;
       switch (action) {
@@ -421,15 +453,10 @@ export default {
         life: 3000,
       });
     };
-    const route = useRoute();
-    const subCategory = ref([]);
-    const products = ref([]);
-    const currentUser = ref(null);
-    const visible = ref(false);
-    const currentComponent = ref("");
-    const router = useRouter();
-    const auth = getAuth();
-    const visibleRight = ref(false);
+
+    const handleCloseDrawer = () => {
+      visibleRight.value = false;
+    };
     const handleSearch = () => {
       is_search.value = true;
     };
@@ -482,7 +509,8 @@ export default {
         await signOut(auth); // Sign out the user using Firebase
         localStorage.removeItem("user"); // Remove any stored user info
         router.push("/"); // Redirect to login page
-        alert("You have been logged out successfully!");
+        push.success("Logout Success");
+        isLogout.value = false;
       } catch (error) {
         console.error("Error logging out:", error);
         alert("Failed to log out. Please try again.");
@@ -600,6 +628,10 @@ export default {
       search_value,
       handleSearch,
       tab,
+      isLogout,
+      handleCloseDrawer,
+      op,
+      toggle,
     };
   },
 };

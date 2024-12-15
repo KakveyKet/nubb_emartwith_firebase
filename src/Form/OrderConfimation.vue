@@ -34,8 +34,9 @@ export default {
           });
           if (result) {
             const report = await addReport({
+              branch_id: props.dataToEdit.branch_id,
               orderId: props.dataToEdit.id,
-              userId: currentUser.value.uid,
+              userId: props.dataToEdit.user[0]?.id,
               reject_reason: "",
               items: props.dataToEdit.items,
               pending_time: props.dataToEdit.pending_time,
@@ -57,10 +58,13 @@ export default {
         console.log(error);
       }
     };
+
     onMounted(() => {
       currentUser.value = auth.currentUser;
       if (props.dataToEdit) {
         time.value = props.dataToEdit.pending_time;
+        console.log("props.dataToEdit", props.dataToEdit.user[0]?.id);
+        console.log("props.dataToEdit", props.dataToEdit.branch_id);
       }
     });
     return {

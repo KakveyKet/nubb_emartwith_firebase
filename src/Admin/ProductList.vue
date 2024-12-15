@@ -162,6 +162,7 @@
         :dataToDelete="dataToDelete"
         @delete="handleDelete"
         @toast="showToast"
+        @close="handleCloseDeleteDialog"
       />
       <Toast />
     </div>
@@ -256,6 +257,9 @@ export default {
     const searchTerm = ref("");
 
     const { removeDoc } = useCollection("products");
+    const handleCloseDeleteDialog = () => {
+      deleteDialog.value = false;
+    };
     const deleteDialog = ref(false);
     const deleteId = ref(null);
     const dataToDelete = ref(null);
@@ -374,6 +378,7 @@ export default {
       categories,
       currentDate,
       selectedCategory,
+      handleCloseDeleteDialog,
     };
   },
 };

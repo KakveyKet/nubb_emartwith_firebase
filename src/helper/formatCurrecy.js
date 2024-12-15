@@ -48,3 +48,9 @@ export const formatDateTime = (value) => {
 export const formatNumberWithCommas = (value) => {
     return new Intl.NumberFormat("en-US").format(value);
 };
+// formart phone number max 10 digit not allow for - + space    
+// helpers.js
+export const formatPhoneNumber = (value) => {
+    return value.replace(/[^\d]/g, "").slice(0, 10);
+};
+

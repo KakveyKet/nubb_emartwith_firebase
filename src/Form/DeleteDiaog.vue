@@ -8,7 +8,15 @@
     @hide="handleClose"
   >
     <div>
-      <p>កាលុបមិនអាចយកមកវិញបានទេ [ {{ dataToDelete.name }} ] ?</p>
+      <p>
+        កាលុបមិនអាចយកមកវិញបានទេ [
+        {{
+          route.path === "/paymentmethod"
+            ? dataToDelete?.bank_name
+            : dataToDelete?.name
+        }}
+        ] ?
+      </p>
     </div>
     <template #footer>
       <Button
@@ -28,7 +36,7 @@
 <script>
 import { ref, watch, onMounted } from "vue";
 import { Button } from "primevue/button";
-
+import { useRoute, useRouter } from "vue-router";
 export default {
   props: {
     visible: {
@@ -50,9 +58,10 @@ export default {
   },
   setup(props, { emit }) {
     const visible = ref(props.visible);
-
+    const route = useRoute();
     const handleClose = () => {
-      emit("update:visible", false); // Emit an event to close the dialog
+      // emit("update:visible", false); // Emit an event to close the dialog
+      emit("close");
     };
 
     const confirmDelete = () => {
@@ -76,6 +85,7 @@ export default {
       visible,
       handleClose,
       confirmDelete,
+      route,
     };
   },
 };

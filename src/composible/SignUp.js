@@ -31,7 +31,8 @@ const signup = async (email, password, displayName, role, phoneNumber, imageUrl)
             email: email,
             phoneNumber: phoneNumber,
             role: role || "manager", // Default role if not provided
-            image: imageUrl,
+            //image default null
+            image: imageUrl ? imageUrl : null, //
             createdAt: timestamp(),
         };
 

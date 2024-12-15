@@ -19,11 +19,11 @@
                 v-else
                 class="mx-auto h-20 w-20 bg-primary-7 rounded-full border-4 border-white flex items-center justify-center relative group"
               >
-                <InputText
+                <!-- <InputText
                   type="file"
                   @change="handleImageUpload"
                   class="w-full h-full opacity-0 cursor-pointer fixed top-0 left-0 z-50"
-                />
+                /> -->
                 <p
                   class="text-13px w-full text-center h-full flex cursor-pointer items-center justify-center rounded-full font-bold text-white bg-black/50 absolute bottom-0 opacity-0 right-0 group-hover:opacity-100 transition-opacity duration-300"
                 >
@@ -178,9 +178,14 @@ export default {
     const imageFile = ref(null);
     const handleImageUpload = (e) => {
       const file = e.target.files[0];
-      imagePreview.value = URL.createObjectURL(file);
-      imageFile.value = file;
+      if (file) {
+        imagePreview.value = URL.createObjectURL(file);
+        imageFile.value = file;
+      } else {
+        console.error("No file selected.");
+      }
     };
+
     const { updateDocs } = useCollection("users");
     const fetchUser = async (field, value) => {
       try {

@@ -46,7 +46,7 @@
                       class="flex items-center gap-3 xl:text-16px lg:text-16px md:text-16px text-13px text-nowrap"
                     >
                       <p>PRICE</p>
-                      <span>{{ cart.price }} ៛</span>
+                      <span>{{ formatNumber(cart.price) }} ៛</span>
                     </div>
                   </div>
                   <div class="mr-8">
@@ -92,7 +92,7 @@
               >
                 <div v-for="item in groupedItems" :key="item.id">
                   <p>{{ item.name }} x {{ item.totalQuantity }}:</p>
-                  <p>{{ item.totalPrice }}៛</p>
+                  <p>{{ formatNumber(item.totalPrice) }} ៛</p>
                 </div>
               </div>
             </div>
@@ -146,6 +146,7 @@
                 v-model="location_selected"
                 placeholder="Ex: room 114"
                 style="width: 250px"
+                class="h-9"
               />
               <Select
                 v-else
@@ -186,10 +187,71 @@
                   <label for="pay_by_cash">Pay by Cash</label>
                 </div>
               </div>
+              <!-- when payment method is bank -->
+              <div
+                v-if="paymentMethod === 'bank'"
+                class="mt-6 animate-fade-up animate-once animate-duration-300"
+              >
+                <Select
+                  v-model="selectedBankId"
+                  :options="paymentMethods"
+                  optionLabel="bank_name"
+                  option-value="bank_name"
+                  placeholder="Select a payment method"
+                  filter
+                  show-clear
+                  class="w-[250px] mt-4 h-10 flex items-center"
+                />
+              </div>
+            </div>
+            <div v-if="selectedBank" class="mt-4">
+              <h3
+                class="xl:text-16px lg:text-16px md:text-16px text-13px font-semibold text-primary-6"
+              >
+                Pay by {{ selectedBank.bank_name }}
+              </h3>
+              <div
+                class="flex gap-4 animate-fade-up animate-once animate-duration-300"
+              >
+                <!-- Khmer QR Code -->
+                <div>
+                  <h4
+                    class="font-medium xl:text-16px lg:text-16px md:text-16px text-13px"
+                  >
+                    KH QR Code
+                  </h4>
+                  <img
+                    v-if="selectedBank.kh_qr_payement_image"
+                    :src="selectedBank.kh_qr_payement_image"
+                    alt="KH QR Code"
+                    class="w-52 h-52 object-contain border rounded"
+                  />
+                </div>
+                <!-- USD QR Code -->
+                <div>
+                  <h4
+                    class="font-medium xl:text-16px lg:text-16px md:text-16px text-13px"
+                  >
+                    USD QR Code
+                  </h4>
+                  <img
+                    v-if="selectedBank.usd_qr_payement_image"
+                    :src="selectedBank.usd_qr_payement_image"
+                    alt="USD QR Code"
+                    class="w-52 h-52 object-contain border rounded"
+                  />
+                </div>
+              </div>
             </div>
             <div class="w-[90%] mt-4 flex justify-between">
-              <p>Total</p>
-              <p>{{ totalPrice }} ៛</p>
+              <p
+                class="xl:text-16px lg:text-16px md:text-16px text-16px text-primary-6 font-semibold"
+              >
+                Total
+              </p>
+              <p class="xl:text-16px lg:text-16px md:text-16px text-13px">
+                {{ formatNumber(totalPrice) }} ៛
+              </p>
             </div>
             <div
               class="
@@ -210,7 +272,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import useCollection from "@/composible/useCollection";
 import { projectAuth } from "@/config/config";
@@ -220,6 +282,7 @@ import { timestamp } from "@/config/config";
 import EmptyCart from "@/Form/EmptyCart.vue";
 import { writeBatch, getDocs, query, collection } from "firebase/firestore";
 import { projectFirestore } from "@/config/config";
+import { formatNumber } from "@/helper/formatCurrecy";
 export default {
   components: {
     EmptyCart,
@@ -233,6 +296,7 @@ export default {
     const locations = ref(null);
     const location_selected = ref(null);
     const isArea = ref("yourarea");
+    const is_Bank = ref(null);
     const location = ref([
       {
         name: "ស្រះទឹក",
@@ -342,7 +406,49 @@ export default {
 
       return grouped;
     });
+    const paymentMethods = ref([]);
 
+    const fetchPaymentMethod = async (field, value) => {
+      const conditions = [where(field, "==", value)];
+      await getCollectionQuery(
+        "payment_methods",
+        conditions,
+        (data) => {
+          paymentMethods.value = data;
+        },
+        true
+      );
+    };
+    const fetchPaymentMethodsForBranches = async () => {
+      for (const branchName in groupedByBranch.value) {
+        const branchId = groupedByBranch.value[branchName][0]?.branch_id;
+        if (branchId) {
+          const paymentMethodsData = await fetchPaymentMethod(
+            "branch_id",
+            branchId
+          );
+          paymentMethods.value[branchName] = paymentMethodsData;
+        }
+      }
+    };
+    watch([cartAdded, markets], fetchPaymentMethodsForBranches, {
+      immediate: true,
+    });
+    const selectedBankId = ref("");
+    const selectedBank = computed(() => {
+      return (
+        paymentMethods.value.find(
+          (bank) => bank.bank_name === selectedBankId.value
+        ) || null
+      );
+    });
+
+    watch(selectedBankId, (newId) => {
+      console.log("Selected bank ID:", newId);
+      if (selectedBank.value) {
+        console.log("Selected bank details:", selectedBank.value);
+      }
+    });
     const { addDocs, removeDoc, updateDocs } = useCollection("carts");
     const { addDocs: addOrder } = useCollection("orders");
     const clearCartForUser = async (userId) => {
@@ -356,10 +462,10 @@ export default {
         const batch = writeBatch(projectFirestore);
 
         querySnapshot.forEach((doc) => {
-          batch.delete(doc.ref); // Add each document to the batch for deletion
+          batch.delete(doc.ref);
         });
 
-        await batch.commit(); // Execute all deletes in one batch
+        await batch.commit();
         console.log(`Cart cleared for user: ${userId}`);
       } catch (error) {
         console.error("Error clearing cart:", error);
@@ -475,11 +581,15 @@ export default {
         fetchCartAdded("userId", currentUser.value?.uid),
         fetchUser("id", currentUser.value?.uid),
       ]);
+      await fetchPaymentMethodsForBranches(),
+        console.log("paymentMethods", paymentMethods.value);
+      console.log("groupedByBranch", groupedByBranch.value);
     });
 
     return {
       cartAdded,
       paymentMethod,
+      paymentMethods,
       totalPrice,
       groupedItems,
       instructions,
@@ -493,6 +603,9 @@ export default {
       groupedByBranchID,
       handleAddMoreCart,
       handleDecrementCart,
+      selectedBankId,
+      selectedBank,
+      formatNumber,
     };
   },
 };

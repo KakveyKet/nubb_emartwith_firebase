@@ -1,53 +1,30 @@
-// import { projectAuth } from "@/config/config";
-// import { ref, onMounted } from "vue";
-// import axios from "axios";
-// import { getCollectionQuery } from "./getCollection";
-// const currentUser = ref(null);
-// const items = ref([]);
-// const fetchUser = async (field, value) => {
-//     const conditions = [where(field, "==", value)];
-//     await getCollectionQuery(
-//         "users",
-//         conditions,
-//         (data) => {
-//             items.value = data;
-//             console.log("items", items.value);
-//         },
+const TelegramBot = require("node-telegram-bot-api");
+const { getFirestore, doc, getDoc } = require("firebase/firestore");
 
-//         true
-//     );
-// };
-// onMounted(async () => {
-//     currentUser.value = projectAuth.currentUser;
-//     await fetchUser("id", currentUser.value?.uid)
+const db = getFirestore();
 
-// });
+const getTelegramBotToken = async () => {
+    const settingsDoc = await getDoc(doc(db, "settings", "telegramBotToken"));
+    if (settingsDoc.exists()) {
+        return settingsDoc.data().telegramBotToken;
+    } else {
+        throw new Error("Telegram Bot Token not found in Firestore.");
+    }
+};
 
-// // Function to send a message to a Telegram bot for the current user
-// export const sendTelegramMessage = async (message) => {
-//     if (!currentUser.value) {
-//         console.error("No user is currently logged in.");
-//         return;
-//     }
-//     const botToken = items.value[0]?.botToken;
-//     const chatId = items.value[0]?.telegram_id;
-//     if (!botToken || !chatId) {
-//         console.error("Bot token or chat ID is missing.");
-//         return;
-//     }
+// Example usage
+const startBot = async () => {
+    try {
+        const botToken = await getTelegramBotToken();
+        const bot = new TelegramBot(botToken, { polling: true });
 
-//     // Construct the URL for the API request
-//     const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-//     const payload = {
-//         chat_id: chatId,
-//         text: message, // Message to send
-//     };
+        bot.onText(/\/start/, (msg) => {
+            const chatId = msg.chat.id;
+            bot.sendMessage(chatId, "Welcome to the Telegram bot!");
+        });
+    } catch (error) {
+        console.error("Error starting bot:", error);
+    }
+};
 
-//     try {
-//         // Send the message via axios POST request
-//         const response = await axios.post(url, payload);
-//         console.log("Message sent successfully:", response.data);
-//     } catch (error) {
-//         console.error("Error sending message:", error?.response?.data || error.message);
-//     }
-// };
+startBot();

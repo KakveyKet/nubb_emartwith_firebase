@@ -5,7 +5,7 @@ import '../src/css/index.css';
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faBowlFood, faShop, faStar } from "@fortawesome/free-solid-svg-icons";
 
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
@@ -77,7 +77,7 @@ app.use(PrimeVue, {
     }
 });
 // FontAwesome configuration
-library.add(faStar);
+library.add(faStar, faBowlFood, faShop);
 app.component('font-awesome-icon', FontAwesomeIcon);
 // Register PrimeVue components
 app.component('Drawer', Drawer); // Use a multi-word name

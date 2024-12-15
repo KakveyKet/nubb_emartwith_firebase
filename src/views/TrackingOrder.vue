@@ -67,7 +67,7 @@
                   <!-- price -->
                   <div class="w-fit">
                     <p class="text-13px text-black" v-if="order.items">
-                      {{ order_data.price }} ៛
+                      {{ formatNumber(order_data.price) }} ៛
                     </p>
                   </div>
                 </div>
@@ -139,6 +139,7 @@ import { where, doc, getDoc } from "firebase/firestore";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { ref, onMounted } from "vue";
 import { formatDate } from "@/composible/formatDate";
+import { formatNumber } from "@/helper/formatCurrecy";
 import moment from "moment-timezone";
 export default {
   props: ["currentUser"],
@@ -152,8 +153,6 @@ export default {
       // Extract the first 7 characters
       const prefix = id.slice(0, 7);
 
-      // Include a padded number (e.g., 001)
-      // dynamic number part of orders length
       const numberPart = `00${orders.value.length + 1}`;
 
       // Combine and return the result
@@ -221,6 +220,7 @@ export default {
       formatBranchName,
       formarBranchImage,
       splitInvoiceId,
+      formatNumber,
     };
   },
 };

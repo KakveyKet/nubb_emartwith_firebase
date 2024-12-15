@@ -185,9 +185,16 @@
           <div
             class="xl:w-fit lg:w-fit md:w-fit w-full xl:gap-8 lg:gap-8 md:gap-8 gap-4 grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-3 grid-cols-2 h-fit"
           >
+            <!-- opacity 0.5 when shop is close -->
             <div
               v-for="product in product"
               :key="product.id"
+              :class="{
+                'cursor-not-allowed': isShopClose(
+                  shop.openTime,
+                  shop.closeTime
+                ),
+              }"
               class="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 animate-fade-up animate-duration-300 group xl:h-fit lg:h-fit md:h-fit h-fit border"
             >
               <!-- Image Container -->
@@ -243,14 +250,21 @@
                 <div class="flex items-center justify-between mt-3">
                   <div class="flex flex-col">
                     <span class="text-17px font-bold text-primary-8">
-                      {{ product.price }} ៛
+                      {{ formatNumber(product.price) }} ៛
                     </span>
                     <!-- <span class="text-13px text-gray-500 line-through">
                       {{ Math.round(product.price * 1.2) }} ៛
                     </span> -->
                   </div>
                   <button
+                    :disabled="isShopClose(shop.openTime, shop.closeTime)"
                     @click="handleAddToCart(product)"
+                    :class="{
+                      'cursor-not-allowed': isShopClose(
+                        shop.openTime,
+                        shop.closeTime
+                      ),
+                    }"
                     class="bg-primary-5 hover:bg-primary-6 text-white rounded-lg flex items-center justify-center size-10 transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-7 focus:ring-opacity-50"
                   >
                     <i class="pi pi-plus size-5"></i>
@@ -356,6 +370,8 @@ import { useRouter } from "vue-router";
 import UserLoginForm from "@/user/UserLoginForm.vue";
 // notivue
 import { Notivue, Notification, push } from "notivue";
+import { formatNumber } from "@/helper/formatCurrecy";
+import moment from "moment-timezone";
 
 export default {
   components: {
@@ -508,6 +524,25 @@ export default {
       console.log("Selected Category Changed:", newCategory);
       fetchProducts("branch_id", route.params.id); // Pass branch ID
     });
+    // watch open and close time of shop the button add to cart disable
+    const isShopClose = (openTime, closeTime) => {
+      // Convert openTime and closeTime to moment objects
+      const openTimeFormatted = moment
+        .unix(openTime.seconds)
+        .tz("Asia/Phnom_Penh")
+        .format("HH:mm");
+      const closeTimeFormatted = moment
+        .unix(closeTime.seconds)
+        .tz("Asia/Phnom_Penh")
+        .format("HH:mm");
+
+      const currentTime = moment().tz("Asia/Phnom_Penh").format("HH:mm");
+
+      // Compare the current time with open and close times
+      return (
+        currentTime < openTimeFormatted || currentTime > closeTimeFormatted
+      );
+    };
 
     return {
       product,
@@ -519,6 +554,8 @@ export default {
       route,
       handleTab,
       visible,
+      formatNumber,
+      isShopClose,
     };
   },
 };

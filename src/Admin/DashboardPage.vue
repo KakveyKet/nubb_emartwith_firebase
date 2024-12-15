@@ -10,8 +10,11 @@
       ]"
     >
       <div class="flex items-center gap-4 p-5 w-full">
-        <div class="w-[45px] h-[60px]">
-          <img :src="marts[0]?.profileImageUrl" alt="" />
+        <div class="size-14 overflow-hidden rounded-full">
+          <img
+            class="size-full object-cover w-full h-full"
+            :src="marts[0]?.profileImageUrl"
+          />
         </div>
         <div
           :class="[
@@ -503,13 +506,13 @@
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { projectAuth } from "@/config/config"; // Firebase config import
 import { where } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
-
+import moment from "moment-timezone";
 export default {
   setup() {
     const sidebarVisible = ref(true);
@@ -523,23 +526,36 @@ export default {
     const toggleSidebar = () => {
       sidebarVisible.value = !sidebarVisible.value;
     };
+    let unsubscribeMarts = null;
     const fetchMartsForCurrentUser = async () => {
       if (currentUser?.value) {
+        // subscribe to the mart collection
         const userId = currentUser.value?.uid; // Get current user's ID
         const conditions = [where("ownerId", "==", userId)];
-
-        await getCollectionQuery("marts", conditions, (data) => {
-          marts.value = data;
-          console.log("data mart", marts.value);
-        });
+        unsubscribeMarts = await getCollectionQuery(
+          "marts",
+          conditions,
+          (data) => {
+            marts.value = data;
+            console.log("data mart", marts.value);
+          },
+          true
+        );
       } else {
         console.error("No user is currently logged in.");
       }
     };
     let unsubscribeOrders = null;
     const fetchOrders = async (field, value) => {
+      const today = moment().tz("Asia/Phnom_Penh").startOf("day").toDate();
+      const tomorrow = moment(today).add(1, "day").toDate();
       if (marts.value.length > 0) {
-        const conditions = [where(field, "==", value)];
+        const conditions = [
+          where(field, "==", value),
+          where("created_at", ">=", today),
+          where("created_at", "<", tomorrow),
+        ];
+        // show toast when unsubcribe or new order
         unsubscribeOrders = await getCollectionQuery(
           "orders",
           conditions,
@@ -553,6 +569,11 @@ export default {
         console.error("Error fetching data: Marts data is empty.");
       }
     };
+    watch(marts, async (newMarts) => {
+      if (newMarts.length > 0) {
+        await fetchOrders("branch_id", newMarts[0].id);
+      }
+    });
     const logout = async () => {
       try {
         await signOut(auth); // Sign out the user using Firebase
@@ -566,8 +587,11 @@ export default {
 
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
-      await Promise.allSettled([fetchMartsForCurrentUser()]);
-      await fetchOrders("branch_id", marts.value[0]?.id);
+      await fetchMartsForCurrentUser();
+      if (marts.value.length > 0) {
+        console.log("marts", marts.value[0]?.id);
+        await fetchOrders("branch_id", marts.value[0]?.id);
+      }
     });
     const isLogout = ref(false);
     const logoutCofimation = () => {

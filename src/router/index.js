@@ -21,11 +21,11 @@ import MartList from '@/SuperAdminDashboard/MartList.vue';
 import UserList from '@/SuperAdminDashboard/UserList.vue';
 import MainCategoryList from '@/SuperAdminDashboard/MainCategoryList.vue';
 import DashboarManagement from '@/SuperAdminDashboard/DashboarManagement.vue';
-import UserHistoy from '@/views/UserHistoy.vue';
 import UserInfo from '@/user/UserInfo.vue';
 import AdminProfile from '@/SuperAdminDashboard/AdminProfile.vue';
 import ShopDetail from '@/views/ShopDetail.vue';
 import PaymentMethod from '@/Admin/PaymentMethod.vue';
+import UserHistory from '@/views/UserHistory.vue';
 setPersistence(projectAuth, browserLocalPersistence).catch((error) => {
   console.error("Error setting persistence:", error);
 });
@@ -90,7 +90,7 @@ const routes = [
   }, {
     path: '/userhistory',
     name: 'userhistory',
-    component: UserHistoy,
+    component: UserHistory,
   },
   {
     path: '/userregister',

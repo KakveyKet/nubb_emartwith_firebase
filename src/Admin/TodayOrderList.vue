@@ -5,35 +5,11 @@
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-xl font-semibold">To Day Order</h1>
       <div class="flex space-x-4">
-        <InputText
-          v-model="searchTerm"
-          clearButton="true"
-          placeholder="Search by name"
-        />
-        <!-- <DatePicker
-          v-model="currentDate"
-          selectionMode="range"
-          :manualInput="false"
-          placeholder="Filter by date"
-          showButtonBar
-        /> -->
+        <IconField>
+          <InputIcon class="pi pi-search" />
+          <InputText v-model="searchTerm" placeholder="Search" />
+        </IconField>
       </div>
-      <!-- <button @click="handleAdd" class="add_new_button">
-        <div class="flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1em"
-            height="1em"
-            viewBox="0 0 16 16"
-          >
-            <path
-              fill="currentColor"
-              d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2"
-            />
-          </svg>
-          <span class="mr-2"> Add New</span>
-        </div>
-      </button> -->
     </div>
     <div class="overflow-x-auto">
       <DataTable
@@ -44,28 +20,31 @@
         :rowsPerPageOptions="[50, 100, 200, 500]"
         tableStyle="min-width: 50rem"
       >
-        <Column field="items" header="Product">
-          <template #body="slotProps">
-            <div v-for="item in slotProps.data.items" :key="item.id">
-              {{ item.name }}
-            </div>
-          </template>
-        </Column>
         <Column field="items" header="Image">
           <template #body="slotProps">
-            <div class="flex space-x-2">
-              <div v-for="item in slotProps.data.items" :key="item.id">
-                <OverlayBadge :value="item.quantity">
-                  <img
-                    :src="
-                      item.images[0]
-                        ? item.images[0]
-                        : 'https://via.placeholder.com/150'
-                    "
-                    alt="Image"
-                    class="size-20 rounded object-cover"
-                  />
-                </OverlayBadge>
+            <div class="flex space-x-4">
+              <div
+                v-for="item in slotProps.data.items"
+                :key="item.id"
+                class="flex items-center justify-center relative"
+              >
+                <div class="size-32">
+                  <OverlayBadge :value="item.quantity">
+                    <img
+                      :src="
+                        item.images[0]
+                          ? item.images[0]
+                          : 'https://via.placeholder.com/150'
+                      "
+                      alt="Image"
+                      class="size-32 rounded object-cover"
+                    />
+                  </OverlayBadge>
+                </div>
+                <span
+                  class="text-nowrap left-1 text-13px absolute bottom-2 bg-primary-6 text-white px-2 py-1 rounded-md"
+                  >{{ item.name }}</span
+                >
               </div>
             </div>
           </template>
@@ -213,15 +192,24 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import OrderConfimation from "@/Form/OrderConfimation.vue";
 import { getAuth } from "firebase/auth";
 import { projectAuth } from "@/config/config";
-import { where, Timestamp } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+  Timestamp,
+} from "firebase/firestore";
 import { formatDate } from "@/helper/formatCurrecy";
 import { useToast } from "primevue/usetoast";
 import HandleRejectOrder from "@/Form/HandleRejectOrder.vue";
+import moment from "moment-timezone";
+
 export default {
   components: {
     OrderConfimation,
@@ -246,6 +234,11 @@ export default {
         default:
           severity = "info";
           summary = "Action Completed";
+          break;
+        case "new order":
+          severity = "success";
+          summary = "New Order";
+          break;
       }
 
       toast.add({
@@ -328,8 +321,15 @@ export default {
       }
     };
     const fetchOrders = async (field, value) => {
+      const today = moment().tz("Asia/Phnom_Penh").startOf("day").toDate();
+      const tomorrow = moment(today).add(1, "day").toDate();
       if (marts.value.length > 0) {
-        const conditions = [where(field, "==", value)];
+        const conditions = [
+          where(field, "==", value),
+          where("created_at", ">=", today),
+          where("created_at", "<", tomorrow),
+        ];
+        // show toast when unsubcribe or new order
         unsubscribeOrders = await getCollectionQuery(
           "orders",
           conditions,
@@ -337,14 +337,21 @@ export default {
             orders.value = data;
             console.log("data orders", orders.value);
           },
-          true,
-          "created_at",
-          searchTerm.value
+          true
         );
+
+        // show toast when unsubcribe or new order
       } else {
         console.error("Error fetching data: Marts data is empty.");
       }
     };
+    const groupByItemName = computed(() => {
+      return orders.value.reduce((acc, order) => {
+        acc[order.items[0].name] = acc[order.items[0].name] || [];
+        acc[order.items[0].name].push(order);
+        return acc;
+      }, {});
+    });
     watch(searchTerm, () => {
       fetchSubCategories("branch_id", marts.value[0].id);
     });
@@ -393,6 +400,7 @@ export default {
       orders,
       handleRejectOrders,
       isReject,
+      groupByItemName,
     };
   },
 };

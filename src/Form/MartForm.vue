@@ -9,7 +9,9 @@
       <!-- Mart Name -->
 
       <div>
-        <label for="name" class="block text-gray-600 mb-1">Mart Name</label>
+        <label for="name" class="block text-gray-600 mb-1"
+          >Mart Name <span class="text-red-500"> * </span></label
+        >
         <InputText
           v-model="name"
           type="text"
@@ -20,7 +22,9 @@
 
       <!-- Location -->
       <div>
-        <label for="location" class="block text-gray-600 mb-1">Location</label>
+        <label for="location" class="block text-gray-600 mb-1"
+          >Location <span class="text-red-500"> * </span></label
+        >
         <InputText
           v-model="location"
           type="text"
@@ -30,7 +34,9 @@
       </div>
       <!-- Category -->
       <div>
-        <label for="category" class="block text-gray-600 mb-1">Category</label>
+        <label for="category" class="block text-gray-600 mb-1"
+          >Category <span class="text-red-500"> * </span></label
+        >
         <Select
           v-model="Mart_category"
           :options="items"
@@ -44,12 +50,13 @@
       </div>
       <!-- Profile Image -->
       <div>
-        <label class="block text-gray-600 mb-1">Profile Image (Max 1MB)</label>
+        <label class="block text-gray-600 mb-1"
+          >Profile Image (Max 1MB) <span class="text-red-500"> * </span></label
+        >
         <input
           type="file"
           @change="handleProfileImage"
           accept="image/*"
-          required
           class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         />
         <img
@@ -66,14 +73,14 @@
       <!-- Cover Images -->
       <div>
         <label class="block text-gray-600 mb-1"
-          >Cover Images (Max 3 images, 1MB each)</label
+          >Cover Images (Max 3 images, 1MB each)
+          <span class="text-red-500"> * </span></label
         >
         <input
           type="file"
           @change="handleCoverImages"
           accept="image/*"
           multiple
-          required
           class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         />
         <div class="mt-2 grid grid-cols-3 gap-2">
@@ -82,7 +89,7 @@
             :key="index"
             :src="image"
             alt="Cover Preview"
-            class="w-24 h-24 rounded-lg object-cover"
+            class="w-56 h-24 rounded-lg object-cover"
           />
         </div>
         <span v-if="coverImagesError" class="text-red-500 text-sm">{{
@@ -93,7 +100,7 @@
       <!-- Description -->
       <div class="col-span-3">
         <label for="Mart_Description" class="block text-gray-600 mb-1"
-          >Description</label
+          >Description <span class="text-red-500"> * </span></label
         >
         <textarea
           v-model="Mart_Description"
@@ -107,7 +114,9 @@
 
       <!-- Open and Close Time -->
       <div>
-        <label class="block text-gray-600 mb-1">Open Time</label>
+        <label class="block text-gray-600 mb-1"
+          >Open Time <span class="text-red-500"> * </span></label
+        >
         <DatePicker
           v-model="openTime"
           type="time"
@@ -119,7 +128,9 @@
         />
       </div>
       <div>
-        <label class="block text-gray-600 mb-1">Close Time</label>
+        <label class="block text-gray-600 mb-1"
+          >Close Time <span class="text-red-500"> * </span></label
+        >
         <DatePicker
           v-model="closeTime"
           type="time"
@@ -134,7 +145,7 @@
       <!-- Phone Number -->
       <div>
         <label for="Phone_number" class="block text-gray-600 mb-1"
-          >Phone Number</label
+          >Phone Number <span class="text-red-500"> * </span></label
         >
         <input
           v-model="Phone_number"
@@ -142,6 +153,7 @@
           id="Phone_number"
           placeholder="Phone Number"
           required
+          @input="onPhoneNumberInput"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -174,13 +186,15 @@ import useStorage from "@/composible/useStorage";
 import { where } from "firebase/firestore";
 import { projectAuth } from "@/config/config";
 import { useToast } from "primevue/usetoast";
-
+import { formatPhoneNumber } from "@/helper/formatCurrecy";
 export default {
   setup() {
     const { uploadImage } = useStorage();
     const { addDocs, updateDocs } = useCollection("marts");
     const toast = useToast();
-
+    const onPhoneNumberInput = (event) => {
+      Phone_number.value = formatPhoneNumber(event.target.value);
+    };
     const showToast = (action, severity) => {
       let summary;
       switch (action) {
@@ -271,10 +285,11 @@ export default {
         return;
       }
 
-      let profileImageUrl = null;
-      let coverImageUrls = [];
+      // Retain existing profile and cover images
+      let profileImageUrl = marts.value[0]?.profileImageUrl || null;
+      let coverImageUrls = [...(marts.value[0]?.coverImageUrls || [])];
 
-      // Upload profile image
+      // Upload new profile image if provided
       if (martImage.value) {
         try {
           profileImageUrl = await uploadImage(
@@ -288,21 +303,27 @@ export default {
         }
       }
 
-      // Upload cover images
-      for (const coverImage of martCover.value) {
-        try {
-          const coverImageUrl = await uploadImage(
-            `marts/covers/${coverImage.name}`,
-            coverImage
-          );
-          coverImageUrls.push(coverImageUrl);
-        } catch (error) {
-          console.error("Error uploading cover image:", error);
-          alert("Failed to upload cover images.");
-          return;
+      // Upload new cover images if provided
+      if (martCover.value.length > 0) {
+        const newCoverImageUrls = [];
+        for (const coverImage of martCover.value) {
+          try {
+            const coverImageUrl = await uploadImage(
+              `marts/covers/${coverImage.name}`,
+              coverImage
+            );
+            newCoverImageUrls.push(coverImageUrl);
+          } catch (error) {
+            console.error("Error uploading cover image:", error);
+            alert("Failed to upload cover images.");
+            return;
+          }
         }
+        // Replace existing cover images with newly uploaded ones
+        coverImageUrls = newCoverImageUrls;
       }
 
+      // Prepare mart data
       const martData = {
         name: name.value,
         location: location.value,
@@ -310,26 +331,32 @@ export default {
         Mart_Description: Mart_Description.value,
         Phone_number: Phone_number.value,
         status: true,
-        profileImageUrl: profileImageUrl,
-        coverImageUrls: coverImageUrls,
-        createdAt: timestamp(),
+        profileImageUrl: profileImageUrl, // Use new or existing URL
+        coverImageUrls: coverImageUrls, // Use new or existing URLs
+        createdAt:
+          marts.value.length > 0 ? marts.value[0].createdAt : timestamp(),
         ownerId: currentUser.value.uid,
         openTime: openTime.value,
         closeTime: closeTime.value,
       };
 
+      isLoading.value = true;
+
       try {
-        isLoading.value = true;
         if (marts.value.length > 0) {
-          const result = await updateDocs(marts.value[0].id, martData);
+          // Update existing mart
+          await updateDocs(marts.value[0].id, martData);
           showToast("update", "success");
         } else {
-          const result = await addDocs(martData);
+          // Create a new mart
+          await addDocs(martData);
           showToast("create", "success");
         }
       } catch (error) {
-        console.error("Error creating mart:", error);
-        showToast("create", "error");
+        console.error("Error submitting mart data:", error);
+        showToast(marts.value.length > 0 ? "update" : "create", "error");
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -361,21 +388,27 @@ export default {
         });
 
         if (marts.value.length > 0) {
-          Phone_number.value = marts.value[0]?.Phone_number || null;
-          location.value = marts.value[0]?.location || null;
-          name.value = marts.value[0]?.name || null;
-          martCover.value = marts.value[0]?.profileImageUrl || null;
-          coverImagesPreviews.value = marts.value[0]?.coverImageUrls;
-          profileImagePreview.value = marts.value[0]?.profileImageUrl;
-          Mart_category.value = marts.value[0]?.Mart_category;
-          Mart_Description.value = marts.value[0]?.Mart_Description;
-          openTime.value = marts.value[0]?.openTime.toDate();
-          closeTime.value = marts.value[0]?.closeTime.toDate();
+          const mart = marts.value[0]; // Get the first mart
+          Phone_number.value = mart?.Phone_number || null;
+          location.value = mart?.location || null;
+          name.value = mart?.name || null;
+
+          // Bind existing image URLs
+          martCover.value = []; // Reset file input
+          martImage.value = null; // Reset file input
+          coverImagesPreviews.value = [...(mart?.coverImageUrls || [])];
+          profileImagePreview.value = mart?.profileImageUrl;
+
+          Mart_category.value = mart?.Mart_category || null;
+          Mart_Description.value = mart?.Mart_Description || null;
+          openTime.value = mart?.openTime?.toDate() || null;
+          closeTime.value = mart?.closeTime?.toDate() || null;
         }
       } else {
         console.error("No user is currently logged in.");
       }
     };
+
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
       await Promise.allSettled([getData(), fetchMartsForCurrentUser()]);
@@ -406,6 +439,7 @@ export default {
       openTime,
       marts,
       isLoading,
+      onPhoneNumberInput,
     };
   },
 };

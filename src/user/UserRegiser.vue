@@ -71,6 +71,7 @@
               type="tel"
               class="w-full px-4 py-3 rounded-lg bg-primary-2 border border-primary-3 focus:outline-none focus:ring-2 focus:ring-primary-6 text-primary-10 placeholder-primary-5"
               placeholder="Phone Number"
+              @input="onPhoneNumberInput"
               required
             />
             <input
@@ -121,7 +122,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { projectStorage } from "@/config/config";
-
+import { formatPhoneNumber } from "@/helper/formatCurrecy";
 export default {
   setup() {
     const email = ref("");
@@ -165,7 +166,9 @@ export default {
         alert("An error occurred during registration. Please try again.");
       }
     };
-
+    const onPhoneNumberInput = (event) => {
+      phoneNumber.value = formatPhoneNumber(event.target.value);
+    };
     return {
       email,
       password,
@@ -174,6 +177,7 @@ export default {
       error,
       isPending,
       handleSignUp,
+      onPhoneNumberInput,
     };
   },
 };

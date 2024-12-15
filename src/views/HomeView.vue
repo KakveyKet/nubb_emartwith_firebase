@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-fit">
     <!-- navbar -->
-    <div class="xl:w-full lg:w-full md:w-full w-full shadow-md">
+    <div class="xl:w-full lg:w-full md:w-full w-full shadow-md hidden-print">
       <div
         class="xl:w-[90%] lg:w-[90%] md:w-[90%] w-[90%] mx-auto py-2 flex items-center justify-between"
       >
@@ -16,7 +16,7 @@
             <h1
               class="xl:text-24px lg:text-20px md:text-16px text-14px font-bold text-nowrap"
             >
-              NUBB E-Shop
+              <router-link to="/">NUBB E-Shop</router-link>
             </h1>
           </div>
         </div>
@@ -108,7 +108,7 @@
       </div>
     </div>
     <!-- sub navbar  -->
-    <div class="border-b w-full">
+    <div class="border-b w-full hidden-print">
       <div
         class="flex items-center justify-items-start h-[47px] xl:w-[80%] lg:w-[80%] md:w-[80%] mx-auto gap-3"
       >
@@ -174,12 +174,27 @@
           </span>
           Tracking Order
         </div>
+        <div
+          @click="handleTab('history')"
+          class="flex items-center gap-2"
+          :class="{
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
+              tab === 'history',
+            'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
+              tab !== 'history',
+          }"
+        >
+          <span>
+            <i class="pi pi-history"></i>
+          </span>
+          History
+        </div>
       </div>
       <!-- search -->
     </div>
     <!-- category -->
 
-    <div v-if="tab === 'shop'" class="w-full">
+    <div v-if="tab === 'shop'" class="w-full hidden-print">
       <div class="w-[80%] mx-auto">
         <ShopComponent
           @tab="handleTab"
@@ -189,13 +204,19 @@
         />
       </div>
     </div>
-    <div v-if="tab === 'cart'" class="w-full">
+    <div v-if="tab === 'cart'" class="w-full hidden-print">
       <div class="">
         <CartView />
       </div>
     </div>
-    <div v-if="tab === 'tracking_order'" class="w-full">
+    <div v-if="tab === 'tracking_order'" class="w-full hidden-print">
       <TrackingOrder :currentUser="currentUser" />
+    </div>
+    <!-- user history -->
+    <div v-if="tab === 'history'" class="w-full">
+      <div class="w-[80%] mx-auto">
+        <UserHistory :currentUser="currentUser" />
+      </div>
     </div>
     <!-- footer -->
     <Dialog
@@ -208,7 +229,7 @@
     </Dialog>
     <Toast />
   </div>
-  <div class="">
+  <div class="hidden-print">
     <FooterVue />
   </div>
   <div class="fixed bottom-5 right-5 hidden">
@@ -220,7 +241,11 @@
     position="right"
     class="h-screen"
   >
-    <Sidebar @close_drawer="handleCloseDrawer" @toast="showToast" />
+    <Sidebar
+      @close_drawer="handleCloseDrawer"
+      :currentUser="currentUser"
+      @toast="showToast"
+    />
   </Drawer>
   <Dialog
     v-model:visible="is_search"
@@ -377,7 +402,7 @@ import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import CartView from "./CartView.vue";
 import { Notivue, Notification, push } from "notivue";
-
+import UserHistory from "@/views/UserHistory.vue";
 export default {
   components: {
     FooterVue,
@@ -392,6 +417,7 @@ export default {
     ShopDetail,
     Notivue,
     Notification,
+    UserHistory,
   },
   setup() {
     const toast = useToast();

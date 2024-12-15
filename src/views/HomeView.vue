@@ -50,7 +50,7 @@
               </div>
             </div>
           </div>
-          <div class="xl:hidden lg:hidden md:flex flex items-center gap-2">
+          <div class="flex items-center gap-2">
             <Button
               @click="is_search = true"
               icon="pi pi-search"
@@ -172,7 +172,7 @@
           <span>
             <i class="pi pi-send"></i>
           </span>
-          Tracking Order
+          Your Order
         </div>
         <div
           @click="handleTab('history')"
@@ -190,7 +190,6 @@
           History
         </div>
       </div>
-      <!-- search -->
     </div>
     <!-- category -->
 

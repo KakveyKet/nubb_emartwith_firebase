@@ -268,15 +268,13 @@ export default {
 @media print {
   @page {
     size: A5; /* Set the page size to A5 */
-    margin: 10mm; /* Optional: Add margins */
   }
 
 
   /* Optional: Ensure content fits A5 */
   .print-container {
-    width: 148mm; /* A5 width */
-    height: 210mm; /* A5 height */
-    margin: 0 auto;
+    width: 100mm; /* A5 width */
+    height: 100mm; /* A5 height */
   }
 }
 </style

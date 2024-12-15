@@ -7,7 +7,9 @@
       >
         <!-- logo -->
         <div class="flex items-center gap-4">
-          <div class="w-[48px] h-[66px]">
+          <div
+            class="xl:w-[48px] lg:w-[48px] md:w-[48px] w-[40px] xl:h-[66px] lg:h-[66px] md:h-[66px] h-[50px]"
+          >
             <img src="../assets/nubb.png" alt="" />
           </div>
           <div
@@ -116,7 +118,7 @@
           @click="handleTab('shop')"
           class="flex items-center gap-2"
           :class="{
-            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 xl:px-4 lg:px-4 md:px-2 px-1.5 duration-300 text-nowrap cursor-pointer':
               tab === 'shop',
             'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
               tab !== 'shop',
@@ -130,7 +132,7 @@
         <div
           class="xl:hidden lg:hidden md:block block relative"
           :class="{
-            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 xl:px-4 lg:px-4 md:px-2 px-1.5 duration-300 text-nowrap cursor-pointer':
               tab === 'cart',
             'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
               tab !== 'cart',
@@ -163,7 +165,7 @@
           @click="handleTab('tracking_order')"
           class="flex items-center gap-2"
           :class="{
-            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 xl:px-4 lg:px-4 md:px-2 px-1.5 duration-300 text-nowrap cursor-pointer':
               tab === 'tracking_order',
             'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
               tab !== 'tracking_order',
@@ -172,13 +174,13 @@
           <span>
             <i class="pi pi-send"></i>
           </span>
-          Your Order
+          Order
         </div>
         <div
           @click="handleTab('history')"
           class="flex items-center gap-2"
           :class="{
-            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 px-4 duration-300 text-nowrap cursor-pointer':
+            'text-primary-6 font-semibold xl:text-16px lg:text-16px md:text-16px text-13px h-full flex items-center border-b-2 border-primary-6 xl:px-4 lg:px-4 md:px-2 px-1.5 duration-300 text-nowrap cursor-pointer':
               tab === 'history',
             'text-slate-500 xl:text-16px lg:text-16px md:text-16px text-13px  cursor-pointer duration-300 text-nowrap px-3 font-semibold':
               tab !== 'history',
@@ -253,8 +255,11 @@
     :style="{ width: '50vw', position: 'absolute', top: '5vh' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     :closable="false"
+    class="!rounded-xl !overflow-auto"
   >
-    <div class="w-[100%] mx-auto flex gap-2 relative">
+    <div
+      class="w-[100%] mx-auto overflow-auto hide-scrollbar flex gap-2 relative"
+    >
       <div class="w-[100%] flex items-center mx-auto gap-3">
         <div class="flex items-center gap-2">
           <Button
@@ -278,7 +283,7 @@
       </div>
     </div>
 
-    <div class="w-[100%] mx-auto">
+    <div class="w-[100%] mx-auto overflow-auto hide-scrollbar">
       <ShopFilter :markets="markets" :search_value="search_value" />
     </div>
   </Dialog>
@@ -325,12 +330,6 @@
         <div class="hidden md:flex flex-col items-start">
           <!-- Logout Button -->
           <div class="w-[90%] border-b mx-auto"></div>
-          <div
-            class="p-3 w-full text-16px text-primary-8 hover:bg-primary-2 hover:text-primary-10 transition-colors duration-200 cursor-pointer rounded-md flex items-center gap-2"
-          >
-            <i class="pi pi-history size-5"></i>
-            <span>History</span>
-          </div>
 
           <div class="w-[90%] border-b mx-auto"></div>
 

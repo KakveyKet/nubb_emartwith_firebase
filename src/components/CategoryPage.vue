@@ -12,7 +12,7 @@
           <span
             class="xl:text-16px lg:text-16px md:text-16px text-13px font-semibold text-primary-6"
           >
-            View by category
+            Category
           </span>
         </div>
       </div>

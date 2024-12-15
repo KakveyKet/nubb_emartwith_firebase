@@ -1,23 +1,51 @@
 <template>
   <div class="h-fit py-2">
-    <div v-if="filteredMarkets.length > 0" class="mt-3">
-      <div class="text-black text-14px font-bold flex items-center gap-3">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
-          />
-        </svg>
-        <span>All Shop</span>
+    <div>
+      <!-- sort by category -->
+      <div class="py-2">
+        <div class="">
+          <div
+            class="flex overflow-x-auto pb-4 px-4 space-x-3 snap-x hide-scrollbar bg-none"
+          >
+            <!-- viwe all -->
+            <button
+              @click="selectedCategory = null"
+              class="flex-shrink-0 snap-start focus:outline-none transition-all duration-300 ease-in-out border"
+              :class="[
+                selectedCategory === null
+                  ? 'bg-primary-6 text-white'
+                  : 'bg-white text-gray-700 hover:bg-primary-2 hover:text-primary-8',
+                'px-4 py-2 rounded-full text-16px font-medium shadow-md hover:shadow-lg',
+              ]"
+            >
+              All
+            </button>
+            <button
+              v-for="category in mainCategory"
+              :key="category.id"
+              @click="selectedCategory = category.name"
+              class="flex-shrink-0 snap-start focus:outline-none transition-all duration-300 ease-in-out border"
+              :class="[
+                selectedCategory === category
+                  ? 'bg-primary-6 text-white'
+                  : 'bg-white text-gray-700 hover:bg-primary-2 hover:text-primary-8',
+                'px-4 py-2 rounded-full text-16px font-medium shadow-md hover:shadow-lg',
+              ]"
+            >
+              {{ category.name }}
+            </button>
+          </div>
+          <div
+            class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-primary-1 to-transparent pointer-events-none"
+          ></div>
+          <div
+            class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-primary-1 to-transparent pointer-events-none"
+          ></div>
+        </div>
       </div>
+    </div>
+    <div v-if="filteredMarkets.length > 0" class="mt-3">
+      <!-- filter by category -->
     </div>
     <div
       v-if="filteredMarkets.length > 0"
@@ -128,6 +156,7 @@ export default {
   },
   setup(props, { emit }) {
     const mainCategory = ref([]);
+    const selectedCategory = ref(null);
     const formatTime = (time) => {
       if (!time || !time.seconds) return "N/A";
       const date = new Date(time.seconds * 1000);
@@ -147,20 +176,29 @@ export default {
       );
     };
     const filteredMarkets = computed(() => {
-      if (!props.search_value || props.search_value.trim() === "") {
-        return props.markets;
-      }
-      const searchTerm = props.search_value.toLowerCase();
+      const searchTerm = props.search_value?.trim().toLowerCase() || "";
+      const category = selectedCategory.value;
+
       return props.markets.filter((market) => {
-        return (
-          market.name.toLowerCase().includes(searchTerm) ||
-          market.location.toLowerCase().includes(searchTerm) ||
-          (market.Mart_category?.name &&
-            market.Mart_category.name.toLowerCase().includes(searchTerm))
-        );
+        // Check if market matches the selected category
+        const matchesCategory = category
+          ? market.Mart_category?.name === category
+          : true;
+
+        // Check if market matches the search term
+        const matchesSearch = searchTerm
+          ? market.name.toLowerCase().includes(searchTerm) ||
+            market.location.toLowerCase().includes(searchTerm) ||
+            (market.Mart_category?.name &&
+              market.Mart_category.name.toLowerCase().includes(searchTerm))
+          : true;
+
+        // Return true if both conditions are met
+        return matchesCategory && matchesSearch;
       });
     });
 
+    console.log(filteredMarkets.value);
     const router = useRouter();
     console.log(props.markets);
     onMounted(async () => {
@@ -170,13 +208,26 @@ export default {
       if (props.search_value) {
         console.log("search_value", props.search_value);
       }
+      await fetchMainCategory();
     });
     return {
       router,
       mainCategory,
       formatTime,
       filteredMarkets,
+      selectedCategory,
     };
   },
 };
 </script>
+<style scoped>
+.hide-scrollbar {
+  overflow: auto; /* Enables scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+</style>

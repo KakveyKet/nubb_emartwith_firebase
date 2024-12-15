@@ -128,44 +128,50 @@
             class="flex items-center size-10 object-cover"
           >
             <img src="../assets/nubb.png" class="size-10 me-3" />
-            <span class="self-center text-2xl font-semibold whitespace-nowrap"
+            <span
+              class="self-center xl:text-2xl lg:text-2xl md:text-2xl text-16px font-semibold whitespace-nowrap"
               >NUBB E-Shop</span
             >
           </div>
         </div>
         <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
           <div>
-            <h2 class="mb-6 text-sm font-semibold uppercase dark:text-white">
-              Resources
-            </h2>
             <ul class="text-gray-500 dark:text-gray-400 font-medium">
               <li class="mb-4">
                 <a href="https://flowbite.com/" class="hover:underline"
-                  >Flowbite</a
+                  >Contact Us</a
                 >
               </li>
               <li>
                 <a href="https://tailwindcss.com/" class="hover:underline"
-                  >Tailwind CSS</a
-                >
+                  >Facebook
+                </a>
               </li>
             </ul>
           </div>
           <div>
-            <h2 class="mb-6 text-sm font-semibold uppercase dark:text-white">
-              Follow us
-            </h2>
             <ul class="text-gray-500 dark:text-gray-400 font-medium">
               <li class="mb-4">
                 <a
                   href="https://github.com/themesberg/flowbite"
                   class="hover:underline"
-                  >Github</a
+                  >Telegram</a
                 >
               </li>
               <li>
                 <a href="https://discord.gg/4eeurUVvTy" class="hover:underline"
-                  >Discord</a
+                  >Instagram</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <ul class="text-gray-500 dark:text-gray-400 font-medium">
+              <li class="mb-4">
+                <a
+                  href="https://github.com/themesberg/flowbite"
+                  class="hover:underline"
+                  >Website</a
                 >
               </li>
             </ul>

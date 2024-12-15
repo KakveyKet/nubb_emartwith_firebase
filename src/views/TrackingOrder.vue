@@ -22,7 +22,11 @@
               <!-- branch name -->
 
               <div class="flex items-center justify-between mt-4">
-                <p class="text-20px text-black font-bold">Order Details</p>
+                <p
+                  class="xl:text-20px lg:text-20px md:text-20px text-16px text-slate-700 font-bold"
+                >
+                  Order Details
+                </p>
               </div>
               <div class="flex items-center justify-between">
                 <p class="text-13px text-gray-500">Shop Name</p>
@@ -36,13 +40,7 @@
                   {{ formatDate(order.created_at) }}
                 </p>
               </div>
-              <div class="flex items-center justify-between">
-                <p class="text-13px text-gray-500">Invoice ID</p>
-                <!-- split invoice id -->
-                <p class="text-13px text-gray-500">
-                  {{ splitInvoiceId(order.id) }}
-                </p>
-              </div>
+
               <div class="w-full border-b border-t py-2 mt-4 space-y-2">
                 <div
                   v-for="order_data in order.items"
@@ -54,19 +52,19 @@
                   </div>
                   <!-- name -->
                   <div class="w-fit">
-                    <p class="text-13px text-black" v-if="order.items">
+                    <p class="text-13px text-slate-700" v-if="order.items">
                       {{ order_data.name }}
                     </p>
                   </div>
                   <!-- qty -->
                   <div class="w-fit">
-                    <p class="text-13px text-black" v-if="order.items">
+                    <p class="text-13px text-slate-700" v-if="order.items">
                       {{ order_data.quantity }}
                     </p>
                   </div>
                   <!-- price -->
                   <div class="w-fit">
-                    <p class="text-13px text-black" v-if="order.items">
+                    <p class="text-13px text-slate-700" v-if="order.items">
                       {{ formatNumber(order_data.price) }} ៛
                     </p>
                   </div>
@@ -74,10 +72,16 @@
               </div>
             </div>
             <div class="w-full mt-4">
-              <h2 class="text-20px text-black font-bold">Activity</h2>
+              <h2
+                class="xl:text-20px lg:text-20px md:text-20px text-16px text-slate-700 font-bold"
+              >
+                Activity
+              </h2>
             </div>
             <div class="w-full mt-4 flex items-center justify-between">
-              <h2 class="text-16px font-semibold text-black">Order Status</h2>
+              <h2 class="text-16px font-semibold text-slate-700">
+                Order Status
+              </h2>
               <h2
                 v-if="order.status === 'pending'"
                 class="text-13px p-2 text-[#FEC53D] rounded-md animate-pulse animate-infinite animate-duration-[600ms]"
@@ -103,7 +107,9 @@
               v-if="order.status === 'accepted'"
               class="w-full mt-4 flex items-center justify-between"
             >
-              <h2 class="text-16px font-semibold text-black">Time Delivery</h2>
+              <h2 class="text-16px font-semibold text-slate-700">
+                Time Delivery
+              </h2>
               <h2
                 v-if="order.status === 'accepted'"
                 class="text-13px p-2 text-[#FEC53D] rounded-md"
@@ -118,7 +124,9 @@
               v-if="order.status === 'rejected'"
               class="w-full mt-4 flex items-center justify-between"
             >
-              <h2 class="text-16px font-semibold text-black">Reject Reason</h2>
+              <h2 class="text-16px font-semibold text-slate-700">
+                Reject Reason
+              </h2>
               <p class="text-16px font-semibold text-primary-6">
                 {{ order.reject_reason }}
               </p>

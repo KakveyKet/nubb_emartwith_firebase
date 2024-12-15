@@ -25,14 +25,7 @@
             </span>
           </div>
         </li>
-        <li
-          class="p-4 hover:bg-primary-2 transition-colors duration-200 cursor-pointer"
-        >
-          <div class="flex items-center text-primary-8 hover:text-primary-10">
-            <i class="pi pi-history size-5 mr-3"></i>
-            <span class="text-16px">History</span>
-          </div>
-        </li>
+
         <li
           v-if="currentUser"
           @click="is_logout = true"

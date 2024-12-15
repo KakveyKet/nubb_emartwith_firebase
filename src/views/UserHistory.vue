@@ -1,37 +1,21 @@
 <template>
-  <div
-    class="xl:w-[100%] lg:w-[100%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 py-5"
-  >
+  <div class="xl:w-[100%] lg:w-[100%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 py-5">
     <div class="w-full">
-      <h1
-        class="text-24px font-semibold mb-6 text-primary-11 hidden-print"
-        v-if="userHistory.length > 0"
-      >
+      <h1 class="text-24px font-semibold mb-6 text-primary-11 hidden-print" v-if="userHistory.length > 0">
         Your Order History
       </h1>
-      <div
-        v-if="userHistory.length === 0"
-        class="text-primary-8 text-center py-10 text-20px animate-fade-up animate-once animate-duration-2000 animate-delay-275"
-      >
+      <div v-if="userHistory.length === 0"
+        class="text-primary-8 text-center py-10 text-20px animate-fade-up animate-once animate-duration-2000 animate-delay-275">
         No orders found. Time to treat yourself!
       </div>
     </div>
     <div
-      class="xl:w-[70%] lg:w-[80%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 grid grid-cols-1 xl:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 print-container"
-    >
-      <div
-        v-for="order in userHistory"
-        :key="order.id"
-        :id="'invoice-' + order.id"
-        class="bg-white border border-primary-3 rounded-lg p-6 mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 animate-fade-up animate-once animate-duration-300"
-      >
+      class="xl:w-[70%] lg:w-[80%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 grid grid-cols-1 xl:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 print-container">
+      <div v-for="order in userHistory" :key="order.id" :id="'invoice-' + order.id"
+        class="bg-white border border-primary-3 rounded-lg p-6 mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 animate-fade-up animate-once animate-duration-300">
         <!-- Branch -->
         <div class="flex flex-col items-center space-y-2 mb-4 font-medium">
-          <img
-            :src="formarBranchImage(order.branch_id)"
-            alt="Branch Image"
-            class="w-14 h-14 rounded-full"
-          />
+          <img :src="formarBranchImage(order.branch_id)" alt="Branch Image" class="w-14 h-14 rounded-full" />
           <p class="text-16px text-slate-700">
             {{ formatBranchName(order.branch_id) }}
           </p>
@@ -42,16 +26,14 @@
               Order #<span class="">{{ order.orderId }}</span>
             </p>
             <p class="text-13px text-slate-500 mt-1">
-              
-              <span
-                class="font-medium capitalize px-2 py-1 text-primary-6 bg-primary-2 rounded-full"
-                >{{ order.status }}</span
-              >
+
+              <span class="font-medium capitalize px-2 py-1 text-primary-6 bg-primary-2 rounded-full">{{ order.status
+                }}</span>
             </p>
           </div>
           <div class="text-right">
             <p class="text-13px text-slate-500">
-              Address: <span class="font-medium">{{ order.location }}</span>
+              Order from: <span class="font-medium">{{ order.location }}</span>
             </p>
             <p class="text-17px font-semibold text-red-500 mt-1">
               {{ formatNumber(order.total_price) }} ៛
@@ -64,22 +46,14 @@
           <h2 class="text-17px font-semibold mb-3 text-slate-700">
             Your Order
           </h2>
-          <div
-            v-for="item in order.items"
-            :key="item.id"
-            class="flex items-center space-x-4 mb-3"
-          >
-            <img
-              :src="item.images[0]"
-              alt="Food Item"
-              class="w-20 h-20 rounded-lg object-cover "
-            />
-            <div>
+          <div v-for="item in order.items" :key="item.id" class="flex items-center space-x-4 mb-3">
+            <!-- <img :src="item.images[0]" alt="Food Item" class="w-20 h-20 rounded-lg object-cover " /> -->
+            <div class="flex  items-end justify-between w-full space-x-2 border-b border-dashed pb-2">
               <p class="font-medium text-16px text-slate-700">
                 {{ item.name }}
               </p>
               <p class="text-13px text-slate-500">
-                Quantity: {{ item.quantity }}
+                Qty: {{ item.quantity }}
               </p>
               <p class="text-13px text-primary-8 font-medium">
                 {{ formatNumber(item.price) }} ៛
@@ -87,31 +61,17 @@
             </div>
           </div>
         </div>
-
-        <!-- Instructions -->
         <div v-if="order.instructions" class="mt-4 border-t border-dashed py-2">
           <p class="text-13px text-slate-500">
             <span class="font-medium text-slate-500">Special instructions: </span>
             {{ order.instructions }}
           </p>
         </div>
-
-        <!-- Order Footer -->
-        <div
-          class="mt-4 text-13px text-slate-500 flex justify-between items-center"
-        >
+        <div class="mt-4 text-13px text-slate-500 flex justify-between items-center">
           <p>Ordered on: {{ formatDate(order.created_at) }}</p>
-          <!-- print different invoice -->
           <div class="hidden-print">
-            <Button
-              icon="pi pi-bookmark"
-              @click="handlePrint(order.id)"
-              severity="primary"
-              variant="text"
-              raised
-              rounded
-              aria-label="Bookmark"
-            />
+            <Button icon="pi pi-download" class="hidden-print" @click="handleDownload(order.id)" severity="primary" text
+              aria-label="Bookmark" />
           </div>
         </div>
       </div>
@@ -124,6 +84,9 @@ import { ref, onMounted, watch } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { where } from "@firebase/firestore";
 import { formatDate, formatNumber } from "@/helper/formatCurrecy";
+import html2canvas from "html2canvas";
+
+import jsPDF from "jspdf";
 export default {
   props: ["currentUser"],
   setup(props) {
@@ -247,6 +210,30 @@ export default {
       });
     };
 
+    const handleDownload = (orderId) => {
+  const invoiceElement = document.getElementById(`invoice-${orderId}`);
+  
+  // Render the content without images
+  html2canvas(invoiceElement, { 
+    scale: 2, 
+    useCORS: true, 
+    backgroundColor: null // Optional: Set the background color to null for transparency
+  }).then((canvas) => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: [148, 210], // A5 size
+    });
+
+    // Add the canvas image to the PDF
+    pdf.addImage(imgData, "PNG", 0, 0, 148, 210); // Fit content to A5 dimensions
+    pdf.save(`invoice-${orderId}.pdf`);
+  });
+};
+
+
+
     return {
       userHistory,
       users,
@@ -256,6 +243,7 @@ export default {
       formatBranchName,
       formarBranchImage,
       handlePrint,
+      handleDownload,
     };
   },
 };
@@ -263,18 +251,28 @@ export default {
 
 <style scoped>
 .text-primary {
-  color: #ff5722; /* Example primary color */
+  color: #ff5722;
+  /* Example primary color */
 }
-@media print {
-  @page {
-    size: A5; /* Set the page size to A5 */
-  }
 
+.invoice {
+  font-size: 12px;
+  /* Small font size */
+  line-height: 1.2;
+  /* Compact line spacing */
+  width: 70mm;
+  /* Match content width */
+}
 
-  /* Optional: Ensure content fits A5 */
-  .print-container {
-    width: 100mm; /* A5 width */
-    height: 100mm; /* A5 height */
-  }
+.invoice-header,
+.invoice-footer {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.invoice-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
 }
 </style

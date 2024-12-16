@@ -22,7 +22,7 @@
     >
       <div v-for="category in data" class="mt-6" :key="data">
         <div
-          class="xl:size-16 lg:size-14 md:size-14 size-14 overflow-hidden mx-auto animate-fade-left animate-duration-300 shadow p-1 shadow-primary-2"
+          class="xl:size-16 lg:size-14 md:size-14 size-10 overflow-hidden mx-auto animate-fade-left animate-duration-300"
         >
           <img
             class="size-full object-cover"

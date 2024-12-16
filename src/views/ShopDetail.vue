@@ -266,6 +266,12 @@
                   >
                     <i class="pi pi-plus size-5"></i>
                   </button>
+                  <!-- <button
+                    @click="handleAddToCart(product)"
+                    class="bg-primary-5 hover:bg-primary-6 text-white rounded-lg flex items-center justify-center size-10 transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-7 focus:ring-opacity-50"
+                  >
+                    <i class="pi pi-plus size-5"></i>
+                  </button> -->
                 </div>
               </div>
             </div>

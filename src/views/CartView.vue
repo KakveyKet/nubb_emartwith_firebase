@@ -168,7 +168,7 @@
               </label>
 
               <div class="flex flex-wrap gap-4">
-                <div class="flex items-center gap-2">
+                <!-- <div class="flex items-center gap-2">
                   <RadioButton
                     v-model="paymentMethod"
                     inputId="pay_by_bank"
@@ -176,7 +176,7 @@
                     value="bank"
                   />
                   <label for="pay_by_bank">Pay by Bank</label>
-                </div>
+                </div> -->
                 <div class="flex items-center gap-2">
                   <RadioButton
                     v-model="paymentMethod"
@@ -188,61 +188,8 @@
                 </div>
               </div>
               <!-- when payment method is bank -->
-              <div
-                v-if="paymentMethod === 'bank'"
-                class="mt-6 animate-fade-up animate-once animate-duration-300"
-              >
-                <Select
-                  v-model="selectedBankId"
-                  :options="paymentMethods"
-                  optionLabel="bank_name"
-                  option-value="bank_name"
-                  placeholder="Select a payment method"
-                  filter
-                  show-clear
-                  class="w-[250px] mt-4 h-10 flex items-center"
-                />
-              </div>
             </div>
-            <div v-if="selectedBank" class="mt-4">
-              <h3
-                class="xl:text-16px lg:text-16px md:text-16px text-13px font-semibold text-primary-6"
-              >
-                Pay by {{ selectedBank.bank_name }}
-              </h3>
-              <div
-                class="flex gap-4 animate-fade-up animate-once animate-duration-300"
-              >
-                <!-- Khmer QR Code -->
-                <div>
-                  <h4
-                    class="font-medium xl:text-16px lg:text-16px md:text-16px text-13px"
-                  >
-                    KH QR Code
-                  </h4>
-                  <img
-                    v-if="selectedBank.kh_qr_payement_image"
-                    :src="selectedBank.kh_qr_payement_image"
-                    alt="KH QR Code"
-                    class="w-52 h-52 object-contain border rounded"
-                  />
-                </div>
-                <!-- USD QR Code -->
-                <div>
-                  <h4
-                    class="font-medium xl:text-16px lg:text-16px md:text-16px text-13px"
-                  >
-                    USD QR Code
-                  </h4>
-                  <img
-                    v-if="selectedBank.usd_qr_payement_image"
-                    :src="selectedBank.usd_qr_payement_image"
-                    alt="USD QR Code"
-                    class="w-52 h-52 object-contain border rounded"
-                  />
-                </div>
-              </div>
-            </div>
+
             <div class="w-[90%] mt-4 flex justify-between">
               <p
                 class="xl:text-16px lg:text-16px md:text-16px text-16px text-primary-6 font-semibold"
@@ -288,7 +235,7 @@ export default {
     EmptyCart,
   },
   setup() {
-    const paymentMethod = ref("bank"); // Default selected value
+    const paymentMethod = ref("cash"); // Default selected value
     const auth = getAuth();
     const users = ref([]);
     const currentUser = ref(null);
@@ -296,7 +243,6 @@ export default {
     const locations = ref(null);
     const location_selected = ref(null);
     const isArea = ref("yourarea");
-    const is_Bank = ref(null);
     const location = ref([
       {
         name: "ស្រះទឹក",
@@ -408,47 +354,6 @@ export default {
     });
     const paymentMethods = ref([]);
 
-    const fetchPaymentMethod = async (field, value) => {
-      const conditions = [where(field, "==", value)];
-      await getCollectionQuery(
-        "payment_methods",
-        conditions,
-        (data) => {
-          paymentMethods.value = data;
-        },
-        true
-      );
-    };
-    const fetchPaymentMethodsForBranches = async () => {
-      for (const branchName in groupedByBranch.value) {
-        const branchId = groupedByBranch.value[branchName][0]?.branch_id;
-        if (branchId) {
-          const paymentMethodsData = await fetchPaymentMethod(
-            "branch_id",
-            branchId
-          );
-          paymentMethods.value[branchName] = paymentMethodsData;
-        }
-      }
-    };
-    watch([cartAdded, markets], fetchPaymentMethodsForBranches, {
-      immediate: true,
-    });
-    const selectedBankId = ref("");
-    const selectedBank = computed(() => {
-      return (
-        paymentMethods.value.find(
-          (bank) => bank.bank_name === selectedBankId.value
-        ) || null
-      );
-    });
-
-    watch(selectedBankId, (newId) => {
-      console.log("Selected bank ID:", newId);
-      if (selectedBank.value) {
-        console.log("Selected bank details:", selectedBank.value);
-      }
-    });
     const { addDocs, removeDoc, updateDocs } = useCollection("carts");
     const { addDocs: addOrder } = useCollection("orders");
     const clearCartForUser = async (userId) => {
@@ -581,9 +486,6 @@ export default {
         fetchCartAdded("userId", currentUser.value?.uid),
         fetchUser("id", currentUser.value?.uid),
       ]);
-      await fetchPaymentMethodsForBranches(),
-        console.log("paymentMethods", paymentMethods.value);
-      console.log("groupedByBranch", groupedByBranch.value);
     });
 
     return {
@@ -603,8 +505,6 @@ export default {
       groupedByBranchID,
       handleAddMoreCart,
       handleDecrementCart,
-      selectedBankId,
-      selectedBank,
       formatNumber,
     };
   },

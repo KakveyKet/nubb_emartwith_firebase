@@ -11,7 +11,7 @@
         </IconField>
       </div>
     </div>
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto h-screen">
       <DataTable
         v-if="orders.length > 0"
         :value="orders"
@@ -216,6 +216,10 @@ export default {
     HandleRejectOrder,
   },
   setup() {
+    const playSound = () => {
+      const audio = new Audio("/notification.mp3"); // Correct path without `/public`
+      audio.play();
+    };
     const toast = useToast();
     const showToast = (action, severity) => {
       let summary;
@@ -234,6 +238,14 @@ export default {
         default:
           severity = "info";
           summary = "Action Completed";
+          break;
+        case "new order":
+          severity = "success";
+          summary = "New Order";
+          break;
+        case "update":
+          severity = "info";
+          summary = "Order Updated";
           break;
         case "new order":
           severity = "success";
@@ -320,27 +332,48 @@ export default {
         console.error("Error fetching data: Marts data is empty.");
       }
     };
-    const fetchOrders = async (field, value) => {
+    const notifiedOrderIds = ref([]);
+    const fetchOrders = (field, value) => {
       const today = moment().tz("Asia/Phnom_Penh").startOf("day").toDate();
       const tomorrow = moment(today).add(1, "day").toDate();
+
       if (marts.value.length > 0) {
         const conditions = [
           where(field, "==", value),
           where("created_at", ">=", today),
           where("created_at", "<", tomorrow),
         ];
-        // show toast when unsubcribe or new order
-        unsubscribeOrders = await getCollectionQuery(
+
+        // Real-time listener using onSnapshot (for Firestore)
+        unsubscribeOrders = getCollectionQuery(
           "orders",
           conditions,
           (data) => {
-            orders.value = data;
-            console.log("data orders", orders.value);
+            // Identify new orders
+            const newOrders = data.filter(
+              (newOrder) =>
+                !orders.value.some((order) => order.id === newOrder.id)
+            );
+
+            if (newOrders.length > 0) {
+              newOrders.forEach((order) => {
+                if (
+                  order.status === "pending" &&
+                  !notifiedOrderIds.value.includes(order.id)
+                ) {
+                  showToast("new order", "success");
+                  notifiedOrderIds.value.push();
+                  playSound();
+                }
+              });
+
+              orders.value = [...orders.value, ...newOrders];
+            }
+
+            console.log("Updated orders:", orders.value);
           },
           true
         );
-
-        // show toast when unsubcribe or new order
       } else {
         console.error("Error fetching data: Marts data is empty.");
       }

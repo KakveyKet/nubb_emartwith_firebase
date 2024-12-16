@@ -40,7 +40,7 @@
             </p>
           </div>
         </div>
-
+        
         <!-- Items List -->
         <div class="border-t border-dashed pt-4">
           <h2 class="text-17px font-semibold mb-3 text-slate-700">

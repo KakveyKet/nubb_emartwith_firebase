@@ -23,13 +23,25 @@
             placeholder="Email"
             required
           />
-          <input
-            v-model="password"
-            type="password"
-            class="w-full px-4 py-3 rounded-lg bg-primary-2 border border-primary-3 focus:outline-none focus:ring-2 focus:ring-primary-6 text-primary-10 placeholder-primary-5"
-            placeholder="Password"
-            required
-          />
+          <div class="relative">
+            <input
+              v-model="password"
+              class="w-full px-4 py-3 rounded-lg bg-primary-2 border border-primary-3 focus:outline-none focus:ring-2 focus:ring-primary-6 text-primary-10 placeholder-primary-5"
+              placeholder="Password"
+              :type="isViewPassword ? 'text' : 'password'"
+              required
+            />
+            <span
+              ><i
+                class="text-primary-6 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                :class="{
+                  'text-primary-6 pi pi-eye size-5': isViewPassword,
+                  'text-primary-5 pi pi-eye-slash size-5': !isViewPassword,
+                }"
+                @click="isViewPassword = !isViewPassword"
+              ></i
+            ></span>
+          </div>
         </div>
 
         <button
@@ -51,7 +63,7 @@
       </div>
       <div class="flex items-center justify-center">
         <router-link
-          to="/forgot-password"
+          to="/forgotpassword"
           class="xl:text-16px lg:text-13px text-13px underline text-primary-6 hover:text-primary-7 font-medium transition duration-300 ease-in-out"
         >
           Forgot password?
@@ -69,7 +81,6 @@ import { ref } from "vue";
 import useSignIn from "@/composible/SignIn";
 import { useRouter } from "vue-router";
 import { Notivue, Notification, push } from "notivue";
-
 export default {
   emits: ["close"],
   components: {
@@ -81,7 +92,7 @@ export default {
     const password = ref("");
     const router = useRouter();
     const { error, isPending, signin } = useSignIn();
-
+    const isViewPassword = ref(false);
     const handleSubmit = async () => {
       if (!email.value || !password.value) {
         alert("Please fill in all fields.");
@@ -108,6 +119,7 @@ export default {
       error,
       isPending,
       handleSubmit,
+      isViewPassword,
     };
   },
 };

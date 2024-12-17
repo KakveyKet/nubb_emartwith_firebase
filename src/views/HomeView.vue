@@ -84,7 +84,7 @@
               <div
                 @click="handleUserInfo"
                 v-else
-                class="text-white font-bold cursor-pointer"
+                class="text-white size-9 bg-primary-5 rounded-full flex items-center justify-center font-bold cursor-pointer"
               >
                 {{ items[0]?.username[0] }}
               </div>
@@ -519,9 +519,10 @@ export default {
     };
     const markets = ref([]);
     const fetchMarket = async () => {
+      const conditions = [where("status", "==", true)];
       await getCollectionQuery(
         "marts",
-        [],
+        conditions,
         (data) => {
           markets.value = data;
         },

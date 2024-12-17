@@ -10,7 +10,6 @@ import { faBowlFood, faShop, faStar } from "@fortawesome/free-solid-svg-icons";
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 
-
 import ToastService from 'primevue/toastservice';
 
 import Drawer from 'primevue/drawer'; // PrimeVue Drawer component

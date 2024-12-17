@@ -139,7 +139,7 @@
             <ul class="text-gray-500 dark:text-gray-400 font-medium">
               <li class="mb-4">
                 <a href="https://flowbite.com/" class="hover:underline"
-                  >Contact Us</a
+                  >About Us</a
                 >
               </li>
               <li>
@@ -176,7 +176,7 @@
               </li>
             </ul>
           </div>
-          <div>
+          <!-- <div>
             <h2 class="mb-6 text-sm font-semibold uppercase dark:text-white">
               Legal
             </h2>
@@ -188,7 +188,7 @@
                 <a href="#" class="hover:underline">Terms &amp; Conditions</a>
               </li>
             </ul>
-          </div>
+          </div> -->
         </div>
       </div>
       <hr
@@ -196,9 +196,10 @@
       />
       <div class="sm:flex sm:items-center sm:justify-between">
         <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400"
-          >© 2023
-          <a href="https://flowbite.com/" class="hover:underline">Flowbite™</a>.
-          All Rights Reserved.
+          >© 2024
+          <a href="https://flowbite.com/" class="hover:underline">
+            National University of Battambang
+          </a>
         </span>
         <div class="flex mt-4 sm:justify-center sm:mt-0">
           <a href="#" class="text-gray-500 hover: dark:hover:text-white">

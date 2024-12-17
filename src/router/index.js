@@ -26,6 +26,7 @@ import AdminProfile from '@/SuperAdminDashboard/AdminProfile.vue';
 import ShopDetail from '@/views/ShopDetail.vue';
 import PaymentMethod from '@/Admin/PaymentMethod.vue';
 import UserHistory from '@/views/UserHistory.vue';
+import ForgotPassword from '@/user/ForgotPassword.vue';
 setPersistence(projectAuth, browserLocalPersistence).catch((error) => {
   console.error("Error setting persistence:", error);
 });
@@ -106,6 +107,11 @@ const routes = [
     path: '/userinfo/:id',
     name: 'userinfo',
     component: UserInfo,
+  },
+  {
+    path: '/forgotpassword',
+    name: 'forgotpassword',
+    component: ForgotPassword,
   },
   {
     path: '/supperadmin',

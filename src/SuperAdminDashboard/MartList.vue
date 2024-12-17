@@ -2,7 +2,7 @@
   <div class="w-full">
     <div class="mt-3 bg-white p-4 rounded-lg w-full">
       <div class="flex justify-between items-center w-full">
-        <h2 class="text-20px font-semibold">Mart List</h2>
+        <h2 class="text-20px font-semibold">Shop List</h2>
         <div class="flex items-center gap-2">
           <DatePicker
             v-model="currentDate"
@@ -51,12 +51,8 @@
             </template>
           </Column>
 
-          <Column
-            field="name"
-            header="Product Name"
-            style="width: 20%"
-          ></Column>
-          <Column style="width: 20%" header="Image">
+          <Column field="name" header="Shop Name" style="width: 20%"></Column>
+          <Column style="width: 20%" header="Logo">
             <template #body="slotProps">
               <Skeleton
                 shape="circle"
@@ -77,29 +73,30 @@
               />
             </template>
           </Column>
-
-          <Column field="status" header="Status" style="width: 20%">
+          <!-- open time -->
+          <Column field="openTime" header="Open Time" style="width: 20%">
             <template #body="slotProps">
-              <Tag
-                severity="success"
-                v-if="slotProps.data.status !== undefined"
-                :value="slotProps.data.status ? 'Active' : 'Inactive'"
-              />
+              {{ formatTime(slotProps.data.openTime) }}
             </template>
           </Column>
+          <!-- close time -->
+          <Column field="closeTime" header="Close Time" style="width: 20%">
+            <template #body="slotProps">
+              {{ formatTime(slotProps.data.closeTime) }}
+            </template>
+          </Column>
+
           <Column field="action" header="Action" style="width: 20%">
             <template #body="slotProps">
               <div class="flex gap-2">
-                <Button
-                  icon="pi pi-pencil"
-                  text
-                  @click="handleEdit(slotProps.data)"
-                />
-                <Button
-                  @click="handleDeleteDialog(slotProps.data.id, slotProps.data)"
-                  icon="pi pi-trash"
-                  severity="danger"
-                  text
+                <!-- toggle update status -->
+                <ToggleSwitch
+                  :modelValue="slotProps.data.status"
+                  @update:modelValue="
+                    slotProps.data.status
+                      ? handleToggleStatusToFalse(slotProps.data.id)
+                      : handleToggleStatusToTrue(slotProps.data.id)
+                  "
                 />
               </div>
             </template>
@@ -144,6 +141,7 @@ import { formatDate } from "@/helper/formatCurrecy";
 import AddNewMartForm from "@/SuperAdminForm/AddNewMartForm.vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
+import useCollection from "@/composible/useCollection";
 export default {
   components: {
     AddNewMartForm,
@@ -155,6 +153,16 @@ export default {
     const searchTerm = ref("");
     const dataToEdit = ref(null);
     const toast = useToast();
+    const formatTime = (time) => {
+      if (!time || !time.seconds) return "N/A";
+      const date = new Date(time.seconds * 1000);
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    };
+    const { updateDocs } = useCollection("marts");
     const showToast = (action, severity) => {
       let summary;
       switch (action) {
@@ -206,6 +214,14 @@ export default {
     onMounted(async () => {
       await Promise.allSettled([fetchMart()]);
     });
+    const handleToggleStatusToFalse = async (id) => {
+      await updateDocs(id, { status: false });
+      console.log("id", id);
+    };
+    const handleToggleStatusToTrue = async (id) => {
+      await updateDocs(id, { status: true });
+      console.log("id", id);
+    };
     return {
       items,
       currentDate,
@@ -218,6 +234,9 @@ export default {
       handleClose,
       showToast,
       toast,
+      formatTime,
+      handleToggleStatusToFalse,
+      handleToggleStatusToTrue,
     };
   },
 };

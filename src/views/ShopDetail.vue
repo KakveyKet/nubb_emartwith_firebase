@@ -199,12 +199,12 @@
             >
               <!-- Image Container -->
               <div
-                class="relative xl:w-[200px] lg:w-[200px] md:w-[150px] w-full xl:h-[180px] lg:h-[180px] md:h-[150px] h-[150px] overflow-hidden"
+                class="relative xl:w-full lg:w-full md:w-full w-full xl:h-[180px] lg:h-[180px] md:h-[150px] h-[150px] overflow-hidden"
               >
                 <img
                   :src="product.images[0]"
                   :alt="product.name"
-                  class="w-full h-full object-cover transform transition-transform group-hover:scale-110"
+                  class="w-full h-full mx-auto object-cover transform transition-transform"
                 />
                 <div
                   class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
@@ -326,7 +326,7 @@
       </div>
     </div>
     <!-- floating cart  and back to cart view-->
-    <div class="fixed bottom-5 right-5">
+    <div class="fixed bottom-20 right-5">
       <button
         @click="handleTab('cart')"
         class="bg-primary-6 text-white rounded-full size-10 hover:bg-primary-7 active:bg-primary-8 animate-bounce animate-once animate-duration-300"

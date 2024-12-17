@@ -8,7 +8,7 @@
         <!-- logo -->
         <div class="flex items-center gap-4">
           <div
-            class="xl:w-[48px] lg:w-[48px] md:w-[48px] w-[40px] xl:h-[66px] lg:h-[66px] md:h-[66px] h-[50px]"
+            class="xl:w-[48px] lg:w-[48px] md:w-[48px] w-[30px] xl:h-[66px] lg:h-[66px] md:h-[66px] h-[40px]"
           >
             <img src="../assets/nubb.png" alt="" />
           </div>
@@ -110,9 +110,11 @@
       </div>
     </div>
     <!-- sub navbar  -->
-    <div class="border-b w-full hidden-print">
+    <div
+      class="border-b xl:w-[90%] lg:w-[90%] md:w-[90%] w-full hidden-print mx-auto"
+    >
       <div
-        class="flex items-center justify-items-start h-[47px] xl:w-[80%] lg:w-[80%] md:w-[80%] mx-auto gap-3"
+        class="xl:ml-0 lg:ml-0 md:ml-0 ml-3 flex items-center justify-items-start h-[47px] xl:w-[80%] lg:w-[80%] md:w-[80%] mx-auto gap-3"
       >
         <div
           @click="handleTab('shop')"
@@ -142,7 +144,7 @@
             <i class="pi pi-shopping-cart"></i>
             In Cart
           </div>
-          <div
+          <div v-if="cartAdded.length > 0"
             :class="{
               'absolute top-1 -right-2 size-5 bg-primary-6 rounded-full flex items-center justify-center text-white text-10px ':
                 tab === 'cart',
@@ -151,12 +153,15 @@
             }"
           >
             <p
+              
               :class="{
                 'animate-flip-up animate-once animate-duration-300':
                   tab === 'cart',
               }"
             >
-              {{ cartAdded.length }}
+              <p  class="text-primary-6">
+                {{ cartAdded.length }}
+              </p>
             </p>
           </div>
         </div>
@@ -172,7 +177,10 @@
           }"
         >
           <span>
-            <i class="pi pi-send"></i>
+            <font-awesome-icon
+              class="text-primary-6 size-5"
+              :icon="['fas', 'burger']"
+            />
           </span>
           Order
         </div>

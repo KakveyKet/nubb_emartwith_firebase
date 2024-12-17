@@ -13,7 +13,11 @@
         <div class="size-14 overflow-hidden rounded-full">
           <img
             class="size-full object-cover w-full h-full"
-            :src="marts[0]?.profileImageUrl"
+            :src="
+              marts[0]?.profileImageUrl
+                ? marts[0]?.profileImageUrl
+                : 'https://via.placeholder.com/150'
+            "
           />
         </div>
         <div

@@ -1,16 +1,16 @@
 <template>
   <div
-    class="xl:w-[100%] lg:w-[100%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 py-5"
+    class="xl:w-[100%] lg:w-[100%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto py-5"
   >
     <div class="py-2">
       <div>
         <div class="flex items-center gap-2">
           <font-awesome-icon
             class="text-primary-6"
-            :icon="['fas', 'bowl-food']"
+            :icon="['fas', 'utensils']"
           />
           <span
-            class="xl:text-16px lg:text-16px md:text-16px text-13px font-semibold text-slate-700"
+            class="xl:text-16px lg:text-16px md:text-16px text-13px font-semibold text-slate-500"
           >
             Category
           </span>
@@ -18,11 +18,11 @@
       </div>
     </div>
     <div
-      class="xl:flex lg:flex md:flex grid grid-cols-4 xl:gap-9 lg:gap-6 md:gap-3 gap-2"
+      class="xl:flex lg:flex md:flex grid grid-cols-5 xl:gap-9 lg:gap-6 md:gap-3 gap-2"
     >
       <div v-for="category in data" class="mt-6" :key="data">
         <div
-          class="xl:size-12 lg:size-12 md:size-12 size-8 overflow-hidden mx-auto animate-fade-left animate-duration-300"
+          class="xl:size-12 lg:size-12 md:size-12 size-6 overflow-hidden mx-auto animate-fade-left animate-duration-300"
         >
           <img
             class="size-full object-cover"
@@ -35,7 +35,7 @@
           />
         </div>
         <h2
-          class="text-center font-normal mt-2 xl:text-16px lg:text-16px md:text-16px text-13px text-slate-700"
+          class="text-center font-normal mt-1 xl:text-16px lg:text-16px md:text-16px text-13px text-slate-500"
         >
           {{ category.name }}
         </h2>

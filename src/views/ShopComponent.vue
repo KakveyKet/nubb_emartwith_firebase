@@ -8,7 +8,7 @@
       <div class="text-black text-14px font-bold flex items-center gap-3">
         <font-awesome-icon class="text-primary-6" :icon="['fas', 'shop']" />
         <span
-          class="xl:text-16px lg:text-16px md:text-16px text-13px text-slate-700"
+          class="xl:text-16px lg:text-16px md:text-16px text-13px text-slate-500"
         >
           All Shop
         </span>
@@ -20,7 +20,7 @@
       <div
         v-for="market in markets"
         @click.stop="$router.push(`/shopdetail/${market.id}`)"
-        class="bg-white rounded-lg shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)] hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer animate-fade-up animate-duration-300 border"
+        class="bg-white rounded-lg shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)] hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer animate-fade-up animate-duration-300"
       >
         <!-- Cover Image Section -->
         <div class="relative">

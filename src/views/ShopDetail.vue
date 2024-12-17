@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full p-5 relative">
+  <div v-if="shop" class="w-full p-5 relative">
     <div class="xl:w-[80%] lg:w-[80%] md:w-[80%] w-full mx-auto">
       <div v-if="shop">
         <div
@@ -356,6 +356,10 @@
     <Notivue v-slot="item">
       <Notification :item="item" />
     </Notivue>
+    <div
+      v-if="isShopClose(shop.openTime, shop.closeTime)"
+      class="w-full h-full bg-black/50 fixed top-0 left-0"
+    ></div>
   </div>
 </template>
 
@@ -390,6 +394,35 @@ export default {
     const handleTab = (t) => {
       emit("tab", t);
       router.push("/");
+    };
+    const showActionToast = () => {
+      // Push a toast with custom content and actions
+      push({
+        title: "Confirm Action",
+        message: "Do you want to allow this action?",
+        type: "info", // Can be 'info', 'success', 'error', etc.
+        duration: 0, // Set to 0 to make it persistent until user interacts
+        render: ({ close }) => {
+          return {
+            content: `
+              <div class="flex items-center justify-between space-x-4">
+                <button
+                  class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  @click="denyAction(close)"
+                >
+                  Deny
+                </button>
+                <button
+                  class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                  @click="allowAction(close)"
+                >
+                  Allow
+                </button>
+              </div>
+            `,
+          };
+        },
+      });
     };
     const visible = ref(false);
     const auth = getAuth();

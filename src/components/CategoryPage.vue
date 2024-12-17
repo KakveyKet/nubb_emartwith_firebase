@@ -10,7 +10,7 @@
             :icon="['fas', 'bowl-food']"
           />
           <span
-            class="xl:text-16px lg:text-16px md:text-16px text-13px font-semibold text-primary-6"
+            class="xl:text-16px lg:text-16px md:text-16px text-13px font-semibold text-slate-700"
           >
             Category
           </span>
@@ -22,7 +22,7 @@
     >
       <div v-for="category in data" class="mt-6" :key="data">
         <div
-          class="xl:size-16 lg:size-14 md:size-14 size-10 overflow-hidden mx-auto animate-fade-left animate-duration-300"
+          class="xl:size-12 lg:size-12 md:size-12 size-8 overflow-hidden mx-auto animate-fade-left animate-duration-300"
         >
           <img
             class="size-full object-cover"
@@ -35,7 +35,7 @@
           />
         </div>
         <h2
-          class="text-center font-normal mt-2 xl:text-14px lg:text-14px md:text-14px text-13px"
+          class="text-center font-normal mt-2 xl:text-16px lg:text-16px md:text-16px text-13px text-slate-700"
         >
           {{ category.name }}
         </h2>

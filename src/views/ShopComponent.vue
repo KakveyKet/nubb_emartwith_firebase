@@ -8,7 +8,7 @@
       <div class="text-black text-14px font-bold flex items-center gap-3">
         <font-awesome-icon class="text-primary-6" :icon="['fas', 'shop']" />
         <span
-          class="xl:text-16px lg:text-16px md:text-16px text-13px text-primary-6"
+          class="xl:text-16px lg:text-16px md:text-16px text-13px text-slate-700"
         >
           All Shop
         </span>

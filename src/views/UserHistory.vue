@@ -4,10 +4,7 @@
       <h1 class="text-24px font-semibold mb-6 text-primary-11 hidden-print" v-if="userHistory.length > 0">
         Your Order History
       </h1>
-      <div v-if="userHistory.length === 0"
-        class="text-primary-8 text-center py-10 text-20px animate-fade-up animate-once animate-duration-2000 animate-delay-275">
-        No orders found. Time to treat yourself!
-      </div>
+      <EmptyHistory v-if="userHistory.length === 0" />
     </div>
     <div
       class="xl:w-[70%] lg:w-[80%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 grid grid-cols-1 xl:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 print-container">
@@ -85,13 +82,16 @@ import { getCollectionQuery } from "@/composible/getCollection";
 import { where } from "@firebase/firestore";
 import { formatDate, formatNumber } from "@/helper/formatCurrecy";
 import html2canvas from "html2canvas";
-
+import EmptyHistory from "@/Form/EmptyHistory.vue";
 import jsPDF from "jspdf";
 export default {
   props: ["currentUser"],
+  components: {
+    EmptyHistory,
+  },
   setup(props) {
-    const users = ref([]); // To store users data
-    const userHistory = ref([]); // To store user order history
+    const users = ref([]); 
+    const userHistory = ref([]); 
 
     const fetchUser = async (field, value) => {
       if (!value) {

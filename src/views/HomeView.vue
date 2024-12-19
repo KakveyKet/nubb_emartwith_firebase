@@ -142,7 +142,7 @@
         >
           <div @click="handleTab('cart')" class="flex items-center gap-2">
             <i class="pi pi-shopping-cart"></i>
-            In Cart
+           Cart
           </div>
           <div 
           v-if="cartAdded.length > 0"

@@ -35,7 +35,7 @@
                 >
                   <div class="size-20 rounded-md overflow-hidden">
                     <img
-                      class="object-cover w-full h-full"
+                      class="object-cover size-20"
                       :src="cart.images[0]"
                       alt=""
                     />

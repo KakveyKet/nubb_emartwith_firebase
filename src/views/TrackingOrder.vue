@@ -48,7 +48,10 @@
                 >
                   <!-- img -->
                   <div class="w-[60px] h-[70px] rounded-md overflow-hidden">
-                    <img :src="order_data.images[0]" class="w-full h-full" />
+                    <img
+                      :src="order_data.images[0]"
+                      class="w-full h-full object-cover"
+                    />
                   </div>
                   <!-- name -->
                   <div class="w-fit">

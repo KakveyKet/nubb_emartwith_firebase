@@ -144,7 +144,9 @@
             <i class="pi pi-shopping-cart"></i>
             In Cart
           </div>
-          <div v-if="cartAdded.length > 0"
+          <div 
+          v-if="cartAdded.length > 0"
+
             :class="{
               'absolute top-1 -right-2 size-5 bg-primary-6 rounded-full flex items-center justify-center text-white text-10px ':
                 tab === 'cart',
@@ -153,13 +155,12 @@
             }"
           >
             <p
-              
               :class="{
                 'animate-flip-up animate-once animate-duration-300':
                   tab === 'cart',
               }"
             >
-              <p  class="text-primary-6">
+              <p    class="text-white">
                 {{ cartAdded.length }}
               </p>
             </p>
@@ -598,7 +599,10 @@ export default {
         console.error("Error fetching cart data:", error);
       }
     };
-
+    watch(cartAdded, async () => {
+      console.log("cartAdded", cartAdded.value);
+      await fetchCartAdded("userId", currentUser.value?.uid);
+    });
     const handleAddToCart = async (data) => {
       try {
         const cartItem = {

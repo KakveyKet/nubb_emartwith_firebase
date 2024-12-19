@@ -34,7 +34,11 @@
                   class="flex items-center w-full justify-between gap-4 animate-fade-up animate-duration-300"
                 >
                   <div class="size-20 rounded-md overflow-hidden">
-                    <img class="object-cover" :src="cart.images[0]" alt="" />
+                    <img
+                      class="object-cover w-full h-full"
+                      :src="cart.images[0]"
+                      alt=""
+                    />
                   </div>
                   <div class="mr-4">
                     <p

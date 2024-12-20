@@ -418,11 +418,6 @@ export default {
 
     const fetchProducts = async (field, value) => {
       try {
-        // Validate inputs
-        if (!field || !value) {
-          throw new Error("Invalid field or value for query.");
-        }
-
         let conditions = [where(field, "==", value)]; // Add branch filter
 
         // Add category filter only if selectedCategory is valid
@@ -438,7 +433,6 @@ export default {
         await getCollectionQuery("products", conditions, (data) => {
           products.value = data;
         });
-
         console.log("Filtered Products:", products.value);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -448,27 +442,6 @@ export default {
     const shop = ref(null);
     const isLoading = ref(false);
     const error = ref(null);
-
-    const fetchShopsById = async (id) => {
-      isLoading.value = true;
-      error.value = null;
-
-      try {
-        const docRef = doc(projectFirestore, "marts", id);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          shop.value = { id: docSnap.id, ...docSnap.data() };
-        } else {
-          error.value = "No document found with the provided ID.";
-        }
-      } catch (error) {
-        console.error("Error fetching shops by document ID:", error);
-        error.value = "An error occurred while fetching the shop.";
-      } finally {
-        isLoading.value = false;
-      }
-    };
 
     const handleAddToCart = async (data) => {
       try {
@@ -526,7 +499,26 @@ export default {
         console.error("Error fetching category:", error);
       }
     };
+    const fetchShopsById = async (id) => {
+      isLoading.value = true;
+      error.value = null;
 
+      try {
+        const docRef = doc(projectFirestore, "marts", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          shop.value = { id: docSnap.id, ...docSnap.data() };
+        } else {
+          error.value = "No document found with the provided ID.";
+        }
+      } catch (error) {
+        console.error("Error fetching shops by document ID:", error);
+        error.value = "An error occurred while fetching the shop.";
+      } finally {
+        isLoading.value = false;
+      }
+    };
     onMounted(async () => {
       console.log("route", route.params.id);
       await Promise.all([

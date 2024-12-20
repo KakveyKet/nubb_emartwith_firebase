@@ -9,7 +9,7 @@
             <img
               :src="selectedImage || product_detail.images[0]"
               :alt="product_detail.name"
-              class="w-full h-[400px] object-cover"
+              class="max-h-40 min-h-[40] max-w-[40] object-cover"
             />
           </div>
           <div class="flex gap-3">
@@ -77,7 +77,7 @@
                 </button>
                 <span class="px-4 py-2 border-x">{{ cartItem?.quantity }}</span>
                 <button
-                  @click="handleAddToCart(product_detail)"
+                  @click="handleAddMoreCart(cartItem)"
                   class="px-3 py-2 text-gray-600 hover:bg-gray-100"
                 >
                   +
@@ -180,20 +180,18 @@ export default {
       }
     };
 
-    const handleAddMoreCart = async (id) => {
+    const handleAddMoreCart = async (cartItem) => {
       try {
-        const cartItem = cartAdded.value.find((item) => item.id === id);
-        if (cartItem) {
-          const newQuantity = cartItem.quantity + 1; // Increment quantity by 1
-          await updateDocs(id, { quantity: newQuantity });
-          console.log(
-            `Updated cart item ${id} with new quantity: ${newQuantity}`
-          );
-        } else {
-          console.error("Cart item not found");
-        }
+        cartItem.quantity += 1;
+        await updateDocs(cartItem.id, cartItem);
+        fetchCartAdded(
+          "userId",
+          props.currentUser?.uid,
+          "product_id",
+          props.product_detail?.id
+        );
       } catch (error) {
-        console.error("Error updating cart quantity:", error);
+        console.error("Error adding more to cart:", error);
       }
     };
     const handleRemoveCart = async (id) => {

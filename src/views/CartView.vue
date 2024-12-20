@@ -21,27 +21,48 @@
                 <p>{{ branchId }}</p>
               </div>
 
-              <div v-for="cart in item" class="cart_added relative">
-                <div
+              <div
+                v-for="cart in cartAdded"
+                :key="cart.id"
+                class="cart_added relative bg-white p-4 rounded-lg shadow-sm"
+              >
+                <!-- Remove Button -->
+                <button
                   @click="handleRemoveCart(cart.id)"
-                  class="absolute size-3 rounded-full flex items-center justify-center right-2 top-2"
+                  class="absolute size-3 rounded-full flex items-center justify-center right-2 top-2 hover:bg-gray-50"
                 >
-                  <i
-                    class="pi pi-times hover:cursor-pointer hover:text-red-500"
-                  ></i>
-                </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 hover:text-red-500 transition-colors"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="{2}"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+
+                <!-- Cart Item Content -->
                 <div
                   class="flex items-center w-full justify-between gap-4 animate-fade-up animate-duration-300"
                 >
+                  <!-- Product Image -->
                   <div
-                    class="rounded-md overflow-hidden min-w-20 min-h-20 max-w-20 max-h-20"
+                    class="rounded-md overflow-hidden min-w-12 min-h-12 max-w-12 max-h-12"
                   >
                     <img
                       class="object-cover w-full h-full"
                       :src="cart.images[0]"
-                      alt=""
+                      :alt="cart.name"
                     />
                   </div>
+
+                  <!-- Product Details -->
                   <div class="mr-4">
                     <p
                       class="font-semibold text-black xl:text-16px lg:text-16px md:text-16px text-13px"
@@ -55,17 +76,30 @@
                       <span>{{ formatNumber(cart.price) }} ៛</span>
                     </div>
                   </div>
+
+                  <!-- Quantity Controls -->
                   <div class="mr-8">
                     <div class="border flex items-center rounded-md">
                       <button
                         :disabled="cart.quantity <= 1"
                         @click="handleDecrementCart(cart.id, cart.quantity)"
-                        class="size-8 rounded flex items-center justify-center bg-slate-200 text-black"
+                        class="xl:size-8 lg:size-7 md:size-6 size-5 rounded flex items-center justify-center bg-slate-200 text-black disabled:opacity-50"
                       >
-                        <i class="pi pi-minus text-primary-6"></i>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4 text-primary-6"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeWidth="2"
+                            d="M5 12h14"
+                          />
+                        </svg>
                       </button>
                       <div
-                        class="size-8 flex items-center justify-center text-13px text-primary-6 font-semibold"
+                        class="xl:size-8 lg:size-7 md:size-6 size-5 flex items-center justify-center text-13px text-primary-6 font-semibold"
                       >
                         <p
                           class="animate-flip-up animate-once animate-duration-300"
@@ -75,9 +109,20 @@
                       </div>
                       <button
                         @click="handleAddMoreCart(cart.id)"
-                        class="size-8 rounded flex items-center justify-center bg-primary-6 text-white"
+                        class="xl:size-8 lg:size-7 md:size-6 size-5 rounded flex items-center justify-center bg-primary-6 text-white"
                       >
-                        <i class="pi pi-plus"></i>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeWidth="2"
+                            d="M12 5v14m-7-7h14"
+                          />
+                        </svg>
                       </button>
                     </div>
                   </div>

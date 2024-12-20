@@ -59,12 +59,14 @@
               severity="secondary"
               rounded
               aria-label="Bookmark"
+              size="small"
             />
             <Button
               @click="visibleRight = true"
               icon="pi pi-bars"
               severity="secondary"
               rounded
+              size="small"
               aria-label="Bookmark"
             />
           </div>

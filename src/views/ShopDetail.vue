@@ -179,7 +179,7 @@
           </div>
         </div>
       </div>
-      <div v-if="product.length > 0">
+      <div v-if="products.length > 0">
         <div class="w-full md:mx-auto">
           <!-- cart container -->
           <div
@@ -187,7 +187,7 @@
           >
             <!-- opacity 0.5 when shop is close -->
             <div
-              v-for="product in product"
+              v-for="product in products"
               :key="product.id"
               :class="{
                 'cursor-not-allowed': isShopClose(
@@ -199,6 +199,7 @@
             >
               <!-- Image Container -->
               <div
+                @click="handlerDrawer(product)"
                 class="relative xl:w-full lg:w-full md:w-full w-full xl:h-[180px] lg:h-[180px] md:h-[150px] h-[150px] overflow-hidden"
               >
                 <img
@@ -278,7 +279,7 @@
           </div>
         </div>
       </div>
-      <div v-else-if="product.length > 0 && selectedCategory">
+      <div v-else-if="products.length > 0 && selectedCategory">
         <!-- sort by category -->
         <div class="py-4 animate-pulse">
           <div class="h-5 bg-gray-200 rounded w-1/4 mb-4 px-4"></div>
@@ -295,7 +296,7 @@
           </div>
         </div>
       </div>
-      <div v-else-if="product.length === 0 && selectedCategory">
+      <div v-else-if="products.length === 0 && selectedCategory">
         <div class="flex flex-col items-center justify-center p-8">
           <div class="mb-6">
             <svg
@@ -360,6 +361,18 @@
       v-if="isShopClose(shop.openTime, shop.closeTime)"
       class="w-full h-full bg-black/50 fixed top-0 left-0"
     ></div>
+    <Drawer
+      v-model:visible="visibleBottom"
+      position="bottom"
+      style="height: 80vh"
+      :show-close-icon="false"
+    >
+      <CartDetails
+        :product_detail="product_detail"
+        :product_related="product_related"
+        :currentUser="currentUser"
+      />
+    </Drawer>
   </div>
 </template>
 
@@ -375,16 +388,17 @@ import { onAuthStateChanged } from "firebase/auth";
 import { timestamp } from "@/config/config";
 import { useRouter } from "vue-router";
 import UserLoginForm from "@/user/UserLoginForm.vue";
-// notivue
 import { Notivue, Notification, push } from "notivue";
 import { formatNumber } from "@/helper/formatCurrecy";
 import moment from "moment-timezone";
+import CartDetails from "@/Form/CartDetails.vue";
 
 export default {
   components: {
     UserLoginForm,
     Notivue,
     Notification,
+    CartDetails,
   },
   setup(props, { emit }) {
     const route = useRoute();
@@ -395,39 +409,11 @@ export default {
       emit("tab", t);
       router.push("/");
     };
-    const showActionToast = () => {
-      // Push a toast with custom content and actions
-      push({
-        title: "Confirm Action",
-        message: "Do you want to allow this action?",
-        type: "info", // Can be 'info', 'success', 'error', etc.
-        duration: 0, // Set to 0 to make it persistent until user interacts
-        render: ({ close }) => {
-          return {
-            content: `
-              <div class="flex items-center justify-between space-x-4">
-                <button
-                  class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                  @click="denyAction(close)"
-                >
-                  Deny
-                </button>
-                <button
-                  class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                  @click="allowAction(close)"
-                >
-                  Allow
-                </button>
-              </div>
-            `,
-          };
-        },
-      });
-    };
+
     const visible = ref(false);
     const auth = getAuth();
     const { addDocs } = useCollection("carts");
-    const product = ref([]);
+    const products = ref([]);
     const selectedCategory = ref(null);
 
     const fetchProducts = async (field, value) => {
@@ -450,10 +436,10 @@ export default {
 
         // Fetch data
         await getCollectionQuery("products", conditions, (data) => {
-          product.value = data;
+          products.value = data;
         });
 
-        console.log("Filtered Products:", product.value);
+        console.log("Filtered Products:", products.value);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -495,6 +481,7 @@ export default {
           category: data.category,
           images: data.images,
           branch_id: data.branch_id,
+          product_id: data.id,
         };
         if (currentUser.value?.uid) {
           const result = await addDocs(cartItem);
@@ -579,9 +566,18 @@ export default {
         currentTime < openTimeFormatted || currentTime > closeTimeFormatted
       );
     };
+    const product_detail = ref(null);
+    const product_related = ref(null);
+    const visibleBottom = ref(false);
+
+    const handlerDrawer = (doc) => {
+      product_detail.value = doc;
+      product_related.value = products.value;
+      visibleBottom.value = true;
+    };
 
     return {
-      product,
+      products,
       cartAdded,
       handleAddToCart,
       categories,
@@ -593,6 +589,11 @@ export default {
       formatNumber,
       isShopClose,
       push,
+      visibleBottom,
+      handlerDrawer,
+      product_detail,
+      product_related,
+      currentUser,
     };
   },
 };

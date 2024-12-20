@@ -591,7 +591,6 @@ export default {
           conditions,
           (data) => {
             cartAdded.value = data;
-            console.log("cartAdded", cartAdded.value);
           },
           true
         );
@@ -600,7 +599,6 @@ export default {
       }
     };
     watch(cartAdded, async () => {
-      console.log("cartAdded", cartAdded.value);
       await fetchCartAdded("userId", currentUser.value?.uid);
     });
     const handleAddToCart = async (data) => {

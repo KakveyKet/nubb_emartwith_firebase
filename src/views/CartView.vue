@@ -236,6 +236,7 @@ import EmptyCart from "@/Form/EmptyCart.vue";
 import { writeBatch, getDocs, query, collection } from "firebase/firestore";
 import { projectFirestore } from "@/config/config";
 import { formatNumber } from "@/helper/formatCurrecy";
+
 export default {
   components: {
     EmptyCart,

@@ -11,6 +11,8 @@
             placeholder="Filter by date"
             show-button-bar
             style="width: 250px"
+            showIcon
+            fluid
           />
           <Dropdown
             v-model="selectedCategory"
@@ -22,11 +24,7 @@
             show-clear
           />
           <InputText v-model="searchTerm" placeholder="Search by name" />
-          <Button
-            icon="pi pi-filter"
-            label="Filter"
-            class="!bg-primary-6 !border-none"
-          />
+
           <Button
             icon="pi pi-plus"
             label="Add Product"
@@ -129,14 +127,14 @@
         </DataTable>
         <div v-else class="card flex justify-center py-5">
           <div class="flex flex-col items-center">
-            <ProgressSpinner
+            <!-- <ProgressSpinner
               style="width: 50px; height: 50px"
               strokeWidth="8"
               fill="transparent"
               animationDuration=".5s"
               aria-label="Custom ProgressSpinner"
-            />
-            <p class="mt-2">Product Loading...</p>
+            /> -->
+            <p class="mt-2">No Product Found</p>
           </div>
         </div>
       </div>

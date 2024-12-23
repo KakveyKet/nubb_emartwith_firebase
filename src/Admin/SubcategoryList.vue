@@ -17,6 +17,8 @@
           :manualInput="false"
           placeholder="Filter by date"
           showButtonBar
+          showIcon
+          fluid
         />
       </div>
       <button @click="handleAdd" class="add_new_button">
@@ -94,14 +96,14 @@
       </DataTable>
       <div v-else class="card flex justify-center py-5">
         <div class="flex flex-col items-center">
-          <ProgressSpinner
+          <!-- <ProgressSpinner
             style="width: 50px; height: 50px"
             strokeWidth="8"
             fill="transparent"
             animationDuration=".5s"
             aria-label="Custom ProgressSpinner"
-          />
-          <p class="mt-2">Categories Loading...</p>
+          /> -->
+          <p class="mt-2">No Category Found</p>
         </div>
       </div>
     </div>

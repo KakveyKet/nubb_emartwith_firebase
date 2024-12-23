@@ -6,11 +6,11 @@
       <h1 class="text-xl font-semibold">Payment Method</h1>
       <div class="flex space-x-4">
         <div class="flex space-x-4">
-          <InputText
+          <!-- <InputText
             v-model="searchTerm"
             showClear
             placeholder="Search by name"
-          />
+          /> -->
         </div>
         <button @click="handleAdd" class="add_new_button">
           <div class="flex items-center gap-2">

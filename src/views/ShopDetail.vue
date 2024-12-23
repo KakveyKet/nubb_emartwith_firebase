@@ -443,8 +443,44 @@ export default {
     const isLoading = ref(false);
     const error = ref(null);
 
+    // Clear the user's cart
+    const clearCart = async (userId) => {
+      try {
+        const conditions = [where("userId", "==", userId)];
+        const cartItems = await getCollectionQuery("carts", conditions);
+
+        if (cartItems.length > 0) {
+          const deletePromises = cartItems.map((item) => deleteDoc(item.id));
+          await Promise.all(deletePromises);
+        }
+
+        cartAdded.value = []; // Clear local cart data
+        console.log("Cart cleared successfully.");
+      } catch (error) {
+        console.error("Error clearing cart:", error);
+      }
+    };
+
+    // Add item to cart
     const handleAddToCart = async (data) => {
       try {
+        if (!currentUser.value?.uid) {
+          visible.value = true; // Show login prompt if not logged in
+          return;
+        }
+
+        // Check if cart contains items from a different branch
+        if (cartAdded.value.length > 0) {
+          const existingBranchId = cartAdded.value[0].branch_id;
+          if (existingBranchId !== data.branch_id) {
+            // Notify user and clear the cart
+            await clearCart(currentUser.value?.uid);
+            await fetchCartAdded("userId", currentUser.value?.uid);
+            push.warning("Cart cleared as you're ordering from a new shop.");
+          }
+        }
+
+        // Add the new item to the cart
         const cartItem = {
           name: data.name,
           price: data.price,
@@ -456,15 +492,11 @@ export default {
           branch_id: data.branch_id,
           product_id: data.id,
         };
-        if (currentUser.value?.uid) {
-          const result = await addDocs(cartItem);
-          fetchCartAdded("userId", currentUser.value?.uid);
-          push.success("Add to cart success");
-          console.log("result", result);
-          console.log("cartAdded", cartAdded.value);
-        } else {
-          visible.value = true;
-        }
+
+        const result = await addDocs(cartItem);
+        await fetchCartAdded("userId", currentUser.value?.uid);
+        push.success("Item added to cart successfully.");
+        console.log("Added to cart:", result);
       } catch (error) {
         console.error("Error adding to cart:", error);
       }

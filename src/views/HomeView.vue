@@ -181,7 +181,7 @@
         >
           <span>
             <font-awesome-icon
-              class="text-primary-6 size-5"
+              class=" size-5"
               :icon="['fas', 'burger']"
             />
           </span>

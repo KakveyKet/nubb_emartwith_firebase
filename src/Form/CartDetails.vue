@@ -130,6 +130,7 @@ export default {
       )
     );
     const { addDocs, updateDocs, removeDoc } = useCollection("carts");
+
     const cartAdded = ref([]);
     const fetchCartAdded = async (field1, value1, field2, value2) => {
       try {
@@ -151,15 +152,21 @@ export default {
       }
     };
 
+    // Use the getCollectionQuery function to fetch the data from the Firestore.
+
     const handleAddToCart = async (data) => {
       try {
+        // The callback function to run when the data is fetched.
         const cartItem = {
+          // Update the cartAdded state with the fetched data.
           name: data.name,
           price: data.price,
           quantity: data.quantity || 1,
+          // Set to true to listen for real-time updates.
           createdAt: timestamp(),
           userId: props.currentUser?.uid,
           category: data.category,
+          // Log any errors that occur while fetching the data.
           images: data.images,
           branch_id: data.branch_id,
           product_id: data.id,

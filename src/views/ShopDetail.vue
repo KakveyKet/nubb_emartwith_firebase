@@ -257,7 +257,7 @@
                       {{ Math.round(product.price * 1.2) }} ៛
                     </span> -->
                   </div>
-                  <button
+                  <!-- <button
                     @click="
                       isShopClose(shop.openTime, shop.closeTime)
                         ? push.error('We are close now')
@@ -266,13 +266,13 @@
                     class="bg-primary-5 hover:bg-primary-6 text-white rounded-lg flex items-center justify-center size-10 transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-7 focus:ring-opacity-50"
                   >
                     <i class="pi pi-plus size-5"></i>
-                  </button>
-                  <!-- <button
+                  </button> -->
+                  <button
                     @click="handleAddToCart(product)"
                     class="bg-primary-5 hover:bg-primary-6 text-white rounded-lg flex items-center justify-center size-10 transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-7 focus:ring-opacity-50"
                   >
                     <i class="pi pi-plus size-5"></i>
-                  </button> -->
+                  </button>
                 </div>
               </div>
             </div>
@@ -412,7 +412,7 @@ export default {
 
     const visible = ref(false);
     const auth = getAuth();
-    const { addDocs } = useCollection("carts");
+    const { addDocs, removeDoc } = useCollection("carts");
     const products = ref([]);
     const selectedCategory = ref(null);
 
@@ -444,17 +444,14 @@ export default {
     const error = ref(null);
 
     // Clear the user's cart
-    const clearCart = async (userId) => {
+    // Clear the cart for the current user
+    const clearCart = async () => {
       try {
-        const conditions = [where("userId", "==", userId)];
+        const conditions = [where("userId", "==", currentUser.value?.uid)];
         const cartItems = await getCollectionQuery("carts", conditions);
-
-        if (cartItems.length > 0) {
-          const deletePromises = cartItems.map((item) => deleteDoc(item.id));
-          await Promise.all(deletePromises);
-        }
-
-        cartAdded.value = []; // Clear local cart data
+        const deletePromises = cartItems.map((item) => removeDoc(item.id));
+        await Promise.all(deletePromises);
+        cartAdded.value = [];
         console.log("Cart cleared successfully.");
       } catch (error) {
         console.error("Error clearing cart:", error);
@@ -462,6 +459,7 @@ export default {
     };
 
     // Add item to cart
+
     const handleAddToCart = async (data) => {
       try {
         if (!currentUser.value?.uid) {
@@ -469,7 +467,10 @@ export default {
           return;
         }
 
-        // Check if cart contains items from a different branch
+        // Flag to indicate if the cart was cleared
+        let cartCleared = false;
+
+        // Check if the cart contains items from a different branch
         if (cartAdded.value.length > 0) {
           const existingBranchId = cartAdded.value[0].branch_id;
           if (existingBranchId !== data.branch_id) {
@@ -477,30 +478,46 @@ export default {
             await clearCart(currentUser.value?.uid);
             await fetchCartAdded("userId", currentUser.value?.uid);
             push.warning("Cart cleared as you're ordering from a new shop.");
+            cartCleared = true; // Mark that the cart was cleared
           }
         }
 
-        // Add the new item to the cart
-        const cartItem = {
-          name: data.name,
-          price: data.price,
-          quantity: data.quantity || 1,
-          createdAt: timestamp(),
-          userId: currentUser.value?.uid,
-          category: data.category,
-          images: data.images,
-          branch_id: data.branch_id,
-          product_id: data.id,
-        };
+        // Ensure the cart is cleared before adding the new item
+        if (!cartCleared || cartAdded.value.length === 0) {
+          // Add the new item to the cart
+          const cartItem = {
+            name: data.name,
+            price: data.price,
+            quantity: data.quantity || 1,
+            createdAt: timestamp(),
+            userId: currentUser.value?.uid,
+            category: data.category,
+            images: data.images,
+            branch_id: data.branch_id,
+            product_id: data.id,
+          };
 
-        const result = await addDocs(cartItem);
-        await fetchCartAdded("userId", currentUser.value?.uid);
-        push.success("Item added to cart successfully.");
-        console.log("Added to cart:", result);
+          const result = await addDocs(cartItem);
+          await fetchCartAdded("userId", currentUser.value?.uid);
+          push.success("Item added to cart successfully.");
+          console.log("Added to cart:", result);
+        }
       } catch (error) {
         console.error("Error adding to cart:", error);
       }
     };
+
+    watch(
+      () => route.params.id,
+      async (newBranchId, oldBranchId) => {
+        if (newBranchId !== oldBranchId) {
+          currentBranchId.value = newBranchId;
+          console.log("Branch changed:", newBranchId);
+          await fetchCartAdded();
+        }
+      }
+    );
+
     let subscription = ref(null);
     const cartAdded = ref([]);
     const fetchCartAdded = async (field, value) => {

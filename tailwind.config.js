@@ -34,6 +34,11 @@ module.exports = {
         'long': '10s',
         'very-long': '20s',
       },
+      fontFamily: {
+        Roboto: ["Roboto", "system-ui"],
+        NotoSerif: ["Kantumruy Pro", "serif"]
+      }
+
     },
   },
   variants: {

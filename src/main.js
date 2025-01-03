@@ -39,6 +39,7 @@ import Timeline from 'primevue/timeline';
 import Badge from 'primevue/badge';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import i18n from './composible/in18n';
 
 
 import Popover from 'primevue/popover';
@@ -48,6 +49,7 @@ import { createNotivue } from 'notivue'
 
 import 'notivue/notification.css'
 import 'notivue/animations.css'
+
 // Create Vue app instance
 const app = createApp(App);
 
@@ -75,6 +77,7 @@ app.use(PrimeVue, {
         }
     }
 });
+app.use(i18n);
 // FontAwesome configuration
 library.add(faStar, faBowlFood, faShop, faBurger, faUtensils);
 app.component('font-awesome-icon', FontAwesomeIcon);

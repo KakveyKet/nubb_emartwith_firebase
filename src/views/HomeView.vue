@@ -1,6 +1,7 @@
 <template>
-  <div class="w-full h-fit">
+  <div :class="dynamicFont" class="w-full h-fit">
     <!-- navbar -->
+
     <div class="xl:w-full lg:w-full md:w-full w-full shadow-md hidden-print">
       <div
         class="xl:w-[90%] lg:w-[90%] md:w-[90%] w-[90%] mx-auto py-2 flex items-center justify-between"
@@ -101,13 +102,39 @@
             class="xl:!flex lg:!flex md:!hidden !hidden"
           >
           </Button>
-          <!-- translate  update to select language 
-           -->
-          <div
+         
+          <div @click="toggleTranslate"
             class="border overflow-hidden size-10 cursor-pointer rounded-full"
           >
-            <img class="w-full h-full" src="../assets/download.png" alt="" />
-          </div>
+ 
+        <img
+        v-if="locale === 'khm'"
+        class="w-full h-full animate-fade-up animate-duration-200"
+        src="../assets/download.png"
+        alt="Khmer Language"
+      />
+      <img
+        v-else
+        class="w-full h-full animate-fade-up animate-duration-200"
+        src="../assets/eng1.png"
+        alt="English Language"
+      />        </div>
+          <Popover ref="translate" :show-event="null" :hide-event="null">
+            <div class="flex flex-col gap-2">
+              <button
+                @click="handleChangeLangue('eng')"
+                class="px-4 py-2 bg-primary-6 rounded-lg shadow-lg text-white font-Roboto"
+              >
+                English
+              </button>
+              <button
+                @click="handleChangeLangue('khm')"
+                class="px-4 py-2 bg-primary-6 rounded-lg shadow-lg text-white font-NotoSerif"
+              >
+                ភាសាខ្មែរ
+              </button>
+            </div>
+          </Popover>
         </div>
       </div>
     </div>
@@ -373,10 +400,8 @@
     :style="{ width: '30vw', position: 'absolute', top: '10vh' }"
   >
     <div class="w-[100%] mx-auto flex flex-col space-y-5">
-      <!-- <h1 class="xl:text-24px lg:text-20px md:text-16px text-16px font-bold">
-        Are you sure you want to logout?
-      </h1> -->
-      <div class="flex items-center gap-2">
+      
+      <div class="flex items-center gap-2 font-NotoSerif">
         <Button @click="isLogout = false" severity="secondary" label="Cancel" />
         <Button @click="logout" severity="contrast" text label="Yes " />
       </div>
@@ -394,7 +419,7 @@ import Sidebar from "@/mobile/Sidebar.vue";
 import FooterVue from "@/components/FooterPage.vue";
 import CategoryVue from "@/components/CategoryPage.vue";
 import { getCollectionQuery } from "@/composible/getCollection";
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch , computed } from "vue";
 import { formatCurrency, formatNumber } from "@/helper/formatCurrecy";
 import UserLoginForm from "@/user/UserLoginForm.vue";
 import ShopDetail from "@/views/ShopDetail.vue";
@@ -404,8 +429,8 @@ import { projectAuth } from "@/config/config";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { where } from "@firebase/firestore";
 import { timestamp } from "@/config/config";
-// import { projectFirestore } from "@/config/config";
-// import { sendTelegramMessage } from "@/composible/useDMTelegram";
+import { useI18n } from "vue-i18n";
+
 import useCollection from "@/composible/useCollection";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
@@ -429,8 +454,10 @@ export default {
     UserHistory,
   },
   setup() {
+
     const toast = useToast();
     const op = ref(null);
+    const translate = ref(null);
     const is_search = ref(false);
     const search_value = ref("");
     const route = useRoute();
@@ -639,6 +666,26 @@ export default {
       ]);
       await fetchCartAdded("userId", currentUser.value?.uid);
     });
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     return {
       route,
       products,
@@ -669,6 +716,13 @@ export default {
       handleCloseDrawer,
       op,
       toggle,
+      dynamicFont,
+      handleChangeLangue,
+      t,
+      translate,
+      toggleTranslate,
+      locale
+      
     };
   },
 };

@@ -25,17 +25,21 @@
                 <p
                   class="xl:text-20px lg:text-20px md:text-20px text-16px text-slate-700 font-bold"
                 >
-                  Order Details
+                  {{ t("message.order_details") }}
                 </p>
               </div>
               <div class="flex items-center justify-between">
-                <p class="text-13px text-gray-500">Shop Name</p>
+                <p class="text-13px text-gray-500">
+                  {{ t("message.shop_name") }}
+                </p>
                 <p class="text-13px font-semibold text-primary-6">
                   {{ formatBranchName(order.branch_id) }}
                 </p>
               </div>
               <div class="flex items-center justify-between">
-                <p class="text-13px text-gray-500">Order Date</p>
+                <p class="text-13px text-gray-500">
+                  {{ t("message.order_date") }}
+                </p>
                 <p class="text-13px text-gray-500">
                   {{ formatDate(order.created_at) }}
                 </p>
@@ -78,31 +82,31 @@
               <h2
                 class="xl:text-20px lg:text-20px md:text-20px text-16px text-slate-700 font-bold"
               >
-                Activity
+                {{ t("message.activity") }}
               </h2>
             </div>
             <div class="w-full mt-4 flex items-center justify-between">
               <h2 class="text-16px font-semibold text-slate-700">
-                Order Status
+                {{ t("message.order_status") }}
               </h2>
               <h2
                 v-if="order.status === 'pending'"
                 class="text-13px p-2 text-[#FEC53D] rounded-md animate-pulse animate-infinite animate-duration-[600ms]"
               >
-                Pending
+                {{ t("message.pending") }}
                 <span class=""> ... </span>
               </h2>
               <h2
                 class="text-13px p-2 text-primary-6 rounded-md animate-fade-up animate-once animate-duration-[600ms]"
                 v-if="order.status === 'accepted'"
               >
-                Accepted
+                {{ t("message.accepted") }}
               </h2>
               <h2
                 class="text-13px p-2 text-red-500 rounded-md animate-fade-up animate-once animate-duration-[600ms]"
                 v-else-if="order.status === 'rejected'"
               >
-                Rejected
+                {{ t("message.rejected") }}
               </h2>
             </div>
             <!-- time tracking delivery -->
@@ -111,14 +115,14 @@
               class="w-full mt-4 flex items-center justify-between"
             >
               <h2 class="text-16px font-semibold text-slate-700">
-                Time Delivery
+                {{ t("message.time_delivery") }}
               </h2>
               <h2
                 v-if="order.status === 'accepted'"
                 class="text-13px p-2 text-[#FEC53D] rounded-md"
               >
                 <span class="text-16px font-semibold text-primary-6">
-                  {{ order.pending_time }} Minutes
+                  {{ order.pending_time }} {{ t("message.minute") }}
                 </span>
               </h2>
             </div>
@@ -148,10 +152,12 @@
 import EmptyOrder from "@/Form/EmptyOrder.vue";
 import { where, doc, getDoc } from "firebase/firestore";
 import { getCollectionQuery } from "@/composible/getCollection";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { formatDate } from "@/composible/formatDate";
 import { formatNumber } from "@/helper/formatCurrecy";
 import moment from "moment-timezone";
+import { useI18n } from "vue-i18n";
+
 export default {
   props: ["currentUser"],
   components: {
@@ -219,12 +225,32 @@ export default {
       const branchs = branch.value.find((item) => item.id === id);
       return branchs ? branchs.profileImageUrl : "N/A";
     };
-    onMounted(() => {
+    onMounted(async () => {
       if (props.currentUser) {
         fetchOrders("userId", props.currentUser?.uid);
-        fetchBranch();
+        await fetchBranch();
       }
     });
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     return {
       orders,
       formatDate,
@@ -232,6 +258,10 @@ export default {
       formarBranchImage,
       splitInvoiceId,
       formatNumber,
+      t,
+      handleChangeLangue,
+      dynamicFont,
+      toggleTranslate,
     };
   },
 };

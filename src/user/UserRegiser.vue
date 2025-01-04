@@ -8,7 +8,9 @@
             alt="Logo"
             class="w-24 h-24 object-contain"
           />
-          <h1 class="text-24px font-bold text-primary-8">User Registration</h1>
+          <h1 class="text-24px font-bold text-primary-8">
+            {{ t("message.register") }}
+          </h1>
         </div>
 
         <form @submit.prevent="handleSignUp" class="space-y-6">
@@ -40,37 +42,20 @@
                     />
                   </svg>
                 </div> -->
-                <div
-                  class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
-                >
-                  <label
-                    for="profile-picture"
-                    class="text-white cursor-pointer text-sm font-medium"
-                  >
-                    Change Picture
-                  </label>
-                </div>
               </div>
-              <input
-                type="file"
-                id="profile-picture"
-                accept="image/*"
-                @change="handleImageUpload"
-                class="hidden"
-              />
             </div>
             <input
               v-model="displayName"
               type="text"
               class="w-full px-4 py-3 rounded-lg bg-primary-2 border border-primary-3 focus:outline-none focus:ring-2 focus:ring-primary-6 text-primary-10 placeholder-primary-5"
-              placeholder="Username"
+              :placeholder="t('message.username')"
               required
             />
             <input
               v-model="phoneNumber"
               type="tel"
               class="w-full px-4 py-3 rounded-lg bg-primary-2 border border-primary-3 focus:outline-none focus:ring-2 focus:ring-primary-6 text-primary-10 placeholder-primary-5"
-              placeholder="Phone Number"
+              :placeholder="t('message.phone')"
               @input="onPhoneNumberInput"
               required
             />
@@ -78,14 +63,14 @@
               v-model="email"
               type="email"
               class="w-full px-4 py-3 rounded-lg bg-primary-2 border border-primary-3 focus:outline-none focus:ring-2 focus:ring-primary-6 text-primary-10 placeholder-primary-5"
-              placeholder="Email"
+              :placeholder="t('message.email')"
               required
             />
             <div class="relative">
               <input
                 v-model="password"
                 class="w-full px-4 py-3 rounded-lg bg-primary-2 border border-primary-3 focus:outline-none focus:ring-2 focus:ring-primary-6 text-primary-10 placeholder-primary-5"
-                placeholder="Password"
+                :placeholder="t('message.password')"
                 :type="isViewPassword ? 'text' : 'password'"
                 required
               />
@@ -107,7 +92,7 @@
             class="w-full bg-primary-6 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-7 focus:outline-none focus:ring-2 focus:ring-primary-6 focus:ring-offset-2 transition duration-300 ease-in-out"
             :disabled="isPending"
           >
-            {{ isPending ? "Registering..." : "Register" }}
+            {{ isPending ? t("message.loading") : t("message.register") }}
           </button>
         </form>
 
@@ -116,7 +101,7 @@
             to="/"
             class="text-16px text-primary-6 hover:text-primary-7 font-medium transition duration-300 ease-in-out"
           >
-            Already have an account? Log in
+            {{ t("message.already_have_account") }} {{ t("message.login") }}
           </router-link>
         </div>
       </div>
@@ -125,16 +110,13 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import useSignUp from "@/composible/SignUp";
 import { useRouter } from "vue-router";
-import {
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
-import { projectStorage } from "@/config/config";
+
 import { formatPhoneNumber } from "@/helper/formatCurrecy";
+import { useI18n } from "vue-i18n";
+
 export default {
   setup() {
     const email = ref("");
@@ -145,7 +127,26 @@ export default {
     const address = ref("");
     const telegram_id = ref("");
     const router = useRouter();
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
 
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     // uplaod funtion
 
     const { error, isPending, signup } = useSignUp();
@@ -193,6 +194,13 @@ export default {
       handleSignUp,
       onPhoneNumberInput,
       isViewPassword,
+      role,
+      address,
+      telegram_id,
+      dynamicFont,
+      handleChangeLangue,
+      toggleTranslate,
+      t,
     };
   },
 };

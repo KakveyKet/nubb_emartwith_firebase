@@ -60,9 +60,10 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import useSignIn from "@/composible/SignIn";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 
 export default {
   setup() {
@@ -75,7 +76,26 @@ export default {
       await signin(email.value, password.value);
       router.push({ path: "/dashboard" });
     };
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
 
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     return {
       email,
       password,
@@ -83,6 +103,11 @@ export default {
       isPending,
       handleSubmit,
       router,
+      t,
+      locale,
+      dynamicFont,
+      handleChangeLangue,
+      toggleTranslate,
     };
   },
 };

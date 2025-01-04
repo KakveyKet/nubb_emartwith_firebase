@@ -119,7 +119,7 @@
         <!-- sort by category -->
         <div class="py-4">
           <h2 class="text-20px font-semibold text-gray-800 mb-4 px-4">
-            Category
+            {{ t("message.category") }}
           </h2>
           <div class="">
             <div
@@ -136,7 +136,7 @@
                   'px-4 py-2 rounded-full text-16px font-medium shadow-md hover:shadow-lg',
                 ]"
               >
-                All
+                {{ t("message.all") }}
               </button>
               <button
                 v-for="category in categories"
@@ -221,7 +221,8 @@
                   <span
                     class="bg-white/90 text-primary-8 text-13px font-semibold px-2 py-1 rounded-md"
                   >
-                    {{ product.starting_time }} - {{ product.ending_time }} min
+                    {{ product.starting_time }} - {{ product.ending_time }}
+                    {{ t("message.minute") }}
                   </span>
                 </div>
               </div>
@@ -317,11 +318,10 @@
           <h2
             class="xl:text-24px lg:text-24px md:text-24px text-16px font-bold text-primary-9 mb-2"
           >
-            No Data Available
+            {{ t("message.no_product") }}
           </h2>
           <p class="text-16px text-primary-7 text-center max-w-md">
-            There are currently no items to display in this category. Please try
-            selecting a different category or check back later.
+            {{ t("message.there_are_no_products_in_this_category") }}
           </p>
         </div>
       </div>
@@ -378,7 +378,7 @@
 
 <script>
 import { useRoute } from "vue-router";
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { getAuth } from "firebase/auth";
 import { projectAuth, projectFirestore } from "@/config/config";
@@ -392,6 +392,7 @@ import { Notivue, Notification, push } from "notivue";
 import { formatNumber } from "@/helper/formatCurrecy";
 import moment from "moment-timezone";
 import CartDetails from "@/Form/CartDetails.vue";
+import { useI18n } from "vue-i18n";
 
 export default {
   components: {
@@ -409,7 +410,26 @@ export default {
       emit("tab", t);
       router.push("/");
     };
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
 
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     const visible = ref(false);
     const auth = getAuth();
     const { addDocs, removeDoc } = useCollection("carts");
@@ -477,7 +497,7 @@ export default {
             // Notify user and clear the cart
             await clearCart(currentUser.value?.uid);
             await fetchCartAdded("userId", currentUser.value?.uid);
-            push.warning("Cart cleared as you're ordering from a new shop.");
+            push.warning(t("message.please_clear_cart"));
             cartCleared = true; // Mark that the cart was cleared
           }
         }
@@ -499,7 +519,7 @@ export default {
 
           const result = await addDocs(cartItem);
           await fetchCartAdded("userId", currentUser.value?.uid);
-          push.success("Item added to cart successfully.");
+          push.success(t("message.cart_added"));
           console.log("Added to cart:", result);
         }
       } catch (error) {
@@ -635,6 +655,7 @@ export default {
       product_detail,
       product_related,
       currentUser,
+      t,
     };
   },
 };

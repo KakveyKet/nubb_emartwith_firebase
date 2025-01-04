@@ -62,14 +62,17 @@
               aria-label="Bookmark"
               size="small"
             />
-            <Button
-              @click="visibleRight = true"
-              icon="pi pi-bars"
-              severity="secondary"
-              rounded
-              size="small"
-              aria-label="Bookmark"
-            />
+            <div class="xl:hidden lg:hidden md:block block">
+
+              <Button
+                @click="visibleRight = true"
+                icon="pi pi-bars"
+                severity="secondary"
+                rounded
+                size="small"
+                aria-label="Bookmark"
+              />
+            </div>
           </div>
           <div
             v-if="currentUser"
@@ -158,7 +161,7 @@
           <span>
             <i class="pi pi-shop"></i>
           </span>
-          Shop
+          {{ t("message.shop") }}
         </div>
         <div
           class="xl:hidden lg:hidden md:block block relative"
@@ -171,7 +174,7 @@
         >
           <div @click="handleTab('cart')" class="flex items-center gap-2">
             <i class="pi pi-shopping-cart"></i>
-           Cart
+           {{ t("message.cart") }}
           </div>
           <div 
           v-if="cartAdded.length > 0"
@@ -212,7 +215,7 @@
               :icon="['fas', 'burger']"
             />
           </span>
-          Order
+          {{ t("message.order") }}
         </div>
         <div
           @click="handleTab('history')"
@@ -227,7 +230,7 @@
           <span>
             <i class="pi pi-history"></i>
           </span>
-          History
+          {{ t("message.history") }}
         </div>
       </div>
     </div>
@@ -269,7 +272,7 @@
     <Toast />
   </div>
   <div class="hidden-print">
-    <FooterVue />
+    <FooterVue  />
   </div>
   <div class="fixed bottom-5 right-5 hidden">
     <ShopDetail @tab="handleTab('cart')" />
@@ -377,7 +380,7 @@
             class="p-3 w-full text-16px text-primary-8 hover:bg-primary-2 hover:text-primary-10 transition-colors duration-200 cursor-pointer rounded-md flex items-center gap-2"
           >
             <i class="pi pi-sign-out size-5"></i>
-            <span>Logout</span>
+            <span>{{t("message.logout")}}</span>
           </div>
           <div
             v-else
@@ -429,14 +432,14 @@ import { projectAuth } from "@/config/config";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { where } from "@firebase/firestore";
 import { timestamp } from "@/config/config";
-import { useI18n } from "vue-i18n";
-
 import useCollection from "@/composible/useCollection";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import CartView from "./CartView.vue";
 import { Notivue, Notification, push } from "notivue";
 import UserHistory from "@/views/UserHistory.vue";
+import { useI18n } from "vue-i18n";
+
 export default {
   components: {
     FooterVue,

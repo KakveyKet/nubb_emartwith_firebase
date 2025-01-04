@@ -10,7 +10,7 @@
         <span
           class="xl:text-16px lg:text-16px md:text-16px text-13px text-slate-500"
         >
-          All Shop
+          {{ t("message.all_shop") }}
         </span>
       </div>
     </div>
@@ -56,7 +56,7 @@
               v-if="isShopClose(market.openTime, market.closeTime)"
               class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
             >
-              Closed
+              {{ t("message.closed") }}
             </span>
             <span
               v-else
@@ -108,7 +108,7 @@
             @click.stop="router.push(`/shopdetail/${market.id}`)"
             class="xl:text-14px lg:text-14px md:text-14px text-14px font-semibold bg-primary-5 text-white xl:text-center lg:text-center md:text-center text-start py-1 px-4 rounded-full shadow-lg hover:bg-primary-6 transition duration-300"
           >
-            View More
+            {{ t("message.view_more") }}
           </button>
         </div>
       </div>
@@ -117,10 +117,12 @@
 </template>
 <script>
 import CategoryPage from "@/components/CategoryPage.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import moment from "moment-timezone";
+import { useI18n } from "vue-i18n";
+
 export default {
   props: ["markets", "currentUser"],
   components: {
@@ -186,6 +188,26 @@ export default {
     const handleLogin = () => {
       emit("login");
     };
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     return {
       router,
       mainCategory,
@@ -193,6 +215,10 @@ export default {
       handleTab,
       handleLogin,
       isShopClose,
+      dynamicFont,
+      handleChangeLangue,
+      toggleTranslate,
+      t,
     };
   },
 };

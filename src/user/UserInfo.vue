@@ -49,7 +49,7 @@
                   for="profile-image"
                   class="block text-13px w-full px-4 py-2 font-medium text-primary-6 bg-primary-2 rounded-md cursor-pointer hover:bg-primary-3 transition duration-300 ease-in-out text-center"
                 >
-                  Choose New Image
+                  {{ t("message.chose_new_image") }}
                 </label>
                 <input
                   id="profile-image"
@@ -66,11 +66,15 @@
         <div class="mt-6 border-t border-primary-3 pt-6">
           <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
             <div class="sm:col-span-1">
-              <dt class="text-16px font-medium text-primary-8">Username</dt>
+              <dt class="text-16px font-medium text-primary-8">
+                {{ t("message.username") }}
+              </dt>
               <InputText v-model="username" type="text" class="w-full !h-8" />
             </div>
             <div class="sm:col-span-1">
-              <dt class="text-16px font-medium text-primary-8">Email</dt>
+              <dt class="text-16px font-medium text-primary-8">
+                {{ t("message.email") }}
+              </dt>
               <InputText
                 disabled
                 v-model="email"
@@ -79,7 +83,9 @@
               />
             </div>
             <div class="sm:col-span-1">
-              <dt class="text-16px font-medium text-primary-8">Phone</dt>
+              <dt class="text-16px font-medium text-primary-8">
+                {{ t("message.phone") }}
+              </dt>
 
               <InputText
                 v-model="phoneNumber"
@@ -94,7 +100,7 @@
         <div class="mt-6 flex items-end justify-between space-x-3">
           <div class="sm:col-span-2">
             <label class="text-16px font-medium text-primary-8 mb-2">
-              Profile Image
+              {{ t("message.profile") }}
             </label>
             <div class="flex items-center space-x-4">
               <div
@@ -137,14 +143,14 @@
               severity="secondary"
               class="bg-primary-7 text-white px-4 py-1 rounded-md h-8"
             >
-              Back
+              {{ t("message.back") }}
             </Button>
             <Button
               @click="saveUser()"
               style="background-color: #88bf68; color: #fff"
               class="bg-primary-7 text-white px-4 py-1 rounded-md h-8 !border-none hover:!bg-primary-6"
             >
-              Save
+              {{ t("message.save") }}
             </Button>
           </div>
         </div>
@@ -154,12 +160,14 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { where } from "firebase/firestore";
 import useCollection from "@/composible/useCollection";
 import { projectStorage } from "@/config/config";
+import { useI18n } from "vue-i18n";
+
 import {
   uploadBytes,
   getDownloadURL,
@@ -248,7 +256,26 @@ export default {
     onMounted(() => {
       fetchUser("id", route.params.id);
     });
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
 
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     return {
       user,
       email,
@@ -259,6 +286,10 @@ export default {
       imagePreview,
       saveUser,
       username,
+      dynamicFont,
+      handleChangeLangue,
+      toggleTranslate,
+      t,
     };
   },
 };

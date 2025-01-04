@@ -138,13 +138,13 @@
           <div>
             <ul class="text-gray-500 dark:text-gray-400 font-medium">
               <li class="mb-4">
-                <a href="https://flowbite.com/" class="hover:underline"
-                  >About Us</a
-                >
+                <a href="https://flowbite.com/" class="hover:underline">{{
+                  t("message.about_us")
+                }}</a>
               </li>
               <li>
-                <a href="https://tailwindcss.com/" class="hover:underline"
-                  >Facebook
+                <a href="https://tailwindcss.com/" class="hover:underline">
+                  {{ t("message.facebook") }}
                 </a>
               </li>
             </ul>
@@ -155,12 +155,14 @@
                 <a
                   href="https://github.com/themesberg/flowbite"
                   class="hover:underline"
-                  >Telegram</a
+                  >{{ t("message.telegram") }}</a
                 >
               </li>
               <li>
-                <a href="https://discord.gg/4eeurUVvTy" class="hover:underline"
-                  >Instagram</a
+                <a
+                  href="https://discord.gg/4eeurUVvTy"
+                  class="hover:underline"
+                  >{{ t("message.instagram") }}</a
                 >
               </li>
             </ul>
@@ -171,7 +173,7 @@
                 <a
                   href="https://github.com/themesberg/flowbite"
                   class="hover:underline"
-                  >Website</a
+                  >{{ t("message.website") }}</a
                 >
               </li>
             </ul>
@@ -287,7 +289,39 @@
 </template>
 
 <script>
-export default {};
+import { useI18n } from "vue-i18n";
+import { ref, computed } from "vue";
+export default {
+  setup() {
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
+    return {
+      t,
+      locale,
+      dynamicFont,
+      handleChangeLangue,
+      toggleTranslate,
+    };
+  },
+};
 </script>
 
 <style></style>

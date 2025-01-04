@@ -1,5 +1,6 @@
 <template>
   <div
+    :class="dynamicFont"
     class="xl:w-[100%] lg:w-[100%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto py-5"
   >
     <div class="py-2">
@@ -12,7 +13,7 @@
           <span
             class="xl:text-16px lg:text-16px md:text-16px text-13px font-semibold text-slate-500"
           >
-            Category
+            {{ t("message.category") }}
           </span>
         </div>
       </div>
@@ -45,7 +46,9 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useI18n } from "vue-i18n";
+
 export default {
   props: ["data"],
   setup(props, { emit }) {
@@ -54,7 +57,33 @@ export default {
         console.log(props.data);
       }
     });
-    return {};
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
+    return {
+      t,
+      locale,
+      dynamicFont,
+      handleChangeLangue,
+      toggleTranslate,
+    };
   },
 };
 </script>

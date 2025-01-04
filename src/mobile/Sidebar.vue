@@ -20,7 +20,7 @@
               {{
                 items[0]?.username
                   ? items[0]?.username
-                  : "Please create a account"
+                  : `${t("message.please_create_account")}`
               }}
             </span>
           </div>
@@ -33,7 +33,7 @@
         >
           <div class="flex items-center text-primary-8 hover:text-primary-10">
             <i class="pi pi-sign-out size-5 mr-3"></i>
-            <span class="text-16px">Logout</span>
+            <span class="text-16px">{{ t("message.logout") }}</span>
           </div>
         </li>
         <li
@@ -43,7 +43,7 @@
         >
           <div class="flex items-center text-primary-8 hover:text-primary-10">
             <i class="pi pi-sign-in size-5 mr-3"></i>
-            <span class="text-16px">Login</span>
+            <span class="text-16px">{{ t("message.login") }}</span>
           </div>
         </li>
       </ul>
@@ -76,9 +76,14 @@
           <Button
             @click="is_logout = false"
             severity="secondary"
-            label="Cancel"
+            :label="t('message.cancel')"
           />
-          <Button @click="logout" severity="contrast" text label="Yes " />
+          <Button
+            @click="logout"
+            severity="contrast"
+            text
+            :label="t('message.yes')"
+          />
         </div>
       </div>
     </Dialog>
@@ -89,7 +94,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onUnmounted, onBeforeUnmount, computed } from "vue";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { projectAuth } from "@/config/config";
 import UserLoginForm from "@/user/UserLoginForm.vue";
@@ -97,6 +102,7 @@ import { getCollectionQuery } from "@/composible/getCollection";
 import { where } from "firebase/firestore";
 import { useRouter } from "vue-router";
 import { Notivue, Notification, push } from "notivue";
+import { useI18n } from "vue-i18n";
 
 export default {
   components: { UserLoginForm, Notivue, Notification },
@@ -122,11 +128,11 @@ export default {
           visible.value = false;
           is_logout.value = false;
           handleCloseDrawer();
-          push.success("Logout Success");
+          push.success(`${t("message.logout_success")}`);
         }
       } catch (error) {
         console.error("Error logging out:", error);
-        push.error("Failed to log out. Please try again.");
+        push.error(`${t(`message.logout_error`)}`);
       }
     };
 
@@ -174,6 +180,26 @@ export default {
     const handleUserInfo = () => {
       router.push(`/userinfo/${items.value[0]?.id}`);
     };
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     return {
       currentUser,
       logout,
@@ -186,11 +212,12 @@ export default {
       handleUserInfo,
       handleCloseDrawer,
       is_logout,
+      t,
+      locale,
+      dynamicFont,
     };
   },
 };
 </script>
 
-<style scoped>
-/* Any additional styles can be added here if needed */
-</style>
+<style scoped></style>

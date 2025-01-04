@@ -33,7 +33,7 @@
           <div class="flex items-center justify-between">
             <h1 class="text-24px font-semibold">{{ product_detail.name }}</h1>
             <div class="flex items-center gap-1">
-              <span class="text-yellow-400">★★★★</span>
+              <span class="text-yellow-400">★</span>
               <span class="text-13px text-gray-500">{{
                 product_detail.rate
               }}</span>
@@ -95,7 +95,11 @@
                 "
                 class="flex-1 bg-primary-6 hover:bg-primary-7 text-white py-3 rounded-lg text-17px transition-colors"
               >
-                {{ cartItem?.quantity > 0 ? "Clear Cart" : "Add to cart" }}
+                {{
+                  cartItem?.quantity > 0
+                    ? t("message.clear_cart")
+                    : t("message.add_to_cart")
+                }}
               </button>
             </div>
           </div>
@@ -115,6 +119,7 @@ import useCollection from "@/composible/useCollection";
 import { timestamp } from "@/config/config";
 import { where } from "@firebase/firestore";
 import { Notivue, Notification, push } from "notivue";
+import { useI18n } from "vue-i18n";
 
 export default {
   props: ["product_detail", "product_related", "currentUser"],
@@ -130,7 +135,26 @@ export default {
       )
     );
     const { addDocs, updateDocs, removeDoc } = useCollection("carts");
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
 
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     const cartAdded = ref([]);
     const fetchCartAdded = async (field1, value1, field2, value2) => {
       try {
@@ -268,6 +292,11 @@ export default {
       cartItem,
       handleRemoveCart,
       clearQty,
+      locale,
+      handleChangeLangue,
+      toggleTranslate,
+
+      t,
     };
   },
 };

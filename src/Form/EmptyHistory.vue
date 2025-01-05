@@ -19,7 +19,7 @@
       </svg>
     </div>
     <p class="mt-6 text-primary-10 font-semibold text-20px">
-      {{ t("message.shop_not_found") }}
+      {{ t("message.no_history_today") }}
     </p>
     <p class="mt-2 text-primary-9 text-16px">
       {{ t("message.browse_our_products_and_add_items_to_your_cart") }}

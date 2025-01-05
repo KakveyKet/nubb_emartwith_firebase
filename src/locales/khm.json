@@ -94,6 +94,7 @@
         "order_from": "បញ្ជាទិញពី",
         "spacail_instruction_history": "បញ្ជាក់បន្ថែម",
         "no_history_today": "គ្មានប្រវត្តិការបញ្ជាទិញនៅក្នុងថ្ងៃនេះ",
-        "shop_not_found": "រកមិនឃើញហាង"
+        "shop_not_found": "រកមិនឃើញហាង",
+        "search_by_shop_name": "ស្វែងរកតាមឈ្មោះហាង"
     }
 }

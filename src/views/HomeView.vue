@@ -60,6 +60,7 @@
               severity="secondary"
               rounded
               aria-label="Bookmark"
+            
               size="small"
             />
             <div class="xl:hidden lg:hidden md:block block">
@@ -71,6 +72,7 @@
                 rounded
                 size="small"
                 aria-label="Bookmark"
+
               />
             </div>
           </div>
@@ -126,13 +128,13 @@
             <div class="flex flex-col gap-2">
               <button
                 @click="handleChangeLangue('eng')"
-                class="px-4 py-2 bg-primary-6 rounded-lg shadow-lg text-white font-Roboto"
+                class="px-2 py-1 bg-primary-6 xl:text-16px lg:text-16px md:text-13px text-13px rounded-lg shadow-lg text-white font-Roboto"
               >
                 English
               </button>
               <button
                 @click="handleChangeLangue('khm')"
-                class="px-4 py-2 bg-primary-6 rounded-lg shadow-lg text-white font-NotoSerif"
+                class="px-2 py-1 bg-primary-6 xl:text-16px lg:text-16px md:text-13px text-13px rounded-lg shadow-lg text-white font-NotoSerif"
               >
                 ភាសាខ្មែរ
               </button>
@@ -317,7 +319,7 @@
           <InputIcon class="pi pi-search" />
           <InputText
             v-model="search_value"
-            placeholder="Search by shop name ..."
+            :placeholder="t('message.search_by_shop_name')"
             class="w-full h-12 !rounded-3xl"
           />
         </IconField>

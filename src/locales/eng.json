@@ -101,6 +101,7 @@
         "spacail_instruction_history": "Special Instructions",
         "no_history_today": "No History",
         "shop_not_found": "Shop Not Found",
-        "no_shop_data": "No shop found, please try again."
+        "no_shop_data": "No shop found, please try again.",
+        "search_by_shop_name": "Search by Shop Name"
     }
 }

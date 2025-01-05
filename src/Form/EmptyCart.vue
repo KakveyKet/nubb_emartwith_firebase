@@ -19,17 +19,45 @@
       </svg>
     </div>
     <p class="mt-6 text-primary-10 font-semibold text-20px">
-      Your cart is empty
+      {{ t("message.your_cart_is_empty") }}
     </p>
     <p class="mt-2 text-primary-9 text-16px">
-      Browse our products and add items to your cart.
+      {{ t("message.browse_our_products_and_add_items_to_your_cart") }}
     </p>
   </div>
 </template>
 
 <script>
+import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
+
 export default {
   name: "EmptyCartComponent",
+  setup() {
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
+    return {
+      t,
+    };
+  },
 };
 </script>
 

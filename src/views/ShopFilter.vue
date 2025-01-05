@@ -18,7 +18,7 @@
                 'px-4 py-2 rounded-full text-16px font-medium shadow-md hover:shadow-lg',
               ]"
             >
-              All
+              {{ t("message.all") }}
             </button>
             <button
               v-for="category in mainCategory"
@@ -134,7 +134,7 @@
             @click.stop="router.push(`/shopdetail/${market.id}`)"
             class="xl:text-14px lg:text-14px md:text-14px text-14px font-semibold bg-primary-5 text-white xl:text-center lg:text-center md:text-center text-start py-1 px-4 rounded-full shadow-lg hover:bg-primary-6 transition duration-300"
           >
-            View More
+            {{ t("message.view_more") }}
           </button>
         </div>
       </div>
@@ -149,12 +149,34 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import EmptyShop from "@/Form/EmptyShop.vue";
+import { useI18n } from "vue-i18n";
+
 export default {
   props: ["markets", "search_value"],
   components: {
     EmptyShop,
   },
   setup(props, { emit }) {
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     const mainCategory = ref([]);
     const selectedCategory = ref(null);
     const formatTime = (time) => {
@@ -216,6 +238,10 @@ export default {
       formatTime,
       filteredMarkets,
       selectedCategory,
+      handleChangeLangue,
+      toggleTranslate,
+      dynamicFont,
+      t,
     };
   },
 };

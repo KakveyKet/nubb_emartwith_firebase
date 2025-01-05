@@ -7,7 +7,9 @@
       <div class="cart_container">
         <div>
           <div>
-            <h2 class="text-17px font-semibold">Shopping Cart</h2>
+            <h2 class="text-17px font-semibold">
+              {{ t("message.shoping_cart") }}
+            </h2>
           </div>
           <br />
           <div class="space-y-4">
@@ -72,7 +74,7 @@
                     <div
                       class="flex items-center gap-3 xl:text-16px lg:text-16px md:text-16px text-13px text-nowrap"
                     >
-                      <p>PRICE</p>
+                      <p>{{ t("message.price") }}</p>
                       <span>{{ formatNumber(cart.price) }} ៛</span>
                     </div>
                   </div>
@@ -134,10 +136,12 @@
         <div>
           <div class="summary">
             <div>
-              <p class="text-17px font-semibold">Summary</p>
+              <p class="text-17px font-semibold">{{ t("message.summary") }}</p>
             </div>
             <div class="space-y-1 mt-4">
-              <h2>Subtotal</h2>
+              <h2>
+                {{ t("message.subtotal") }}
+              </h2>
               <div
                 class="flex space-x-4 xl:text-16px lg:text-16px md:text-16px text-13px"
               >
@@ -150,7 +154,9 @@
             <div
               class="mt-2 flex flex-col space-y-2 xl:text-16px lg:text-16px md:text-16px text-13px"
             >
-              <label for="Special"> Special Instructions (Optional) </label>
+              <label for="Special"
+                >{{ t("message.spacail_instruction") }}
+              </label>
               <InputText
                 id="Special"
                 v-model="instructions"
@@ -164,11 +170,12 @@
               class="mt-4 flex flex-col xl:text-16px lg:text-16px md:text-16px text-13px space-y-2"
             >
               <label for="Special">
-                Delivery method <span class="text-red-500">*</span>
+                {{ t("message.delivery_method") }}
+                <span class="text-red-500">*</span>
               </label>
               <span
                 class="text-slate-400 xl:text-16px lg:text-16px md:text-16px text-13px"
-                >Location
+                >{{ t("message.location") }}
               </span>
 
               <div class="flex flex-wrap gap-4">
@@ -179,7 +186,7 @@
                     name="yourara"
                     value="yourarea"
                   />
-                  <label for="pay_by_bank">Your Area</label>
+                  <label for="pay_by_bank">{{ t("message.your_area") }}</label>
                 </div>
                 <div class="flex items-center gap-2">
                   <RadioButton
@@ -188,7 +195,7 @@
                     name="paymentMethod"
                     value="local"
                   />
-                  <label for="local">Local Area</label>
+                  <label for="local">{{ t("message.local_area") }}</label>
                 </div>
               </div>
               <InputText
@@ -215,7 +222,8 @@
               class="mt-4 flex flex-col space-y-1 xl:text-16px lg:text-16px md:text-16px text-13px"
             >
               <label for="Special">
-                Payment method <span class="text-red-500">*</span>
+                {{ t("message.payment_method") }}
+                <span class="text-red-500">*</span>
               </label>
 
               <div class="flex flex-wrap gap-4">
@@ -235,7 +243,9 @@
                     name="paymentMethod"
                     value="cash"
                   />
-                  <label for="pay_by_cash">Pay by Cash</label>
+                  <label for="pay_by_cash">
+                    {{ t("message.pay_by_cash") }}
+                  </label>
                 </div>
               </div>
               <!-- when payment method is bank -->
@@ -245,7 +255,7 @@
               <p
                 class="xl:text-16px lg:text-16px md:text-16px text-16px text-primary-6 font-semibold"
               >
-                Total
+                {{ t("message.total") }}
               </p>
               <p class="xl:text-16px lg:text-16px md:text-16px text-13px">
                 {{ formatNumber(totalPrice) }} ៛
@@ -256,7 +266,7 @@
             "
             >
               <button @click="handleCheckout" class="btncheckout w-full mt-4">
-                Check Out
+                {{ t("message.checkout") }}
               </button>
             </div>
           </div>
@@ -281,12 +291,33 @@ import EmptyCart from "@/Form/EmptyCart.vue";
 import { writeBatch, getDocs, query, collection } from "firebase/firestore";
 import { projectFirestore } from "@/config/config";
 import { formatNumber } from "@/helper/formatCurrecy";
+import { useI18n } from "vue-i18n";
 
 export default {
   components: {
     EmptyCart,
   },
   setup() {
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     const paymentMethod = ref("cash"); // Default selected value
     const auth = getAuth();
     const users = ref([]);
@@ -558,6 +589,7 @@ export default {
       handleAddMoreCart,
       handleDecrementCart,
       formatNumber,
+      t,
     };
   },
 };

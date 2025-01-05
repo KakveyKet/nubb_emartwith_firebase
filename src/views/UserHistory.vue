@@ -2,7 +2,7 @@
   <div class="xl:w-[100%] lg:w-[100%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 py-5">
     <div class="w-full">
       <h1 class="text-24px font-semibold mb-6 text-primary-11 hidden-print" v-if="userHistory.length > 0">
-        Your Order History
+       {{t("message.your_histoy")}}
       </h1>
       <EmptyHistory v-if="userHistory.length === 0" />
     </div>
@@ -30,7 +30,7 @@
           </div>
           <div class="text-right">
             <p class="text-13px text-slate-500">
-              Order from: <span class="font-medium">{{ order.location }}</span>
+              {{t("message.orderd_on")}}: <span class="font-medium">{{ order.location }}</span>
             </p>
             <p class="text-17px font-semibold text-red-500 mt-1">
               {{ formatNumber(order.total_price) }} ៛
@@ -41,7 +41,7 @@
         <!-- Items List -->
         <div class="border-t border-dashed pt-4">
           <h2 class="text-17px font-semibold mb-3 text-slate-700">
-            Your Order
+           {{t("message.your_order")}}
           </h2>
           <div v-for="item in order.items" :key="item.id" class="flex items-center space-x-4 mb-3">
             <!-- <img :src="item.images[0]" alt="Food Item" class="w-20 h-20 rounded-lg object-cover " /> -->
@@ -60,12 +60,12 @@
         </div>
         <div v-if="order.instructions" class="mt-4 border-t border-dashed py-2">
           <p class="text-13px text-slate-500">
-            <span class="font-medium text-slate-500">Special instructions: </span>
+            <span class="font-medium text-slate-500">{{t("message.spacail_instruction_history")}}: </span>
             {{ order.instructions }}
           </p>
         </div>
         <div class="mt-4 text-13px text-slate-500 flex justify-between items-center">
-          <p>Ordered on: {{ formatDate(order.created_at) }}</p>
+          <p>{{t("message.orderd_on")}}: {{ formatDate(order.created_at) }}</p>
           <div class="hidden-print">
             <Button icon="pi pi-download" class="hidden-print" @click="handleDownload(order.id)" severity="primary" text
               aria-label="Bookmark" />
@@ -77,13 +77,15 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch , computed} from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import { where } from "@firebase/firestore";
 import { formatDate, formatNumber } from "@/helper/formatCurrecy";
 import html2canvas from "html2canvas";
 import EmptyHistory from "@/Form/EmptyHistory.vue";
 import jsPDF from "jspdf";
+import { useI18n } from "vue-i18n";
+
 export default {
   props: ["currentUser"],
   components: {
@@ -232,7 +234,26 @@ export default {
   });
 };
 
+const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
 
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
 
     return {
       userHistory,
@@ -244,6 +265,7 @@ export default {
       formarBranchImage,
       handlePrint,
       handleDownload,
+      t
     };
   },
 };

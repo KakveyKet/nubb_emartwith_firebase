@@ -18,16 +18,49 @@
         />
       </svg>
     </div>
-    <p class="mt-6 text-primary-10 font-semibold text-20px">No shop found</p>
+    <p class="mt-6 text-primary-10 font-semibold text-20px">
+      {{ t("message.shop_not_found") }}
+    </p>
     <p class="mt-2 text-primary-9 text-16px">
-      No shop found, please try again.
+      {{ t("message.browse_our_products_and_add_items_to_your_cart") }}
     </p>
   </div>
 </template>
 
 <script>
+import { useI18n } from "vue-i18n";
+import { computed } from "vue";
 export default {
   name: "EmptyCartComponent",
+  setup() {
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
+    return {
+      t,
+      locale,
+      dynamicFont,
+      handleChangeLangue,
+      toggleTranslate,
+    };
+  },
 };
 </script>
 

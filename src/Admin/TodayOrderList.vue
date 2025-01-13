@@ -16,8 +16,8 @@
         v-if="orders.length > 0"
         :value="orders"
         paginator
-        :rows="50"
-        :rowsPerPageOptions="[50, 100, 200, 500]"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
         tableStyle="min-width: 50rem"
       >
         <Column field="items" header="Image">
@@ -77,11 +77,6 @@
         </Column>
         <Column field="status" header="Status" style="width: 20%">
           <template #body="slotProps">
-            <!-- <div class="flex gap-2">
-              <span class="badge" :class="`badge-${slotProps.data.status}`">
-                {{ slotProps.data.status }}
-              </span>
-            </div> -->
             <Button
               v-if="slotProps.data.status === 'pending'"
               label="Pending"
@@ -145,13 +140,6 @@
       </DataTable>
       <div v-else class="card flex justify-center py-5">
         <div class="flex flex-col items-center">
-          <!-- <ProgressSpinner
-            style="width: 50px; height: 50px"
-            strokeWidth="8"
-            fill="transparent"
-            animationDuration=".5s"
-            aria-label="Custom ProgressSpinner"
-          /> -->
           <p class="mt-2">No Order Today...</p>
         </div>
       </div>
@@ -195,20 +183,19 @@
 import { ref, onMounted, watch, computed } from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
 import OrderConfimation from "@/Form/OrderConfimation.vue";
-import { getAuth } from "firebase/auth";
-import { projectAuth } from "@/config/config";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  onSnapshot,
-  Timestamp,
-} from "firebase/firestore";
-import { formatDate } from "@/helper/formatCurrecy";
-import { useToast } from "primevue/usetoast";
 import HandleRejectOrder from "@/Form/HandleRejectOrder.vue";
+import { getAuth } from "firebase/auth";
+import { projectAuth, projectFirestore } from "@/config/config";
+import {
+  where,
+  Timestamp,
+  query,
+  collection,
+  onSnapshot,
+} from "firebase/firestore";
 import moment from "moment-timezone";
+import { useToast } from "primevue/usetoast";
+import { formatDate } from "@/helper/formatCurrecy";
 
 export default {
   components: {
@@ -216,91 +203,169 @@ export default {
     HandleRejectOrder,
   },
   setup() {
+    const toast = useToast();
     const playSound = () => {
-      const audio = new Audio("/notification.mp3"); // Correct path without `/public`
+      const audio = new Audio("/notification.mp3");
       audio.play();
     };
-    const toast = useToast();
-    const showToast = (action, severity) => {
-      let summary;
-      switch (action) {
-        case "create":
-          severity = "success";
-          summary = "Product Created";
-          break;
-        case "update":
-          severity = "info";
-          summary = "Product Updated";
-          break;
-        case "delete":
-          summary = "Product Deleted";
-          break;
-        default:
-          severity = "info";
-          summary = "Action Completed";
-          break;
-        case "new order":
-          severity = "success";
-          summary = "New Order";
-          break;
-        case "update":
-          severity = "info";
-          summary = "Order Updated";
-          break;
-        case "new order":
-          severity = "success";
-          summary = "New Order";
-          break;
-      }
 
-      toast.add({
-        severity: severity,
-        summary: summary,
-        life: 3000,
-      });
+    const showToast = (action, severity = "info") => {
+      const messages = {
+        create: { summary: "Product Created", severity: "success" },
+        update: { summary: "Product Updated", severity: "info" },
+        delete: { summary: "Product Deleted", severity: "warn" },
+        "new order": { summary: "New Order", severity: "success" },
+      };
+      const { summary, severity: sev } = messages[action] || {
+        summary: "Action Completed",
+        severity,
+      };
+      toast.add({ severity: sev, summary, life: 3000 });
     };
-    const dates = ref();
-    const dataToEdit = ref(null);
 
-    const visible = ref(false);
-    const currentUser = ref(null);
-    const auth = getAuth();
-    const items = ref([]);
     const marts = ref([]);
     const orders = ref([]);
+    const items = ref([]);
+    const visible = ref(false);
+    const currentComponent = ref(null);
+    const currentUser = ref(null);
+    const currentDate = ref(null);
+    const searchTerm = ref("");
     const isReject = ref(false);
-    const handleRejectOrders = (data) => {
-      isReject.value = true;
-      dataToEdit.value = data;
-      console.log("data", data);
-    };
+    const dataToEdit = ref(null);
+    const notifiedOrderIds = ref([]);
     let unsubscribeOrders = null;
+    const handleEdit = (data) => {
+      dataToEdit.value = data;
+      visible.value = true;
+      currentComponent.value = "OrderConfimation";
+    };
+
     const fetchMarts = async (field, value) => {
-      if (currentUser?.value) {
+      try {
         const conditions = [where(field, "==", value)];
         await getCollectionQuery("marts", conditions, (data) => {
           marts.value = data;
-          console.log("data mart", marts.value);
+          console.log("Fetched marts:", marts.value);
         });
-      } else {
-        console.error("No user is currently logged in.");
+      } catch (error) {
+        console.error("Error fetching marts:", error);
       }
     };
 
-    const currentComponent = ref(null);
+    const fetchSubCategories = async (field, value) => {
+      try {
+        if (marts.value.length > 0) {
+          const conditions = [where(field, "==", value)];
+          if (currentDate.value?.[0] && currentDate.value?.[1]) {
+            conditions.push(
+              where(
+                "created_at",
+                ">=",
+                Timestamp.fromDate(new Date(currentDate.value[0]))
+              ),
+              where(
+                "created_at",
+                "<=",
+                Timestamp.fromDate(new Date(currentDate.value[1]))
+              )
+            );
+          }
+          await getCollectionQuery(
+            "subcategories",
+            conditions,
+            (data) => {
+              items.value = data;
+              console.log("Fetched subcategories:", items.value);
+            },
+            true,
+            "name",
+            searchTerm.value
+          );
+        } else {
+          console.error("No marts available for fetching subcategories.");
+        }
+      } catch (error) {
+        console.error("Error fetching subcategories:", error);
+      }
+    };
+
+    const fetchOrders = (field, value) => {
+      if (!projectFirestore) {
+        console.error("Firestore instance is not initialized.");
+        return;
+      }
+
+      const today = moment().tz("Asia/Phnom_Penh").startOf("day").toDate();
+      const tomorrow = moment(today).add(1, "day").toDate();
+
+      if (marts.value.length > 0) {
+        const conditions = [
+          where(field, "==", value),
+          where("created_at", ">=", today),
+          where("created_at", "<", tomorrow),
+        ];
+
+        const ordersQuery = query(
+          collection(projectFirestore, "orders"),
+          ...conditions
+        );
+
+        unsubscribeOrders = onSnapshot(
+          ordersQuery,
+          (snapshot) => {
+            const newOrders = [];
+            snapshot.docChanges().forEach((change) => {
+              const orderData = { id: change.doc.id, ...change.doc.data() };
+              if (change.type === "added") {
+                newOrders.push(orderData);
+                if (
+                  orderData.status === "pending" &&
+                  !notifiedOrderIds.value.includes(orderData.id)
+                ) {
+                  showToast("new order", "success");
+                  playSound();
+                  notifiedOrderIds.value.push(orderData.id);
+                }
+              } else if (change.type === "modified") {
+                const index = orders.value.findIndex(
+                  (order) => order.id === orderData.id
+                );
+                if (index !== -1) {
+                  orders.value[index] = orderData;
+                }
+              } else if (change.type === "removed") {
+                orders.value = orders.value.filter(
+                  (order) => order.id !== orderData.id
+                );
+              }
+            });
+
+            orders.value = [...orders.value, ...newOrders];
+            console.log("Updated orders:", orders.value);
+          },
+          (error) => {
+            console.error("Error fetching orders:", error);
+          }
+        );
+      } else {
+        console.error("Error: Marts data is empty.");
+      }
+    };
+
     const handleAdd = () => {
       visible.value = true;
       currentComponent.value = "OrderConfimation";
     };
+
     const handleClose = async () => {
       console.log("Closing dialog...");
       visible.value = false;
       currentComponent.value = "";
 
       if (marts.value.length > 0) {
-        console.log("Fetching orders...");
+        console.log("Refetching data...");
         await fetchOrders("branch_id", marts.value[0].id);
-        console.log("Fetching subcategories...");
         await fetchSubCategories("branch_id", marts.value[0].id);
         console.log("Data re-fetched after closing the dialog");
       } else {
@@ -308,92 +373,10 @@ export default {
       }
     };
 
-    const currentDate = ref(null);
-    const searchTerm = ref("");
-    const fetchSubCategories = async (field, value) => {
-      if (marts.value.length > 0) {
-        const conditions = [where(field, "==", value)];
-
-        if (currentDate.value && currentDate.value[0] && currentDate.value[1]) {
-          conditions.push(
-            where(
-              "created_at",
-              ">=",
-              Timestamp.fromDate(new Date(currentDate.value[0]))
-            ),
-            where(
-              "created_at",
-              "<=",
-              Timestamp.fromDate(new Date(currentDate.value[1]))
-            )
-          );
-        }
-
-        await getCollectionQuery(
-          "subcategories",
-          conditions,
-          (data) => {
-            items.value = data;
-            console.log("data category", items.value);
-          },
-          true,
-          "name",
-          searchTerm.value
-        );
-      } else {
-        console.error("Error fetching data: Marts data is empty.");
-      }
-    };
-    const notifiedOrderIds = ref([]);
-    const fetchOrders = (field, value) => {
-      return new Promise((resolve, reject) => {
-        const today = moment().tz("Asia/Phnom_Penh").startOf("day").toDate();
-        const tomorrow = moment(today).add(1, "day").toDate();
-
-        if (marts.value.length > 0) {
-          const conditions = [
-            where(field, "==", value),
-            where("created_at", ">=", today),
-            where("created_at", "<", tomorrow),
-          ];
-
-          // Real-time listener using onSnapshot (for Firestore)
-          unsubscribeOrders = getCollectionQuery(
-            "orders",
-            conditions,
-            (data) => {
-              // Identify new orders
-              const newOrders = data.filter(
-                (newOrder) =>
-                  !orders.value.some((order) => order.id === newOrder.id)
-              );
-
-              if (newOrders.length > 0) {
-                newOrders.forEach((order) => {
-                  if (
-                    order.status === "pending" &&
-                    !notifiedOrderIds.value.includes(order.id)
-                  ) {
-                    showToast("new order", "success");
-                    notifiedOrderIds.value.push();
-                    playSound();
-                  }
-                });
-
-                orders.value = [...orders.value, ...newOrders];
-              }
-
-              console.log("Updated orders:", orders.value);
-
-              resolve(); // Resolve the promise when data is fetched
-            },
-            true
-          );
-        } else {
-          console.error("Error fetching data: Marts data is empty.");
-          reject("Error: Marts data is empty."); // Reject the promise in case of error
-        }
-      });
+    const handleRejectOrders = (data) => {
+      isReject.value = true;
+      dataToEdit.value = data;
+      console.log("Rejecting order:", data);
     };
 
     const groupByItemName = computed(() => {
@@ -403,17 +386,15 @@ export default {
         return acc;
       }, {});
     });
+
     watch(searchTerm, () => {
-      fetchSubCategories("branch_id", marts.value[0].id);
+      fetchSubCategories("branch_id", marts.value[0]?.id);
     });
+
     watch(currentDate, () => {
-      fetchSubCategories("branch_id", marts.value[0].id);
+      fetchSubCategories("branch_id", marts.value[0]?.id);
     });
-    const handleEdit = (data) => {
-      dataToEdit.value = data;
-      visible.value = true;
-      currentComponent.value = "OrderConfimation";
-    };
+
     watch(
       marts,
       async (newMarts) => {
@@ -426,35 +407,33 @@ export default {
 
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
-      await fetchMarts("ownerId", currentUser.value.uid);
+      await fetchMarts("ownerId", currentUser.value?.uid);
       if (marts.value.length > 0) {
-        await fetchSubCategories("branch_id", marts.value[0].id);
         await fetchOrders("branch_id", marts.value[0].id);
+        await fetchSubCategories("branch_id", marts.value[0].id);
       } else {
         console.error("Error: No marts available for the current user.");
       }
     });
+
     return {
-      dates,
-      items,
       visible,
+      currentComponent,
       handleAdd,
       handleClose,
-      currentComponent,
       marts,
-      formatDate,
-      searchTerm,
-      currentDate,
-      dataToEdit,
-      handleEdit,
-      showToast,
+      items,
       orders,
-      handleRejectOrders,
+      currentDate,
+      searchTerm,
+      dataToEdit,
       isReject,
       groupByItemName,
+      handleRejectOrders,
+      showToast,
+      formatDate,
+      handleEdit,
     };
   },
 };
 </script>
-
-<style scoped></style>

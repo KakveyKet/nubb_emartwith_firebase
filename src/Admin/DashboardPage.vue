@@ -255,7 +255,7 @@
         </router-link>
 
         <!-- payment method -->
-        <router-link
+        <!-- <router-link
           :class="
             $route.path === '/paymentmethod'
               ? 'isSidebar_active'
@@ -298,7 +298,7 @@
               Payment Method
             </h2>
           </div>
-        </router-link>
+        </router-link> -->
         <!-- cover -->
         <router-link
           :class="

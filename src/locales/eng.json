@@ -102,6 +102,13 @@
         "no_history_today": "No History",
         "shop_not_found": "Shop Not Found",
         "no_shop_data": "No shop found, please try again.",
-        "search_by_shop_name": "Search by Shop Name"
+        "search_by_shop_name": "Search by Shop Name",
+        "_comment_for_shop": "this is shop page",
+        "dashoboard": "Dashoboard",
+        "product": "Product",
+        "today_order": "Today Order",
+        "report": "Report",
+        "setting": "Setting",
+        "please_enter_loaction": "Please enter location or select your location"
     }
 }

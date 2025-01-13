@@ -198,25 +198,33 @@
                   <label for="local">{{ t("message.local_area") }}</label>
                 </div>
               </div>
-              <InputText
-                v-if="isArea === 'yourarea'"
-                id="Special"
-                v-model="location_selected"
-                placeholder="Ex: room 114"
-                style="width: 250px"
-                class="h-9"
-              />
-              <Select
-                v-else
-                v-model="location_selected"
-                :options="location"
-                optionLabel="name"
-                option-value="name"
-                placeholder="Select a location"
-                filter
-                show-clear
-                class="w-[250px]"
-              />
+              <div class="flex flex-col" v-if="isArea === 'yourarea'">
+                <InputText
+                  id="Special"
+                  v-model="location_selected"
+                  placeholder="Ex: room 114"
+                  style="width: 250px"
+                  class="h-9"
+                />
+                <span v-if="!isValidateLocation" class="text-red-500">
+                  {{ t("message.please_enter_loaction") }}
+                </span>
+              </div>
+              <div class="flex flex-col" v-else>
+                <Select
+                  v-model="location_selected"
+                  :options="location"
+                  optionLabel="name"
+                  option-value="name"
+                  placeholder="Select a location"
+                  filter
+                  show-clear
+                  class="w-[250px]"
+                />
+                <span v-if="!isValidateLocation" class="text-red-500">
+                  Please select or enter your locations
+                </span>
+              </div>
             </div>
             <div
               class="mt-4 flex flex-col space-y-1 xl:text-16px lg:text-16px md:text-16px text-13px"
@@ -510,7 +518,15 @@ export default {
       }
     };
 
+    const isValidateLocation = ref(true);
+    watch(location_selected, (newValue) => {
+      isValidateLocation.value = !!newValue; // Valid if not empty
+    });
     const handleCheckout = async () => {
+      if (!location_selected.value) {
+        isValidateLocation.value = false;
+        return;
+      }
       try {
         for (const [branchId, items] of Object.entries(
           groupedByBranchID.value
@@ -590,6 +606,7 @@ export default {
       handleDecrementCart,
       formatNumber,
       t,
+      isValidateLocation,
     };
   },
 };

@@ -481,6 +481,39 @@
             </div>
           </div>
         </div>
+        <!-- <div
+          @click="toggleTranslate"
+          class="border overflow-hidden size-10 cursor-pointer rounded-full"
+        >
+          <img
+            v-if="locale === 'khm'"
+            class="w-full h-full animate-fade-up animate-duration-200"
+            src="../assets/download.png"
+            alt="Khmer Language"
+          />
+          <img
+            v-else
+            class="w-full h-full animate-fade-up animate-duration-200"
+            src="../assets/eng1.png"
+            alt="English Language"
+          />
+        </div>
+        <Popover ref="translate" :show-event="null" :hide-event="null">
+          <div class="flex flex-col gap-2">
+            <button
+              @click="handleChangeLangue('eng')"
+              class="px-2 py-1 bg-primary-6 xl:text-16px lg:text-16px md:text-13px text-13px rounded-lg shadow-lg text-white font-Roboto"
+            >
+              English
+            </button>
+            <button
+              @click="handleChangeLangue('khm')"
+              class="px-2 py-1 bg-primary-6 xl:text-16px lg:text-16px md:text-13px text-13px rounded-lg shadow-lg text-white font-NotoSerif"
+            >
+              ភាសាខ្មែរ
+            </button>
+          </div>
+        </Popover> -->
       </div>
       <div class="bg-[#F5F6FA] h-screen p-7">
         <router-view></router-view>
@@ -510,15 +543,38 @@
 </template>
 
 <script>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import { projectAuth } from "@/config/config"; // Firebase config import
 import { where } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { getCollectionQuery } from "@/composible/getCollection";
 import moment from "moment-timezone";
+import { useI18n } from "vue-i18n";
 export default {
   setup() {
+    const { t, locale } = useI18n();
+    const dynamicFont = computed(() => {
+      switch (locale.value) {
+        case "khm":
+          return "font-NotoSerif";
+        case "eng":
+          return "font-Roboto";
+
+        default:
+          return "";
+      }
+    });
+    const translate = ref(null);
+
+    const handleChangeLangue = (lang) => {
+      locale.value = lang;
+    };
+    const toggleTranslate = (event) => {
+      if (translate.value) {
+        translate.value.toggle(event);
+      }
+    };
     const sidebarVisible = ref(true);
     const router = useRouter();
     const currentUser = ref(null);
@@ -612,6 +668,11 @@ export default {
       isLogout,
       logoutCofimation,
       orders,
+      toggleTranslate,
+      handleChangeLangue,
+      dynamicFont,
+      t,
+      translate,
     };
   },
 };

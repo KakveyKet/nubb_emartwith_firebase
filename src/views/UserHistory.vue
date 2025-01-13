@@ -4,8 +4,22 @@
       <h1 class="text-24px font-semibold mb-6 text-primary-11 hidden-print" v-if="userHistory.length > 0">
        {{t("message.your_histoy")}}
       </h1>
+      <div class="flex items-center justify-between mb-4">  
+        <!-- input date picker  -->
+        <DatePicker
+        v-model="currentDate"
+        selectionMode="range"
+        :manualInput="false"
+        placeholder="filter by date"
+        showButtonBar
+        showIcon
+        fluid
+      />
+      </div>
+      <!-- filter history -->
       <EmptyHistory v-if="userHistory.length === 0" />
     </div>
+
     <div
       class="xl:w-[70%] lg:w-[80%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 grid grid-cols-1 xl:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 print-container">
       <div v-for="order in userHistory" :key="order.id" :id="'invoice-' + order.id"
@@ -79,7 +93,7 @@
 <script>
 import { ref, onMounted, watch , computed} from "vue";
 import { getCollectionQuery } from "@/composible/getCollection";
-import { where } from "@firebase/firestore";
+import { where , Timestamp } from "@firebase/firestore";
 import { formatDate, formatNumber } from "@/helper/formatCurrecy";
 import html2canvas from "html2canvas";
 import EmptyHistory from "@/Form/EmptyHistory.vue";
@@ -138,13 +152,29 @@ export default {
     const fetchUserHistory = async () => {
       try {
         const conditions = [where("userId", "==", users.value[0]?.id)];
+        if (currentDate.value && currentDate.value[0] && currentDate.value[1]) {
+          conditions.push(
+            where(
+              "created_at",
+              ">=",
+              Timestamp.fromDate(new Date(currentDate.value[0]))
+            ),
+            where(
+              "created_at",
+              "<=",
+              Timestamp.fromDate(new Date(currentDate.value[1]))
+            )
+          );
+        }
         await getCollectionQuery(
           "orders_report",
           conditions,
           (data) => {
             userHistory.value = data;
           },
-          true
+          true,
+          
+
         );
       } catch (error) {
         console.error("Error fetching user history:", error);
@@ -165,7 +195,7 @@ export default {
         await fetchUserHistory();
       }
     });
-
+    const currentDate = ref(null);
     watch(
       () => props.currentUser,
       async (newVal) => {
@@ -181,6 +211,11 @@ export default {
 
     watch(users, () => {
       if (users.value.length > 0) {
+        fetchUserHistory();
+      }
+    });
+    watch(currentDate, () => {
+      if (currentDate.value && currentDate.value[0] && currentDate.value[1]) {
         fetchUserHistory();
       }
     });
@@ -266,6 +301,10 @@ const { t, locale } = useI18n();
       handlePrint,
       handleDownload,
       t
+      ,dynamicFont,
+      handleChangeLangue,
+      toggleTranslate,
+      currentDate
     };
   },
 };

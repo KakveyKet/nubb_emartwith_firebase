@@ -123,8 +123,9 @@
         class="w-full h-full animate-fade-up animate-duration-200"
         src="../assets/eng1.png"
         alt="English Language"
-      />        </div>
-          <Popover ref="translate" :show-event="null" :hide-event="null">
+      />
+    </div>
+      <Popover ref="translate" :show-event="null" :hide-event="null">
             <div class="flex flex-col gap-2">
               <button
                 @click="handleChangeLangue('eng')"
@@ -139,8 +140,8 @@
                 ភាសាខ្មែរ
               </button>
             </div>
-          </Popover>
-        </div>
+    </Popover>
+    </div>
       </div>
     </div>
     <!-- sub navbar  -->

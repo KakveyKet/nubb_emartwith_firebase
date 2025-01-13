@@ -262,6 +262,8 @@ export default {
       handleChangeLangue,
       dynamicFont,
       toggleTranslate,
+      getTotalSteps,
+      getActiveStep,
     };
   },
 };

@@ -9,7 +9,7 @@
             <img
               :src="selectedImage || product_detail.images[0]"
               :alt="product_detail.name"
-              class="max-h-40 min-h-[40] max-w-[40] object-cover"
+              class="max-h-40 min-h-[40] w-full object-cover"
             />
           </div>
           <div class="flex gap-3">

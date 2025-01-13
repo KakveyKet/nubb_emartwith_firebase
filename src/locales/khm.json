@@ -95,6 +95,13 @@
         "spacail_instruction_history": "បញ្ជាក់បន្ថែម",
         "no_history_today": "គ្មានប្រវត្តិការបញ្ជាទិញនៅក្នុងថ្ងៃនេះ",
         "shop_not_found": "រកមិនឃើញហាង",
-        "search_by_shop_name": "ស្វែងរកតាមឈ្មោះហាង"
+        "search_by_shop_name": "ស្វែងរកតាមឈ្មោះហាង",
+        "_comment_for_shop": "this is shop page",
+        "dashoboard": "ផ្ទាំងគ្រប់គ្រង",
+        "product": "ផលិតផល",
+        "today_order": "ការកម្មង់ថ្ងៃនេះ",
+        "report": "របាយការណ៍",
+        "setting": "ការកំណត់",
+        "please_enter_loaction": "សូមបញ្ចូលទីតាំងឬដជ្រើសរើសទីតាំងតបស់អ្នក"
     }
 }

@@ -74,7 +74,7 @@ export default {
 
     const handleSubmit = async () => {
       await signin(email.value, password.value);
-      router.push({ path: "/dashboard" });
+      router.push({ path: "/admindashboard" });
     };
     const { t, locale } = useI18n();
     const dynamicFont = computed(() => {

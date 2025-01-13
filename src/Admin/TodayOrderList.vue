@@ -292,10 +292,22 @@ export default {
       visible.value = true;
       currentComponent.value = "OrderConfimation";
     };
-    const handleClose = () => {
+    const handleClose = async () => {
+      console.log("Closing dialog...");
       visible.value = false;
       currentComponent.value = "";
+
+      if (marts.value.length > 0) {
+        console.log("Fetching orders...");
+        await fetchOrders("branch_id", marts.value[0].id);
+        console.log("Fetching subcategories...");
+        await fetchSubCategories("branch_id", marts.value[0].id);
+        console.log("Data re-fetched after closing the dialog");
+      } else {
+        console.error("Error: No marts available for the current user.");
+      }
     };
+
     const currentDate = ref(null);
     const searchTerm = ref("");
     const fetchSubCategories = async (field, value) => {
@@ -334,50 +346,56 @@ export default {
     };
     const notifiedOrderIds = ref([]);
     const fetchOrders = (field, value) => {
-      const today = moment().tz("Asia/Phnom_Penh").startOf("day").toDate();
-      const tomorrow = moment(today).add(1, "day").toDate();
+      return new Promise((resolve, reject) => {
+        const today = moment().tz("Asia/Phnom_Penh").startOf("day").toDate();
+        const tomorrow = moment(today).add(1, "day").toDate();
 
-      if (marts.value.length > 0) {
-        const conditions = [
-          where(field, "==", value),
-          where("created_at", ">=", today),
-          where("created_at", "<", tomorrow),
-        ];
+        if (marts.value.length > 0) {
+          const conditions = [
+            where(field, "==", value),
+            where("created_at", ">=", today),
+            where("created_at", "<", tomorrow),
+          ];
 
-        // Real-time listener using onSnapshot (for Firestore)
-        unsubscribeOrders = getCollectionQuery(
-          "orders",
-          conditions,
-          (data) => {
-            // Identify new orders
-            const newOrders = data.filter(
-              (newOrder) =>
-                !orders.value.some((order) => order.id === newOrder.id)
-            );
+          // Real-time listener using onSnapshot (for Firestore)
+          unsubscribeOrders = getCollectionQuery(
+            "orders",
+            conditions,
+            (data) => {
+              // Identify new orders
+              const newOrders = data.filter(
+                (newOrder) =>
+                  !orders.value.some((order) => order.id === newOrder.id)
+              );
 
-            if (newOrders.length > 0) {
-              newOrders.forEach((order) => {
-                if (
-                  order.status === "pending" &&
-                  !notifiedOrderIds.value.includes(order.id)
-                ) {
-                  showToast("new order", "success");
-                  notifiedOrderIds.value.push();
-                  playSound();
-                }
-              });
+              if (newOrders.length > 0) {
+                newOrders.forEach((order) => {
+                  if (
+                    order.status === "pending" &&
+                    !notifiedOrderIds.value.includes(order.id)
+                  ) {
+                    showToast("new order", "success");
+                    notifiedOrderIds.value.push();
+                    playSound();
+                  }
+                });
 
-              orders.value = [...orders.value, ...newOrders];
-            }
+                orders.value = [...orders.value, ...newOrders];
+              }
 
-            console.log("Updated orders:", orders.value);
-          },
-          true
-        );
-      } else {
-        console.error("Error fetching data: Marts data is empty.");
-      }
+              console.log("Updated orders:", orders.value);
+
+              resolve(); // Resolve the promise when data is fetched
+            },
+            true
+          );
+        } else {
+          console.error("Error fetching data: Marts data is empty.");
+          reject("Error: Marts data is empty."); // Reject the promise in case of error
+        }
+      });
     };
+
     const groupByItemName = computed(() => {
       return orders.value.reduce((acc, order) => {
         acc[order.items[0].name] = acc[order.items[0].name] || [];
@@ -409,9 +427,9 @@ export default {
     onMounted(async () => {
       currentUser.value = projectAuth.currentUser;
       await fetchMarts("ownerId", currentUser.value.uid);
-      await fetchOrders("branch_id", marts.value[0].id);
       if (marts.value.length > 0) {
         await fetchSubCategories("branch_id", marts.value[0].id);
+        await fetchOrders("branch_id", marts.value[0].id);
       } else {
         console.error("Error: No marts available for the current user.");
       }

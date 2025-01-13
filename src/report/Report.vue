@@ -55,11 +55,19 @@
         <Column field="status" header="Status">
           <template #body="slotProps">
             <Tag
+              v-if="slotProps.data.status === 'pending'"
+              severity="warning"
+              value="Pending"
+            />
+            <Tag
+              v-if="slotProps.data.status === 'accepted'"
               severity="success"
-              v-if="slotProps.data.status !== undefined"
-              :value="
-                slotProps.data.status === 'accepted' ? 'Accepted' : 'Pending'
-              "
+              value="Accepted"
+            />
+            <Tag
+              v-if="slotProps.data.status === 'rejected'"
+              severity="danger"
+              value="Rejected"
             />
           </template>
         </Column>

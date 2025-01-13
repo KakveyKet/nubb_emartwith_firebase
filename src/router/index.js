@@ -61,8 +61,9 @@ const requireAuth = (to, from, next) => {
             }
             break;
           case 'manager':
-            if (to.name !== 'dashboard') {
-              next({ name: 'dashboard' });
+            if (to.name !== 'admindashboard') {
+              next({ name: 'admindashboard' });
+              // next({ name: 'dashboard' });
             } else {
               next();
             }

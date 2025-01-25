@@ -1,11 +1,11 @@
 <template>
   <div class="xl:w-[100%] lg:w-[100%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 py-5">
-    <div class="w-full">
-      <h1 class="text-24px font-semibold mb-6 text-primary-11 hidden-print" v-if="userHistory.length > 0">
-       {{t("message.your_histoy")}}
-      </h1>
-      <div class="flex items-center justify-between mb-4">  
-        <!-- input date picker  -->
+
+    <div>
+      <div class="xl:w-[80%] lg:w-[80%] md:w-[90%] w-full mx-auto flex items-center justify-between"> 
+        <h1 class="text-24px font-semibold  text-primary-11 hidden-print" >
+          {{t("message.your_histoy")}}
+         </h1>
         <DatePicker
         v-model="currentDate"
         selectionMode="range"
@@ -16,76 +16,77 @@
         fluid
       />
       </div>
-      <!-- filter history -->
-      <EmptyHistory v-if="userHistory.length === 0" />
-    </div>
-
-    <div
-      class="xl:w-[70%] lg:w-[80%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 grid grid-cols-1 xl:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 print-container">
-      <div v-for="order in userHistory" :key="order.id" :id="'invoice-' + order.id"
-        class="bg-white border border-primary-3 rounded-lg p-6 mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 animate-fade-up animate-once animate-duration-300">
-        <!-- Branch -->
-        <div class="flex flex-col items-center space-y-2 mb-4 font-medium">
-          <img :src="formarBranchImage(order.branch_id)" alt="Branch Image" class="w-14 h-14 rounded-full" />
-          <p class="text-16px text-slate-700">
-            {{ formatBranchName(order.branch_id) }}
-          </p>
-        </div>
-        <div class="flex justify-between items-center mb-4">
-          <div>
-            <p class="text-13px italic text-slate-500">
-              Order #<span class="">{{ order.orderId }}</span>
-            </p>
-            <p class="text-13px text-slate-500 mt-1">
-
-              <span class="font-medium capitalize px-2 py-1 text-primary-6 bg-primary-2 rounded-full">{{ order.status
-                }}</span>
+      <div v-if="userHistory.length > 0"
+        class="xl:w-[80%] lg:w-[80%] md:w-[90%] w-full xl:mx-auto lg:mx-0 md:mx-auto mx-0 grid grid-cols-1 xl:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4 print-container mt-4">
+        <div v-for="order in userHistory" :key="order.id" :id="'invoice-' + order.id"
+          class="bg-white border border-primary-3 rounded-lg p-6 mb-6 shadow-md hover:shadow-lg transition-shadow duration-300 animate-fade-up animate-once animate-duration-300">
+          <!-- Branch -->
+          <div class="flex flex-col items-center space-y-2 mb-4 font-medium">
+            <img :src="formarBranchImage(order.branch_id)" alt="Branch Image" class="w-14 h-14 rounded-full" />
+            <p class="text-16px text-slate-700">
+              {{ formatBranchName(order.branch_id) }}
             </p>
           </div>
-          <div class="text-right">
-            <p class="text-13px text-slate-500">
-              {{t("message.orderd_on")}}: <span class="font-medium">{{ order.location }}</span>
-            </p>
-            <p class="text-17px font-semibold text-red-500 mt-1">
-              {{ formatNumber(order.total_price) }} ៛
-            </p>
-          </div>
-        </div>
-        
-        <!-- Items List -->
-        <div class="border-t border-dashed pt-4">
-          <h2 class="text-17px font-semibold mb-3 text-slate-700">
-           {{t("message.your_order")}}
-          </h2>
-          <div v-for="item in order.items" :key="item.id" class="flex items-center space-x-4 mb-3">
-            <!-- <img :src="item.images[0]" alt="Food Item" class="w-20 h-20 rounded-lg object-cover " /> -->
-            <div class="flex  items-end justify-between w-full space-x-2 border-b border-dashed pb-2">
-              <p class="font-medium text-16px text-slate-700">
-                {{ item.name }}
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <p class="text-13px italic text-slate-500">
+                Order #<span class="">{{ order.orderId }}</span>
               </p>
+              <p class="text-13px text-slate-500 mt-1">
+  
+                <span class="font-medium capitalize px-2 py-1 text-primary-6 bg-primary-2 rounded-full">{{ order.status
+                  }}</span>
+              </p>
+            </div>
+            <div class="text-right">
               <p class="text-13px text-slate-500">
-                Qty: {{ item.quantity }}
+                {{t("message.orderd_on")}}: <span class="font-medium">{{ order.location }}</span>
               </p>
-              <p class="text-13px text-primary-8 font-medium">
-                {{ formatNumber(item.price) }} ៛
+              <p class="text-17px font-semibold text-red-500 mt-1">
+                {{ formatNumber(order.total_price) }} ៛
               </p>
             </div>
           </div>
-        </div>
-        <div v-if="order.instructions" class="mt-4 border-t border-dashed py-2">
-          <p class="text-13px text-slate-500">
-            <span class="font-medium text-slate-500">{{t("message.spacail_instruction_history")}}: </span>
-            {{ order.instructions }}
-          </p>
-        </div>
-        <div class="mt-4 text-13px text-slate-500 flex justify-between items-center">
-          <p>{{t("message.orderd_on")}}: {{ formatDate(order.created_at) }}</p>
-          <div class="hidden-print">
-            <Button icon="pi pi-download" class="hidden-print" @click="handleDownload(order.id)" severity="primary" text
-              aria-label="Bookmark" />
+          
+          <!-- Items List -->
+          <div class="border-t border-dashed pt-4">
+            <h2 class="text-17px font-semibold mb-3 text-slate-700">
+             {{t("message.your_order")}}
+            </h2>
+            <div v-for="item in order.items" :key="item.id" class="flex items-center space-x-4 mb-3">
+              <!-- <img :src="item.images[0]" alt="Food Item" class="w-20 h-20 rounded-lg object-cover " /> -->
+              <div class="flex  items-end justify-between w-full space-x-2 border-b border-dashed pb-2">
+                <p class="font-medium text-16px text-slate-700">
+                  {{ item.name }}
+                </p>
+                <p class="text-13px text-slate-500">
+                  Qty: {{ item.quantity }}
+                </p>
+                <p class="text-13px text-primary-8 font-medium">
+                  {{ formatNumber(item.price) }} ៛
+                </p>
+              </div>
+            </div>
+          </div>
+          <div v-if="order.instructions" class="mt-4 border-t border-dashed py-2">
+            <p class="text-13px text-slate-500">
+              <span class="font-medium text-slate-500">{{t("message.spacail_instruction_history")}}: </span>
+              {{ order.instructions }}
+            </p>
+          </div>
+          <div class="mt-4 text-13px text-slate-500 flex justify-between items-center">
+            <p>{{t("message.orderd_on")}}: {{ formatDate(order.created_at) }}</p>
+            <div class="hidden-print">
+              <Button icon="pi pi-download" class="hidden-print" @click="handleDownload(order.id)" severity="primary" text
+                aria-label="Bookmark" />
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    <div>
+      <EmptyHistory v-if="userHistory.length === 0" />
+
     </div>
   </div>
 </template>
@@ -195,7 +196,11 @@ export default {
         await fetchUserHistory();
       }
     });
-    const currentDate = ref(null);
+    // default is this month
+    const currentDate = ref([
+      new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    ]);
     watch(
       () => props.currentUser,
       async (newVal) => {

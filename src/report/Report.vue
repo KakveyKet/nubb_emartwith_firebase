@@ -88,14 +88,14 @@
       <!-- Loading state -->
       <div v-else class="card flex justify-center py-5">
         <div class="flex flex-col items-center">
-          <ProgressSpinner
+          <!-- <ProgressSpinner
             style="width: 50px; height: 50px"
             strokeWidth="8"
             fill="transparent"
             animationDuration=".5s"
             aria-label="Custom ProgressSpinner"
-          />
-          <p class="mt-2">Report Loading...</p>
+          /> -->
+          <p class="mt-2">NO report for this months</p>
         </div>
       </div>
     </div>
